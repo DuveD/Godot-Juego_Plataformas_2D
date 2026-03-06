@@ -1,0 +1,98 @@
+##################################################
+# GIT IGNORE OPTIMIZADO PARA GODOT 4+ & C# / VS / VS CODE
+##################################################
+
+# 1. Godot 4+ Core Ignores
+# Archivos y carpetas generados automáticamente por Godot
+.godot/
+.nomedia
+.import/
+export.cfg
+export_credentials.cfg
+*.tmp
+*.translation
+
+# 2. Godot Mono / .NET Core Ignores
+# Archivos y carpetas generados por el soporte C# / Mono
+.mono/
+data_*/
+mono_crash.*.json
+mono_crash.*
+
+# 3. Visual Studio / IDE Generated Files (Build & Cache)
+# Ignora resultados de compilación y carpetas de caché estándar.
+# Esto cubre la mayoría de las configuraciones x86/x64/AnyCPU.
+[Bb]in/
+[Oo]bj/
+bld/
+[Dd]ebug/
+[Rr]elease/
+Backup/
+
+# Carpetas de caché de VS que no deben compartirse.
+.vs/
+ipch/
+
+# Archivos de la solución y del proyecto específicos del usuario
+# No son necesarios para que otros colaboren.
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.env
+*.userprefs # MonoDevelop/Xamarin Studio user files
+*.VC.db
+*.VC.VC.opendb
+
+# Archivos temporales y de metadatos de compilación
+*.pdb
+*.idb
+*.tlb
+*.tli
+*.tlh
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+*.scc
+*.pidb
+*.svclog
+*.sbr
+
+# Cobertura de Código y Pruebas
+# No subir resultados de pruebas locales
+*.coverage
+*.coveragexml
+*.trx
+TestResult.xml
+nunit-*.xml
+BenchmarkDotNet.Artifacts/
+OpenCover/
+ASALocalRun/
+
+# 4. NuGet/Dependencies Ignores
+# Paquetes y archivos generados por NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+# excepción para 'build/' dentro de 'packages'
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# 5. Visual Studio Code Ignores
+# Archivos de configuración y caché generados por VS Code
+.vscode/*
+# Excepciones: mantenemos archivos clave para compartir la configuración del espacio de trabajo.
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/c_cpp_properties.json
+!.vscode/*.code-snippets
+
+# Otras caché de VS Code
+.history/
+*.vsix
+.vshistory/
+healthchecksdb

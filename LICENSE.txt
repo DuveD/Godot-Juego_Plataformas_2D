@@ -1,0 +1,36 @@
+Copyright (c) 2026 David Marin Medina
+
+All Rights Reserved.
+
+Este proyecto se publica exclusivamente con fines educativos y de aprendizaje.
+
+1. Propiedad intelectual
+Todo el código fuente original de este repositorio es propiedad del autor.
+No se concede ningún permiso para copiar, modificar, distribuir,
+sublicenciar o utilizar el código total o parcialmente sin autorización
+expresa y por escrito del autor.
+
+2. Uso permitido
+Se permite únicamente la visualización y consulta del contenido del
+repositorio con fines educativos y de aprendizaje personal.
+
+3. Prohibiciones
+Queda expresamente prohibido:
+- El uso comercial del proyecto o de cualquiera de sus partes.
+- La redistribución del código fuente.
+- La creación de obras derivadas basadas en este código.
+- La reutilización del código en otros proyectos.
+
+4. Recursos de terceros
+Las imágenes, audios y otros recursos utilizados en este proyecto
+pertenecen a sus respectivos autores y mantienen su propio copyright
+y condiciones de uso. Este repositorio no concede ningún derecho sobre
+dichos recursos.
+
+5. Motor y herramientas
+Este proyecto ha sido desarrollado utilizando el motor Godot.
+Godot es software de código abierto distribuido bajo su propia licencia,
+independiente de este proyecto.
+
+Para cualquier uso distinto al expresamente permitido en este documento,
+debe solicitarse autorización previa por escrito al autor.
