@@ -33,21 +33,12 @@ public partial class Jugador : CharacterBody2D
 
         velocidad = AplicarGravedad(delta, velocidad);
 
-        velocidad = OnSalto(velocidad);
+        velocidad = GestionarSalto(delta, velocidad);
 
-        // Movimiento horizontal
-        float direccion = Input.GetAxis("ui_left", "ui_right");
-        if (direccion != 0)
-        {
-            velocidad.X = direccion * VELOCIDAD;
-            _animatedSprite2D.FlipH = !(direccion > 0);
-        }
-        else
-        {
-            velocidad.X = Mathf.MoveToward(velocidad.X, 0f, VELOCIDAD * 10);
-        }
+        velocidad = GestionarMovimiento(velocidad);
 
         this.Velocity = velocidad;
+
         MoveAndSlide();
     }
 
@@ -57,20 +48,37 @@ public partial class Jugador : CharacterBody2D
 
         if (!IsOnFloor())
         {
+            GD.Print("Aplicamos gravedad.");
             velocidad.Y += Gravedad * (float)delta;
         }
 
         return velocidad;
     }
 
-    private Vector2 OnSalto(Vector2 velocidad)
+    private Vector2 GestionarSalto(double delta, Vector2 velocidad)
     {
         if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
         {
             if (Input.IsActionPressed("ui_down"))
-                _sistemaAtravesarPlataformas.AtravesarPlataformaDebajo();
+                velocidad = _sistemaAtravesarPlataformas.AtravesarPlataformasDebajo(delta, velocidad);
             else
                 velocidad.Y = -VELOCIDAD_SALTO;
+        }
+
+        return velocidad;
+    }
+
+    private Vector2 GestionarMovimiento(Vector2 velocidad)
+    {
+        float direccion = Input.GetAxis("ui_left", "ui_right");
+        if (direccion != 0)
+        {
+            velocidad.X = direccion * VELOCIDAD;
+            _animatedSprite2D.FlipH = !(direccion > 0);
+        }
+        else
+        {
+            velocidad.X = Mathf.MoveToward(velocidad.X, 0f, VELOCIDAD * 10);
         }
 
         return velocidad;
