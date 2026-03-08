@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.pantalla1;
 
@@ -7,15 +8,43 @@ namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
 public partial class SistemaPlataformas : Node
 {
+    private float _tiempoAtravesandoPlataforma = 0f;
+    private const float DURACION_DROP_PLATAFORMA = 0.18f;
+
     private Jugador _jugador;
 
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
-    private HashSet<PhysicsBody2D> _plataformas = [];
+    private HashSet<PhysicsBody2D> _plataformasDebajo = [];
+    private HashSet<PhysicsBody2D> _plataformasIgnoradas = [];
 
     public SistemaPlataformas(Jugador jugador)
     {
         this._jugador = jugador;
+        this._jugador.SensorSuelo.BodyEntered += OnSensorSueloBodyEntered;
+        this._jugador.SensorSuelo.BodyExited += OnSensorSueloBodyExited;
+    }
+
+    public void OnSensorSueloBodyEntered(Node body)
+    {
+        if (body is Plataforma plataforma)
+        {
+            _plataformasDebajo.Add(plataforma);
+        }
+    }
+
+    public void OnSensorSueloBodyExited(Node body)
+    {
+        if (body is Plataforma plataforma)
+        {
+            _plataformasDebajo.Remove(plataforma);
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (_tiempoAtravesandoPlataforma > 0)
+            _tiempoAtravesandoPlataforma -= (float)delta;
     }
 
     public Vector2 AtravesarPlataformasDebajo(double delta, Vector2 velocidad)
@@ -23,6 +52,8 @@ public partial class SistemaPlataformas : Node
         var plataformas = ObtenerPlataformasDebajoJugador();
         if (plataformas.Count == 0)
             return velocidad;
+
+        _tiempoAtravesandoPlataforma = DURACION_DROP_PLATAFORMA;
 
         // Añadimos excepciones de colisión.
         AplicarExcepceionesDeColision(plataformas);
@@ -44,50 +75,24 @@ public partial class SistemaPlataformas : Node
             if (!_jugador.GetCollisionExceptions().Contains(plataforma))
             {
                 _jugador.AddCollisionExceptionWith(plataforma);
-                _plataformas.Add(plataforma);
+                _plataformasIgnoradas.Add(plataforma);
             }
         }
     }
 
     private void RestaurarExcepceionesDeColision()
     {
-        foreach (var plataforma in _plataformas)
+        foreach (var plataforma in _plataformasIgnoradas.ToList())
         {
             _jugador.RemoveCollisionExceptionWith(plataforma);
-            _plataformas.Remove(plataforma);
         }
+
+        _plataformasIgnoradas.Clear();
     }
 
     public List<PhysicsBody2D> ObtenerPlataformasDebajoJugador()
     {
-        var space = _jugador.GetWorld2D().DirectSpaceState;
-
-        // Creamos un query usando el mismo CollisionShape2D del jugador.
-        var query = new PhysicsShapeQueryParameters2D
-        {
-            Shape = _jugador.CollisionShape2D.Shape,
-            Transform = new Transform2D(0, _jugador.GlobalPosition + new Vector2(0, 2)), // Desplazamos 2px hacia abajo.
-            CollideWithAreas = false,
-            CollideWithBodies = true,
-            Exclude = new Godot.Collections.Array<Rid> { _jugador.GetRid() }
-        };
-
-        // Obtenemos todas las colisiones.
-        var results = space.IntersectShape(query);
-
-        // Obtenemos todas las colisiones de tipo Plataforma.
-        List<PhysicsBody2D> plataformasDebajoJugador = [];
-        foreach (var res in results)
-        {
-            var nodo = res["collider"].As<Node>();
-            if (nodo is Plataforma plataforma)
-            {
-                if (!plataformasDebajoJugador.Contains(plataforma))
-                    plataformasDebajoJugador.Add(plataforma);
-            }
-        }
-
-        return plataformasDebajoJugador;
+        return _plataformasDebajo.ToList();
     }
 
     public PhysicsBody2D ObtenerPlataformaDebajoJugadorPredominante()
@@ -113,5 +118,20 @@ public partial class SistemaPlataformas : Node
         }
 
         return plataformaCercana;
+    }
+
+    public bool ExistenPlataformasIgnoradas()
+    {
+        return _plataformasIgnoradas.Count > 0;
+    }
+
+    public bool HayPlataformasDebajo()
+    {
+        return _plataformasDebajo.Count > 0;
+    }
+
+    public bool AtravesandoPlataformas()
+    {
+        return _tiempoAtravesandoPlataforma > 0;
     }
 }

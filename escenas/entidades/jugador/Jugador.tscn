@@ -287,6 +287,9 @@ animations = [{
 radius = 4.5
 height = 16.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ueo0d"]
+size = Vector2(10, 4)
+
 [node name="Jugador" type="CharacterBody2D" unique_id=495711804]
 script = ExtResource("1_rk7g7")
 
@@ -298,5 +301,10 @@ autoplay = "idle"
 frame_progress = 0.738773
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=448350725]
-position = Vector2(-0.5, -8)
+position = Vector2(0, -8)
 shape = SubResource("CapsuleShape2D_ueo0d")
+
+[node name="SensorSuelo" type="Area2D" parent="." unique_id=653536031]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SensorSuelo" unique_id=652567011]
+shape = SubResource("RectangleShape2D_ueo0d")

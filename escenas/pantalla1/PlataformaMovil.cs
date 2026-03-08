@@ -19,12 +19,14 @@ public partial class PlataformaMovil : Plataforma
     [Export]
     public float DistanciaFrenado = 20f;
 
+    [Export]
     public float VelocidadMaxima = 50f;
 
+    [Export]
     public float Aceleracion = 30f; // Cuánto aumenta la velocidad hacia la máxima.
 
     private bool _haciaFin = true;
-    private float aceleracionActual = 0f; // Variable nueva para controlar la aceleración
+    private float _aceleracionActual = 0f; // Variable nueva para controlar la aceleración
 
     public override void _Ready()
     {
@@ -42,15 +44,15 @@ public partial class PlataformaMovil : Plataforma
             // Llegamos al objetivo
             Position = target;
             _haciaFin = !_haciaFin;
-            aceleracionActual = 0f; // Reiniciamos aceleración al cambiar dirección
+            _aceleracionActual = 0f; // Reiniciamos aceleración al cambiar dirección
         }
         else
         {
             // Aceleración gradual hasta la velocidad máxima
-            aceleracionActual += Aceleracion * (float)delta;
-            aceleracionActual = Mathf.Min(aceleracionActual, VelocidadMaxima);
+            _aceleracionActual += Aceleracion * (float)delta;
+            _aceleracionActual = Mathf.Min(_aceleracionActual, VelocidadMaxima);
 
-            float velocidad = aceleracionActual;
+            float velocidad = _aceleracionActual;
 
             // Frenado suave al acercarse
             if (distancia < DistanciaFrenado)
