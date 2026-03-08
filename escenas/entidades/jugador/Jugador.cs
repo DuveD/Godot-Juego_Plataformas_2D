@@ -1,4 +1,5 @@
 using Godot;
+using PrimerjuegoPlataformas2D.escenas.pantalla1;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
@@ -18,13 +19,17 @@ public partial class Jugador : CharacterBody2D
 
     public float VELOCIDAD_SALTO = 300.0f;
 
+    private int _coyoteFrames = 0;
+
+    private const int MAX_COYOTE_FRAMES = 6; // ~0.1s si physics = 60Hz
+
     private AnimatedSprite2D _animatedSprite2D;
 
     public CollisionShape2D CollisionShape2D;
 
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
-    private SistemaAtravesarPlataformas _sistemaAtravesarPlataformas;
+    private SistemaPlataformas _sistemaPlataformas;
 
     public EstadoLocomocionJugador? EstadoLocomocionAnterior;
     private EstadoLocomocionJugador? _estadoLocomocion;
@@ -64,14 +69,22 @@ public partial class Jugador : CharacterBody2D
         if (anterior == EstadoLocomocionJugador.Cayendo &&
             actual == EstadoLocomocionJugador.EnSuelo)
         {
-            GD.Print("Aterrizaje.");
+            OnAterrizar();
         }
     }
 
+    private void OnAterrizar()
+    {
+        GD.Print("Aterrizaje.");
+    }
+
+
+    private Vector2 _velocidadPlataformaAlSaltar = Vector2.Zero;
+
     public Jugador()
     {
-        _sistemaAtravesarPlataformas = new SistemaAtravesarPlataformas(this);
-        AddChild(_sistemaAtravesarPlataformas);
+        _sistemaPlataformas = new SistemaPlataformas(this);
+        AddChild(_sistemaPlataformas);
     }
 
     public override void _Ready()
@@ -82,6 +95,8 @@ public partial class Jugador : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        ActualizarCoyoteTime();
+
         EstadoLocomocion = CalcularEstadoLocomocion();
 
         Vector2 velocidad = Velocity;
@@ -95,6 +110,14 @@ public partial class Jugador : CharacterBody2D
         this.Velocity = velocidad;
 
         MoveAndSlide();
+    }
+
+    private void ActualizarCoyoteTime()
+    {
+        if (IsOnFloor())
+            _coyoteFrames = MAX_COYOTE_FRAMES;
+        else if (_coyoteFrames > 0)
+            _coyoteFrames--;
     }
 
     public EstadoLocomocionJugador CalcularEstadoLocomocion()
@@ -127,12 +150,14 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 GestionarSalto(double delta, Vector2 velocidad)
     {
-        if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
+        if (Input.IsActionJustPressed("ui_accept") && _coyoteFrames > 0)
         {
             if (Input.IsActionPressed("ui_down"))
-                velocidad = _sistemaAtravesarPlataformas.AtravesarPlataformasDebajo(delta, velocidad);
+                velocidad = _sistemaPlataformas.AtravesarPlataformasDebajo(delta, velocidad);
             else
                 velocidad.Y = -VELOCIDAD_SALTO;
+
+            _coyoteFrames = 0;
         }
 
         return velocidad;
@@ -141,14 +166,42 @@ public partial class Jugador : CharacterBody2D
     private Vector2 GestionarMovimiento(Vector2 velocidad)
     {
         float direccion = Input.GetAxis("ui_left", "ui_right");
+
+        Vector2 velocidadJugador = new Vector2(velocidad.X, velocidad.Y);
+
         if (direccion != 0)
         {
-            velocidad.X = direccion * VELOCIDAD;
+            velocidadJugador.X = direccion * VELOCIDAD;
             _animatedSprite2D.FlipH = !(direccion > 0);
+            velocidad = velocidadJugador;
         }
         else
         {
-            velocidad.X = Mathf.MoveToward(velocidad.X, 0f, VELOCIDAD * 10);
+            velocidadJugador.X = Mathf.MoveToward(velocidadJugador.X, 0f, VELOCIDAD * 10);
+
+            // Obtener plataforma predominante debajo
+            PhysicsBody2D plataformaPredominante = _sistemaPlataformas.ObtenerPlataformaDebajoJugadorPredominante();
+            Vector2 velocidadPlataforma = Vector2.Zero;
+
+            if (IsOnFloor())
+            {
+                if (plataformaPredominante is PlataformaMovil plataforma)
+                {
+                    _velocidadPlataformaAlSaltar = plataforma.VelocidadActual;
+                }
+                else
+                {
+                    _velocidadPlataformaAlSaltar = Vector2.Zero;
+                }
+            }
+            else
+            {
+                // En el aire, conservamos la velocidad de la plataforma del momento del salto
+                velocidadPlataforma = _velocidadPlataformaAlSaltar;
+            }
+
+            // Velocidad final
+            velocidad = velocidadJugador + velocidadPlataforma;
         }
 
         return velocidad;

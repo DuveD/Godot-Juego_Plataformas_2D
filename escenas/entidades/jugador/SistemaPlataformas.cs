@@ -5,7 +5,7 @@ using PrimerjuegoPlataformas2D.escenas.pantalla1;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
-public partial class SistemaAtravesarPlataformas : Node
+public partial class SistemaPlataformas : Node
 {
     private Jugador _jugador;
 
@@ -13,7 +13,7 @@ public partial class SistemaAtravesarPlataformas : Node
 
     private HashSet<PhysicsBody2D> _plataformas = [];
 
-    public SistemaAtravesarPlataformas(Jugador jugador)
+    public SistemaPlataformas(Jugador jugador)
     {
         this._jugador = jugador;
     }
@@ -58,17 +58,6 @@ public partial class SistemaAtravesarPlataformas : Node
         }
     }
 
-    private bool JugadorSigueSobrePlataforma(List<PhysicsBody2D> plataformas)
-    {
-        foreach (var plataforma in plataformas)
-        {
-            if (_jugador.GlobalPosition.Y <= plataforma.GlobalPosition.Y)
-                return true;
-        }
-
-        return false;
-    }
-
     public List<PhysicsBody2D> ObtenerPlataformasDebajoJugador()
     {
         var space = _jugador.GetWorld2D().DirectSpaceState;
@@ -99,5 +88,30 @@ public partial class SistemaAtravesarPlataformas : Node
         }
 
         return plataformasDebajoJugador;
+    }
+
+    public PhysicsBody2D ObtenerPlataformaDebajoJugadorPredominante()
+    {
+        PlataformaMovil plataformaCercana = null;
+        float minDistancia = float.MaxValue;
+
+        Vector2 centroJugador = _jugador.GlobalPosition;
+
+        foreach (var piso in ObtenerPlataformasDebajoJugador())
+        {
+            if (piso is PlataformaMovil plataforma)
+            {
+                Vector2 centroPlataforma = plataforma.GlobalPosition;
+                float distancia = centroJugador.DistanceTo(centroPlataforma);
+
+                if (distancia < minDistancia)
+                {
+                    minDistancia = distancia;
+                    plataformaCercana = plataforma;
+                }
+            }
+        }
+
+        return plataformaCercana;
     }
 }
