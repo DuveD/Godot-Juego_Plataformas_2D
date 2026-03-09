@@ -48,10 +48,13 @@ public partial class PlataformaMovil : Plataforma
 
     private Area2D _sensorJugador;
 
+    private CollisionShape2D _collisionShape2D;
+
     public override void _Ready()
     {
         PosicionInicial = _posicionAnterior = GlobalPosition;
         _sensorJugador = GetNode<Area2D>("SensorJugador");
+        _collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
 
         if (Caida)
             _sensorJugador.BodyEntered += OnSensorJugadorBodyEntered;
@@ -134,12 +137,16 @@ public partial class PlataformaMovil : Plataforma
                 if (_timer >= TiempoReaparecer)
                 {
                     _estado = EstadoPlataforma.Reiniciando;
+                    // Lo desactivamos para que no teletransporte al jugador.
+                    _collisionShape2D.Disabled = true;
                 }
                 break;
 
             case EstadoPlataforma.Reiniciando:
                 Position = PosicionInicial;
                 _estado = EstadoPlataforma.Normal;
+                // Volvemos a activar las colisiones.
+                _collisionShape2D.Disabled = false;
                 _timer = 0f;
                 _aceleracionActual = 0f;
                 _haciaFin = true;
