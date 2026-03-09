@@ -197,6 +197,10 @@ position = Vector2(384, 24)
 Movimiento = true
 PosicionA = Vector2(288, 24)
 PosicionB = Vector2(384, 24)
+Caida = true
+
+[node name="Sprite2D" parent="PlataformaMovil2" index="0" unique_id=649151839]
+region_rect = Rect2(16, 16, 32, 9)
 
 [node name="PlataformaMovil3" parent="." unique_id=2104790782 instance=ExtResource("4_hgoh6")]
 position = Vector2(416, 24)
@@ -326,6 +330,7 @@ tile_set = SubResource("TileSet_itltq")
 z_index = 10
 tile_set = SubResource("TileSet_itltq")
 
+[editable path="PlataformaMovil2"]
 [editable path="PlataformaCaida4"]
 [editable path="PlataformaCaida3"]
 [editable path="PlataformaCaida2"]
