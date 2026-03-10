@@ -5,16 +5,6 @@ namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
 public partial class Jugador : CharacterBody2D
 {
-    public const string NOMBRE_ANIMACION_ATERRIZAR = "aterrizar";
-    public const string NOMBRE_ANIMACION_CAER = "caer";
-    public const string NOMBRE_ANIMACION_CORRER = "correr";
-    public const string NOMBRE_ANIMACION_GOLPEADO = "golpeado";
-    public const string NOMBRE_ANIMACION_IDLE = "idle";
-    public const string NOMBRE_ANIMACION_MUERTE = "muerte";
-    public const string NOMBRE_ANIMACION_RODAR = "rodar";
-    public const string NOMBRE_ANIMACION_RODANDO = "rodando";
-    public const string NOMBRE_ANIMACION_SALTAR = "saltar";
-
     /// <summary>
     /// Describe el estado físico vertical del jugador.
     /// </summary>
@@ -30,13 +20,13 @@ public partial class Jugador : CharacterBody2D
 
 
     [Export]
-    public float VELOCIDAD = 130f;
+    public float Velocidad = 130f;
 
     [Export]
-    public float VELOCIDAD_SALTO = 320.0f;
+    public float VelocidadSalto = 320.0f;
 
     [Export]
-    public float MAXIMA_VELOCIDAD_CAIDA = 350f;
+    public float MaximaVelocidadCaida = 350f;
 
     private const float MULTIPLICADOR_CAIDA = 1.8f;
     private const float MULTIPLICADOR_CAIDA_RAPIDA = 2.5f;
@@ -64,7 +54,7 @@ public partial class Jugador : CharacterBody2D
     private bool _mantenerRodar = false;
 
     [Export]
-    public float VELOCIDAD_RODAR = 200; // velocidad horizontal durante el rodar
+    public float VelocidadRodar = 200; // velocidad horizontal durante el rodar
 
     private float _velocidadInicialRodar = 0f;
 
@@ -72,6 +62,31 @@ public partial class Jugador : CharacterBody2D
     public CollisionShape2D CollisionShape2D;
     public Area2D SensorSuelo;
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
+
+    bool _enSuelo = false;
+
+    #region Inputs
+    private struct InputJugador
+    {
+        public float Direccion;
+        public bool SaltoPresionado;
+        public bool SaltoMantenido;
+        public bool Rodar;
+        public bool Abajo;
+    }
+
+    private InputJugador LeerInput()
+    {
+        return new InputJugador
+        {
+            Direccion = Input.GetAxis("ui_left", "ui_right"),
+            SaltoPresionado = Input.IsActionJustPressed("ui_accept"),
+            SaltoMantenido = Input.IsActionPressed("ui_accept"),
+            Rodar = Input.IsActionJustPressed("rodar"),
+            Abajo = Input.IsActionPressed("ui_down")
+        };
+    }
+    #endregion
 
     public SistemaPlataformas SistemaPlataformas;
     public EstadoLocomocionJugador EstadoLocomocionAnterior = EstadoLocomocionJugador.EnSuelo;
@@ -114,10 +129,10 @@ public partial class Jugador : CharacterBody2D
     {
         Vector2 velocidad = Velocity;
 
-        ActualizarInputs();
+        InputJugador inputJugador = ActualizarInputs();
 
-        velocidad = GestionarMovimientoHorizontal(delta, velocidad);
-        velocidad = GestionarMovimientoVertical(delta, velocidad);
+        velocidad = GestionarMovimientoHorizontal(delta, velocidad, inputJugador);
+        velocidad = GestionarMovimientoVertical(delta, velocidad, inputJugador);
 
         Velocity = velocidad;
 
@@ -127,23 +142,27 @@ public partial class Jugador : CharacterBody2D
         ActualizarAnimacion();
     }
 
-    private void ActualizarInputs()
+    private InputJugador ActualizarInputs()
     {
+        InputJugador inputJugador = LeerInput();
+
         ActualizarCoyoteTime();
-        ActualizarBufferDeSalto();
+        ActualizarBufferDeSalto(inputJugador);
+
+        return inputJugador;
     }
 
     private void ActualizarCoyoteTime()
     {
-        if (IsOnFloor())
+        if (_enSuelo)
             _coyoteFrames = MAX_COYOTE_FRAMES;
         else if (_coyoteFrames > 0)
             _coyoteFrames--;
     }
 
-    private void ActualizarBufferDeSalto()
+    private void ActualizarBufferDeSalto(InputJugador inputJugador)
     {
-        if (Input.IsActionJustPressed("ui_accept"))
+        if (inputJugador.SaltoPresionado)
             _jumpBufferFrames = MAX_JUMP_BUFFER;
         else if (_jumpBufferFrames > 0)
             _jumpBufferFrames--;
@@ -151,7 +170,7 @@ public partial class Jugador : CharacterBody2D
 
     public EstadoLocomocionJugador CalcularEstadoLocomocion()
     {
-        if (IsOnFloor())
+        if (_enSuelo)
         {
             return EstadoLocomocionJugador.EnSuelo;
         }
@@ -164,10 +183,10 @@ public partial class Jugador : CharacterBody2D
         return EstadoLocomocionJugador.Cayendo;
     }
 
-    private Vector2 GestionarMovimientoVertical(double delta, Vector2 velocidad)
+    private Vector2 GestionarMovimientoVertical(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         // Procesamos el salto.
-        velocidad = ProcesarSalto(delta, velocidad);
+        velocidad = ProcesarSalto(delta, velocidad, inputJugador);
 
         // Al procesar el salto, la velocidad puede quedar en positivo por la frenada.
         bool cayendo = velocidad.Y > 0;
@@ -175,11 +194,11 @@ public partial class Jugador : CharacterBody2D
             CambiarEstadoLocomocion(EstadoLocomocionJugador.Cayendo);
 
         // Aplicamos la gravedad.
-        velocidad = AplicarGravedad(delta, velocidad);
+        velocidad = AplicarGravedad(delta, velocidad, inputJugador);
 
         // Limitamos la velocidad máxima de caída.
-        if (velocidad.Y > MAXIMA_VELOCIDAD_CAIDA)
-            velocidad.Y = MAXIMA_VELOCIDAD_CAIDA;
+        if (velocidad.Y > MaximaVelocidadCaida)
+            velocidad.Y = MaximaVelocidadCaida;
 
         return velocidad;
     }
@@ -198,7 +217,7 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private Vector2 AplicarGravedad(double delta, Vector2 velocidad)
+    private Vector2 AplicarGravedad(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         bool subiendo = velocidad.Y < 0;
         bool cayendo = velocidad.Y > 0;
@@ -211,7 +230,7 @@ public partial class Jugador : CharacterBody2D
         }
         else if (cayendo)
         {
-            ActualizarCaidaRapida();
+            ActualizarCaidaRapida(inputJugador);
             gravedadAplicada *= CaidaRapida == true ? MULTIPLICADOR_CAIDA_RAPIDA : MULTIPLICADOR_CAIDA;
         }
 
@@ -220,10 +239,10 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private void ActualizarCaidaRapida()
+    private void ActualizarCaidaRapida(InputJugador inputJugador)
     {
         // Si estamos presionando ↓ y no estamos atravesando plataformas, activamos la caída rápida mínima
-        if (Input.IsActionPressed("ui_down") && !SistemaPlataformas.AtravesandoPlataformas())
+        if (inputJugador.Abajo && !SistemaPlataformas.AtravesandoPlataformas())
             _framesCaidaRapida = FRAMES_CAIDA_RAPIDA_MIN;
 
         // Activar la caída rápida mientras queden frames
@@ -248,13 +267,13 @@ public partial class Jugador : CharacterBody2D
         return _jumpBufferFrames > 0;
     }
 
-    private Vector2 ProcesarSalto(double delta, Vector2 velocidad)
+    private Vector2 ProcesarSalto(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         if (EstadoLocomocion != EstadoLocomocionJugador.Saltando)
         {
             if (HayInputSalto() && PuedeSaltar())
             {
-                if (Input.IsActionPressed("ui_down"))
+                if (inputJugador.Abajo)
                 {
                     if (SistemaPlataformas.HayPlataformasDebajo())
                     {
@@ -264,7 +283,7 @@ public partial class Jugador : CharacterBody2D
                 else
                 {
                     velocidad.Y = Mathf.Min(velocidad.Y, 0);
-                    velocidad.Y -= VELOCIDAD_SALTO;
+                    velocidad.Y -= VelocidadSalto;
                 }
 
                 _coyoteFrames = 0;
@@ -278,12 +297,12 @@ public partial class Jugador : CharacterBody2D
         if (subiendo)
         {
             // Cancelar salto con ↓
-            if (Input.IsActionJustPressed("ui_down"))
+            if (inputJugador.Abajo)
             {
                 velocidad = CancelarSalto(velocidad);
             }
             // Jump cut: soltar salto antes de tiempo
-            else if (!Input.IsActionPressed("ui_accept"))
+            else if (!inputJugador.SaltoMantenido)
             {
                 velocidad = FrenarSalto(delta, velocidad);
             }
@@ -292,51 +311,49 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private Vector2 GestionarMovimientoHorizontal(double delta, Vector2 velocidad)
+    private Vector2 GestionarMovimientoHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
-        ProcesarRodar();
+        ProcesarRodar(inputJugador);
 
         if (_mantenerRodar)
             return MantenerVelocidadRodar(velocidad);
 
-        float direccion = Input.GetAxis("ui_left", "ui_right");
-        velocidad = AplicarAceleracionHorizontal(velocidad, direccion, delta);
+        velocidad = AplicarAceleracionHorizontal(delta, velocidad, inputJugador);
 
-        if (direccion != 0)
-            _animatedSprite2D.FlipH = direccion < 0;
+        if (inputJugador.Direccion != 0)
+            _animatedSprite2D.FlipH = inputJugador.Direccion < 0;
 
         return velocidad;
     }
 
-    private void ProcesarRodar()
+    private void ProcesarRodar(InputJugador inputJugador)
     {
-        if (!IsOnFloor() || !Input.IsActionJustPressed("rodar"))
+        if (!_enSuelo || !inputJugador.Rodar)
             return;
 
         if (EstadoLocomocion != EstadoLocomocionJugador.Rodando)
             IniciarRodar();
         else
-            CambiarDireccionRodar();
+            CambiarDireccionRodar(inputJugador);
     }
 
     private void IniciarRodar()
     {
         CambiarEstadoLocomocion(EstadoLocomocionJugador.Rodando);
-        _velocidadInicialRodar = ObtenerDireccionActual() * VELOCIDAD_RODAR;
+        _velocidadInicialRodar = ObtenerDireccionActual() * VelocidadRodar;
         _framesEstadoTemporal = FRAMES_RODAR;
     }
 
-    private void CambiarDireccionRodar()
+    private void CambiarDireccionRodar(InputJugador inputJugador)
     {
-        float direccionInput = Input.GetAxis("ui_left", "ui_right");
-        float direccionActual = Mathf.Sign(_velocidadInicialRodar);
-
-        if (Mathf.Sign(direccionInput) != 0 && Mathf.Sign(direccionInput) != direccionActual)
+        float direccion = Mathf.Sign(_velocidadInicialRodar);
+        if (Mathf.Sign(inputJugador.Direccion) != 0 && Mathf.Sign(inputJugador.Direccion) != direccion)
         {
-            _animatedSprite2D.FlipH = direccionInput < 0;
-            _velocidadInicialRodar = Mathf.Sign(direccionInput) * VELOCIDAD_RODAR;
+            direccion = Mathf.Sign(inputJugador.Direccion);
         }
 
+        _velocidadInicialRodar = Mathf.Sign(direccion) * VelocidadRodar;
+        _animatedSprite2D.FlipH = inputJugador.Direccion < 0;
         _framesEstadoTemporal = FRAMES_RODAR;
     }
 
@@ -351,21 +368,21 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private Vector2 AplicarAceleracionHorizontal(Vector2 velocidad, float direccion, double delta)
+    private Vector2 AplicarAceleracionHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
-        float aceleracion = IsOnFloor() ? ACELERACION_SUELO : ACELERACION_AIRE;
+        float aceleracion = _enSuelo ? ACELERACION_SUELO : ACELERACION_AIRE;
 
         if (EstadoLocomocion == EstadoLocomocionJugador.Saltando && Mathf.Abs(Velocity.Y) < UMBRAL_APEX)
             aceleracion *= MULTIPLICADOR_CONTROL_APEX;
 
-        float objetivoX = direccion * VELOCIDAD;
+        float objetivoX = inputJugador.Direccion * Velocidad;
 
-        if (!IsOnFloor() && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
+        if (!_enSuelo && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
             Mathf.Sign(velocidad.X) == Mathf.Sign(objetivoX))
             return velocidad;
 
         velocidad.X = Mathf.MoveToward(velocidad.X, objetivoX, aceleracion * (float)delta);
-        velocidad.X = Mathf.Clamp(velocidad.X, -VELOCIDAD, VELOCIDAD);
+        velocidad.X = Mathf.Clamp(velocidad.X, -Velocidad, Velocidad);
 
         return velocidad;
     }
@@ -384,6 +401,8 @@ public partial class Jugador : CharacterBody2D
 
     private void EvaluarEstadoLocomocion()
     {
+        _enSuelo = IsOnFloor();
+
         // Reducimos contador si estamos en un estado temporal
         if (_framesEstadoTemporal > 0)
         {
@@ -474,37 +493,60 @@ public partial class Jugador : CharacterBody2D
         switch (EstadoLocomocion)
         {
             case EstadoLocomocionJugador.EnSuelo:
-                ReproducirAnimacion(Mathf.Abs(Velocity.X) > 5f ? NOMBRE_ANIMACION_CORRER : NOMBRE_ANIMACION_IDLE);
+                ActualizarAnimacionEnSuelo();
                 break;
 
             case EstadoLocomocionJugador.Saltando:
-                if (_mantenerRodar)
-                    ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
-                else
-                    ReproducirAnimacion(NOMBRE_ANIMACION_SALTAR);
+                ActualizarAnimacionSaltando();
                 break;
 
             case EstadoLocomocionJugador.Cayendo:
-                if (_mantenerRodar)
-                    ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
-                else
-                    ReproducirAnimacion(NOMBRE_ANIMACION_CAER);
+                ActualizarAnimacionCayendo();
                 break;
 
             case EstadoLocomocionJugador.Rodando:
-                if (_mantenerRodar)
-                    ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
-                else
-                    ReproducirAnimacion(NOMBRE_ANIMACION_RODAR, true);
+                ActualizarAnimacionRodando();
                 break;
         }
     }
 
-    private void ReproducirAnimacion(string nombreAnimacion, bool forzarReproducir = false)
+    private void ActualizarAnimacionEnSuelo()
     {
-        if (_animatedSprite2D.Animation == nombreAnimacion && !forzarReproducir)
+        if (Mathf.Abs(Velocity.X) > 0f)
+            ReproducirAnimacion(AnimacionJugador.Correr);
+        else
+            ReproducirAnimacion(AnimacionJugador.Idle);
+    }
+
+    private void ActualizarAnimacionSaltando()
+    {
+        if (_mantenerRodar)
+            ReproducirAnimacion(AnimacionJugador.Rodando, true);
+        else
+            ReproducirAnimacion(AnimacionJugador.Saltar);
+    }
+
+    private void ActualizarAnimacionCayendo()
+    {
+        if (_mantenerRodar)
+            ReproducirAnimacion(AnimacionJugador.Rodando, true);
+        else
+            ReproducirAnimacion(AnimacionJugador.Caer);
+    }
+
+    private void ActualizarAnimacionRodando()
+    {
+        if (_mantenerRodar)
+            ReproducirAnimacion(AnimacionJugador.Rodando, true);
+        else
+            ReproducirAnimacion(AnimacionJugador.Rodar, true);
+    }
+
+    private void ReproducirAnimacion(AnimacionJugador animacionJugador, bool forzarReproducir = false)
+    {
+        if (_animatedSprite2D.Animation == animacionJugador.Nombre && !forzarReproducir)
             return;
 
-        _animatedSprite2D.Play(nombreAnimacion);
+        _animatedSprite2D.Play(animacionJugador.Nombre);
     }
 }
