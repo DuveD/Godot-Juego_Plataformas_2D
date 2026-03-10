@@ -15,18 +15,6 @@ public partial class Jugador : CharacterBody2D
     public const string NOMBRE_ANIMACION_RODANDO = "rodando";
     public const string NOMBRE_ANIMACION_SALTAR = "saltar";
 
-    private int _framesEstadoTemporal = 0;
-    private const int FRAMES_ATERRIZAR = 6;
-
-    private const int FRAMES_RODAR = 16;          // duración del rodar
-
-    private bool _mantenerAnimacionRodar = false;
-
-    [Export]
-    public float VELOCIDAD_RODAR = 200; // velocidad horizontal durante el rodar
-
-    private float _velocidadInicialRodar = 0f;
-
     /// <summary>
     /// Describe el estado físico vertical del jugador.
     /// </summary>
@@ -35,15 +23,17 @@ public partial class Jugador : CharacterBody2D
         EnSuelo,
         Saltando,
         Cayendo,
-        Aterrizando,
         Rodando
     }
+
+    private int _framesEstadoTemporal = 0;
+
 
     [Export]
     public float VELOCIDAD = 130f;
 
     [Export]
-    public float VELOCIDAD_SALTO = 300.0f;
+    public float VELOCIDAD_SALTO = 320.0f;
 
     [Export]
     public float MAXIMA_VELOCIDAD_CAIDA = 350f;
@@ -69,16 +59,43 @@ public partial class Jugador : CharacterBody2D
     private int _framesCaidaRapida = 0;
     private const int FRAMES_CAIDA_RAPIDA_MIN = 2;
 
+    private const int FRAMES_RODAR = 16;          // duración del rodar
+
+    private bool _mantenerRodar = false;
+
+    [Export]
+    public float VELOCIDAD_RODAR = 200; // velocidad horizontal durante el rodar
+
+    private float _velocidadInicialRodar = 0f;
+
     private AnimatedSprite2D _animatedSprite2D;
     public CollisionShape2D CollisionShape2D;
     public Area2D SensorSuelo;
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
     public SistemaPlataformas SistemaPlataformas;
-    public EstadoLocomocionJugador EstadoLocomocionAnterior;
-    public EstadoLocomocionJugador EstadoLocomocion;
+    public EstadoLocomocionJugador EstadoLocomocionAnterior = EstadoLocomocionJugador.EnSuelo;
+    public EstadoLocomocionJugador EstadoLocomocion = EstadoLocomocionJugador.EnSuelo;
 
-    private bool? CaidaRapida;
+    public bool? CaidaRapida
+    {
+        get;
+        set
+        {
+            if (field == value)
+                return;
+
+            field = value;
+
+            if (value != null)
+            {
+                if (value.Value)
+                    GD.Print("Caída rápida.");
+                else
+                    GD.Print("Caida normal.");
+            }
+        }
+    }
 
     public override void _Ready()
     {
@@ -89,20 +106,18 @@ public partial class Jugador : CharacterBody2D
         this.SistemaPlataformas = new SistemaPlataformas(this);
         AddChild(SistemaPlataformas);
 
-        this.EstadoLocomocion = CalcularEstadoLocomocion();
-        this.EstadoLocomocionAnterior = this.EstadoLocomocion;
+        EvaluarEstadoLocomocion();
         this.ActualizarAnimacion();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        ActualizarInputs();
-
         Vector2 velocidad = Velocity;
 
-        velocidad = GestionarMovimientoVertical(delta, velocidad);
-        velocidad = GestionarSalto(delta, velocidad);
+        ActualizarInputs();
+
         velocidad = GestionarMovimientoHorizontal(delta, velocidad);
+        velocidad = GestionarMovimientoVertical(delta, velocidad);
 
         Velocity = velocidad;
 
@@ -114,40 +129,8 @@ public partial class Jugador : CharacterBody2D
 
     private void ActualizarInputs()
     {
-        DetectarRodar();
-
         ActualizarCoyoteTime();
         ActualizarBufferDeSalto();
-    }
-
-    private void DetectarRodar()
-    {
-        if (IsOnFloor() && Input.IsActionJustPressed("rodar"))
-        {
-            // Si no estaba rodando, o si queremos encadenar rodadas, reiniciamos el contador
-            if (EstadoLocomocion != EstadoLocomocionJugador.Rodando)
-            {
-                CambiarEstadoLocomocion(EstadoLocomocionJugador.Rodando);
-
-                // Guardamos la dirección
-                float direccionRodar = _animatedSprite2D.FlipH ? -1 : 1;
-                _velocidadInicialRodar = direccionRodar * VELOCIDAD_RODAR;
-            }
-            else
-            {
-                float direccionInput = Input.GetAxis("ui_left", "ui_right");
-                float direccionActual = _animatedSprite2D.FlipH ? -1 : 1;
-
-                if (Mathf.Sign(direccionInput) != 0 && Mathf.Sign(direccionInput) != Mathf.Sign(direccionActual))
-                {
-                    _animatedSprite2D.FlipH = direccionInput < 0;
-                    _velocidadInicialRodar = (direccionInput < 0 ? -1 : 1) * VELOCIDAD_RODAR;
-                }
-            }
-
-            // Reiniciamos duración de rodar
-            _framesEstadoTemporal = FRAMES_RODAR;
-        }
     }
 
     private void ActualizarCoyoteTime()
@@ -170,11 +153,6 @@ public partial class Jugador : CharacterBody2D
     {
         if (IsOnFloor())
         {
-            if (EstadoLocomocion == EstadoLocomocionJugador.Cayendo)
-            {
-                return EstadoLocomocionJugador.Aterrizando;
-            }
-
             return EstadoLocomocionJugador.EnSuelo;
         }
 
@@ -188,60 +166,22 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 GestionarMovimientoVertical(double delta, Vector2 velocidad)
     {
-        if (IsOnFloor())
-        {
-            CaidaRapida = null;
-            _framesCaidaRapida = 0;
-            return velocidad;
-        }
+        // Procesamos el salto.
+        velocidad = ProcesarSalto(delta, velocidad);
 
-        bool subiendo = velocidad.Y < 0;
-        if (subiendo)
-        {
-            // Cancelar salto con ↓
-            if (Input.IsActionJustPressed("ui_down"))
-            {
-                velocidad = CancelarSalto(velocidad);
-            }
-            // Jump cut: soltar salto antes de tiempo
-            else if (!Input.IsActionPressed("ui_accept"))
-            {
-                velocidad = FrenarSalto(delta, velocidad);
-            }
-        }
+        // Al procesar el salto, la velocidad puede quedar en positivo por la frenada.
+        bool cayendo = velocidad.Y > 0;
+        if (cayendo && EstadoLocomocion != EstadoLocomocionJugador.Cayendo)
+            CambiarEstadoLocomocion(EstadoLocomocionJugador.Cayendo);
 
-        bool bajando = velocidad.Y > 0;
-        if (bajando)
-        {
-            ActualizarCaidaRapida();
-        }
-
-        // Aplicar gravedad vertical
+        // Aplicamos la gravedad.
         velocidad = AplicarGravedad(delta, velocidad);
 
-        // Limitar velocidad máxima de caída
+        // Limitamos la velocidad máxima de caída.
         if (velocidad.Y > MAXIMA_VELOCIDAD_CAIDA)
             velocidad.Y = MAXIMA_VELOCIDAD_CAIDA;
 
         return velocidad;
-    }
-
-    private void ActualizarCaidaRapida()
-    {
-        // Si estamos presionando ↓ y no estamos atravesando plataformas, activamos la caída rápida mínima
-        if (Input.IsActionPressed("ui_down") && !SistemaPlataformas.AtravesandoPlataformas())
-            _framesCaidaRapida = FRAMES_CAIDA_RAPIDA_MIN;
-
-        // Activar la caída rápida mientras queden frames
-        if (_framesCaidaRapida > 0)
-        {
-            CaidaRapida = true;
-            _framesCaidaRapida--;
-        }
-        else
-        {
-            CaidaRapida = false;
-        }
     }
 
     private Vector2 CancelarSalto(Vector2 velocidad)
@@ -266,24 +206,37 @@ public partial class Jugador : CharacterBody2D
         float gravedadAplicada = Gravedad;
 
         if (subiendo && Mathf.Abs(velocidad.Y) < UMBRAL_APEX)
+        {
             gravedadAplicada *= MULTIPLICADOR_GRAVEDAD_APEX;
+        }
         else if (cayendo)
+        {
+            ActualizarCaidaRapida();
             gravedadAplicada *= CaidaRapida == true ? MULTIPLICADOR_CAIDA_RAPIDA : MULTIPLICADOR_CAIDA;
+        }
 
         velocidad.Y += gravedadAplicada * (float)delta;
 
         return velocidad;
     }
 
-    private Vector2 OnInterrumpirSalto(Vector2 velocidad)
+    private void ActualizarCaidaRapida()
     {
-        GD.Print("Salto interrumpido.");
-        velocidad.Y = Mathf.Max(velocidad.Y, 0);
-        CaidaRapida = false;
+        // Si estamos presionando ↓ y no estamos atravesando plataformas, activamos la caída rápida mínima
+        if (Input.IsActionPressed("ui_down") && !SistemaPlataformas.AtravesandoPlataformas())
+            _framesCaidaRapida = FRAMES_CAIDA_RAPIDA_MIN;
 
-        return velocidad;
+        // Activar la caída rápida mientras queden frames
+        if (_framesCaidaRapida > 0)
+        {
+            CaidaRapida = true;
+            _framesCaidaRapida--;
+        }
+        else
+        {
+            CaidaRapida = false;
+        }
     }
-
 
     private bool PuedeSaltar()
     {
@@ -295,7 +248,7 @@ public partial class Jugador : CharacterBody2D
         return _jumpBufferFrames > 0;
     }
 
-    private Vector2 GestionarSalto(double delta, Vector2 velocidad)
+    private Vector2 ProcesarSalto(double delta, Vector2 velocidad)
     {
         if (EstadoLocomocion != EstadoLocomocionJugador.Saltando)
         {
@@ -316,12 +269,24 @@ public partial class Jugador : CharacterBody2D
 
                 _coyoteFrames = 0;
                 _jumpBufferFrames = 0;
+
+                return velocidad;
             }
         }
-        else
+
+        bool subiendo = velocidad.Y < 0;
+        if (subiendo)
         {
-            if (!Input.IsActionPressed("ui_accept") && velocidad.Y < 0)
-                velocidad.Y += Gravedad * GRAVEDAD_EXTRA_CORTE_SALTO * (float)delta;
+            // Cancelar salto con ↓
+            if (Input.IsActionJustPressed("ui_down"))
+            {
+                velocidad = CancelarSalto(velocidad);
+            }
+            // Jump cut: soltar salto antes de tiempo
+            else if (!Input.IsActionPressed("ui_accept"))
+            {
+                velocidad = FrenarSalto(delta, velocidad);
+            }
         }
 
         return velocidad;
@@ -329,37 +294,78 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 GestionarMovimientoHorizontal(double delta, Vector2 velocidad)
     {
+        ProcesarRodar();
+
+        if (_mantenerRodar)
+            return MantenerVelocidadRodar(velocidad);
+
         float direccion = Input.GetAxis("ui_left", "ui_right");
-
-        if (_mantenerAnimacionRodar)
-        {
-            // Mantener velocidad de rodar aunque cambie el estado
-            velocidad.X = _velocidadInicialRodar;
-            return velocidad; // ignorar input
-        }
-
-        float aceleracion = IsOnFloor() ? ACELERACION_SUELO : ACELERACION_AIRE;
-
-        if (EstadoLocomocion == EstadoLocomocionJugador.Saltando && Mathf.Abs(Velocity.Y) < UMBRAL_APEX)
-        {
-            aceleracion *= MULTIPLICADOR_CONTROL_APEX;
-        }
-
-        float objetivoX = direccion * VELOCIDAD;
-
-        if (!IsOnFloor())
-        {
-            if (Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) && Mathf.Sign(velocidad.X) == Mathf.Sign(objetivoX))
-            {
-                return velocidad;
-            }
-        }
-
-        velocidad.X = Mathf.MoveToward(velocidad.X, objetivoX, aceleracion * (float)delta);
-        velocidad.X = Mathf.Clamp(velocidad.X, -VELOCIDAD, VELOCIDAD);
+        velocidad = AplicarAceleracionHorizontal(velocidad, direccion, delta);
 
         if (direccion != 0)
             _animatedSprite2D.FlipH = direccion < 0;
+
+        return velocidad;
+    }
+
+    private void ProcesarRodar()
+    {
+        if (!IsOnFloor() || !Input.IsActionJustPressed("rodar"))
+            return;
+
+        if (EstadoLocomocion != EstadoLocomocionJugador.Rodando)
+            IniciarRodar();
+        else
+            CambiarDireccionRodar();
+    }
+
+    private void IniciarRodar()
+    {
+        CambiarEstadoLocomocion(EstadoLocomocionJugador.Rodando);
+        _velocidadInicialRodar = ObtenerDireccionActual() * VELOCIDAD_RODAR;
+        _framesEstadoTemporal = FRAMES_RODAR;
+    }
+
+    private void CambiarDireccionRodar()
+    {
+        float direccionInput = Input.GetAxis("ui_left", "ui_right");
+        float direccionActual = Mathf.Sign(_velocidadInicialRodar);
+
+        if (Mathf.Sign(direccionInput) != 0 && Mathf.Sign(direccionInput) != direccionActual)
+        {
+            _animatedSprite2D.FlipH = direccionInput < 0;
+            _velocidadInicialRodar = Mathf.Sign(direccionInput) * VELOCIDAD_RODAR;
+        }
+
+        _framesEstadoTemporal = FRAMES_RODAR;
+    }
+
+    private float ObtenerDireccionActual()
+    {
+        return _animatedSprite2D.FlipH ? -1f : 1f;
+    }
+
+    private Vector2 MantenerVelocidadRodar(Vector2 velocidad)
+    {
+        velocidad.X = _velocidadInicialRodar;
+        return velocidad;
+    }
+
+    private Vector2 AplicarAceleracionHorizontal(Vector2 velocidad, float direccion, double delta)
+    {
+        float aceleracion = IsOnFloor() ? ACELERACION_SUELO : ACELERACION_AIRE;
+
+        if (EstadoLocomocion == EstadoLocomocionJugador.Saltando && Mathf.Abs(Velocity.Y) < UMBRAL_APEX)
+            aceleracion *= MULTIPLICADOR_CONTROL_APEX;
+
+        float objetivoX = direccion * VELOCIDAD;
+
+        if (!IsOnFloor() && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
+            Mathf.Sign(velocidad.X) == Mathf.Sign(objetivoX))
+            return velocidad;
+
+        velocidad.X = Mathf.MoveToward(velocidad.X, objetivoX, aceleracion * (float)delta);
+        velocidad.X = Mathf.Clamp(velocidad.X, -VELOCIDAD, VELOCIDAD);
 
         return velocidad;
     }
@@ -382,77 +388,85 @@ public partial class Jugador : CharacterBody2D
         if (_framesEstadoTemporal > 0)
         {
             _framesEstadoTemporal--;
-            if (_framesEstadoTemporal == 0)
-            {
-                // Al terminar la duración, pasar a estado normal
-                if (EstadoLocomocion == EstadoLocomocionJugador.Aterrizando)
-                {
-                    CambiarEstadoLocomocion(EstadoLocomocionJugador.EnSuelo);
-                }
-            }
 
             return; // Mientras dure el estado temporal, no evaluamos otro cambio
         }
 
         var nuevoEstado = CalcularEstadoLocomocion();
-
-        // Iniciar estados temporales con contador
-        if (nuevoEstado == EstadoLocomocionJugador.Aterrizando)
-        {
-            _framesEstadoTemporal = FRAMES_ATERRIZAR;
-        }
-
         CambiarEstadoLocomocion(nuevoEstado);
     }
 
     private void OnEstadoLocomocionChanged(EstadoLocomocionJugador anterior, EstadoLocomocionJugador actual)
     {
         if (anterior == EstadoLocomocionJugador.Cayendo &&
-            actual == EstadoLocomocionJugador.Aterrizando)
+            actual == EstadoLocomocionJugador.EnSuelo)
         {
             OnAterrizar();
         }
-
-        if (anterior == EstadoLocomocionJugador.EnSuelo &&
+        else if (anterior == EstadoLocomocionJugador.EnSuelo &&
             actual == EstadoLocomocionJugador.Saltando)
         {
             OnDespegar();
         }
-
-        switch (actual)
+        else
         {
-            case EstadoLocomocionJugador.EnSuelo:
-                _mantenerAnimacionRodar = false;
-                GD.Print("Jugador en el suelo.");
-                break;
+            switch (actual)
+            {
+                case EstadoLocomocionJugador.EnSuelo:
+                    OnEnSuelo();
+                    break;
 
-            case EstadoLocomocionJugador.Saltando:
-                GD.Print("Jugador saltando.");
-                break;
+                case EstadoLocomocionJugador.Saltando:
+                    OnSaltando();
+                    break;
 
-            case EstadoLocomocionJugador.Cayendo:
-                GD.Print("Jugador cayendo.");
-                break;
+                case EstadoLocomocionJugador.Cayendo:
+                    OnCayendo();
+                    break;
 
-            case EstadoLocomocionJugador.Aterrizando:
-                GD.Print("Jugador Aterrizando.");
-                break;
-
-            case EstadoLocomocionJugador.Rodando:
-                GD.Print("Jugador rodando.");
-                _mantenerAnimacionRodar = true;
-                break;
+                case EstadoLocomocionJugador.Rodando:
+                    OnRodando();
+                    break;
+            }
         }
     }
 
     private void OnAterrizar()
     {
         GD.Print("Aterrizando.");
+        OnEnSuelo();
     }
 
     private void OnDespegar()
     {
         GD.Print("Despegando.");
+        OnSaltando();
+    }
+
+    private void OnEnSuelo()
+    {
+        _mantenerRodar = false;
+
+        CaidaRapida = null;
+        _framesCaidaRapida = 0;
+
+        GD.Print("Jugador en el suelo.");
+    }
+
+    private void OnSaltando()
+    {
+        GD.Print("Jugador saltando.");
+    }
+
+    private void OnCayendo()
+    {
+        GD.Print("Jugador cayendo.");
+    }
+
+    private void OnRodando()
+    {
+        GD.Print("Jugador rodando.");
+        _mantenerRodar = true;
     }
 
     private void ActualizarAnimacion()
@@ -464,25 +478,21 @@ public partial class Jugador : CharacterBody2D
                 break;
 
             case EstadoLocomocionJugador.Saltando:
-                if (_mantenerAnimacionRodar)
+                if (_mantenerRodar)
                     ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
                 else
                     ReproducirAnimacion(NOMBRE_ANIMACION_SALTAR);
                 break;
 
             case EstadoLocomocionJugador.Cayendo:
-                if (_mantenerAnimacionRodar)
+                if (_mantenerRodar)
                     ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
                 else
                     ReproducirAnimacion(NOMBRE_ANIMACION_CAER);
                 break;
 
-            case EstadoLocomocionJugador.Aterrizando:
-                ReproducirAnimacion(NOMBRE_ANIMACION_ATERRIZAR); // nueva animación
-                break;
-
             case EstadoLocomocionJugador.Rodando:
-                if (_mantenerAnimacionRodar)
+                if (_mantenerRodar)
                     ReproducirAnimacion(NOMBRE_ANIMACION_RODANDO, true);
                 else
                     ReproducirAnimacion(NOMBRE_ANIMACION_RODAR, true);
