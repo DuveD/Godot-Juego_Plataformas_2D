@@ -12,4 +12,5 @@ public readonly struct AnimacionJugador(string nombre)
     public static readonly AnimacionJugador Rodando = new("rodando");
     public static readonly AnimacionJugador Golpeado = new("golpeado");
     public static readonly AnimacionJugador Muerte = new("muerte");
+    public static readonly AnimacionJugador MuerteEnCaida = new("muerteEnCaida");
 }

@@ -135,6 +135,10 @@ region = Rect2(64, 224, 32, 32)
 atlas = ExtResource("1_8hr1h")
 region = Rect2(96, 224, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_nlxe4"]
+atlas = ExtResource("1_8hr1h")
+region = Rect2(96, 32, 32, 32)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_8ptv5"]
 atlas = ExtResource("1_8hr1h")
 region = Rect2(96, 160, 32, 32)
@@ -295,6 +299,14 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nlxe4")
+}],
+"loop": false,
+"name": &"muerteEnCaida",
+"speed": 5.0
+}, {
+"frames": [{
 "duration": 0.5,
 "texture": SubResource("AtlasTexture_8ptv5")
 }, {
@@ -356,7 +368,7 @@ script = ExtResource("1_rk7g7")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601074081]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_a0tr0")
-animation = &"idle"
+animation = &"muerteEnCaida"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=448350725]
