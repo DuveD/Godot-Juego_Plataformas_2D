@@ -34,27 +34,36 @@ public partial class PlataformaMovil : Plataforma
     public bool Caida { get; set; } = false;
 
     [Export]
-    public float TiempoEsperaCaida = 1f;     // tiempo antes de caer
+    public float TiempoEsperaCaida = 1f; // tiempo antes de caer
     [Export]
-    public float TiempoReaparecer = 3f; // tiempo hasta reaparecer
+    public float TiempoCayendo = 2f; // tiempo hasta reaparecer
     [Export]
     public float VelocidadCaida = 150f; // velocidad vertical al caer
 
+    private bool _animacionTemblorIniciado = false;
+    private bool _animacionDesvanecimientoIniciada = false;
+
     // --- Estados de la plataforma ---
-    private enum EstadoPlataforma { Normal, EsperandoCaida, Cayendo, Reiniciando }
+    private enum EstadoPlataforma { Normal, EsperandoCaida, Cayendo, Reiniciando, Restaurando }
     private EstadoPlataforma _estado = EstadoPlataforma.Normal;
 
     private float _timer = 0f;
 
-    private Area2D _sensorJugador;
+    #region Animaciones
+    private Tween _tweenTemblor;
+    private Vector2 _offsetTemblor = Vector2.Zero;
+    #endregion
 
+    private Area2D _sensorJugador;
     private CollisionShape2D _collisionShape2D;
+    private Sprite2D _sprite;
 
     public override void _Ready()
     {
         PosicionInicial = _posicionAnterior = GlobalPosition;
         _sensorJugador = GetNode<Area2D>("SensorJugador");
         _collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
+        _sprite = GetNode<Sprite2D>("Sprite2D"); // ajusta el nombre si es distinto
 
         if (Caida)
             _sensorJugador.BodyEntered += OnSensorJugadorBodyEntered;
@@ -118,40 +127,78 @@ public partial class PlataformaMovil : Plataforma
         switch (_estado)
         {
             case EstadoPlataforma.Normal:
-                // No hacer nada; esperar activación
+                GestionarestadoNormal(delta);
                 break;
 
             case EstadoPlataforma.EsperandoCaida:
-                _timer += (float)delta;
-                if (_timer >= TiempoEsperaCaida)
-                {
-                    _estado = EstadoPlataforma.Cayendo;
-                    _timer = 0f;
-                }
+                GestionarestadoEsperandoCaida(delta);
                 break;
 
             case EstadoPlataforma.Cayendo:
-                _timer += (float)delta;
-                Position += Vector2.Down * VelocidadCaida * (float)delta;
-
-                if (_timer >= TiempoReaparecer)
-                {
-                    _estado = EstadoPlataforma.Reiniciando;
-                    // Lo desactivamos para que no teletransporte al jugador.
-                    _collisionShape2D.Disabled = true;
-                }
+                GestionarestadoCayendo(delta);
                 break;
 
             case EstadoPlataforma.Reiniciando:
-                Position = PosicionInicial;
-                _estado = EstadoPlataforma.Normal;
-                // Volvemos a activar las colisiones.
-                _collisionShape2D.Disabled = false;
-                _timer = 0f;
-                _aceleracionActual = 0f;
-                _haciaFin = true;
+                GestionarestadoReiniciando(delta);
+                break;
+
+
+            case EstadoPlataforma.Restaurando:
+                GestionarestadoRestaurando(delta);
                 break;
         }
+    }
+
+    private void GestionarestadoNormal(double delta)
+    {
+    }
+
+    private void GestionarestadoEsperandoCaida(double delta)
+    {
+        _timer += (float)delta;
+        if (_timer >= TiempoEsperaCaida)
+        {
+            DetenerAnimacionTemblor();
+            _estado = EstadoPlataforma.Cayendo;
+            _timer = 0f;
+        }
+        else if (_timer >= TiempoEsperaCaida * 0.6f && !_animacionTemblorIniciado)
+        {
+            IniciarAnimacionTemblor();
+        }
+    }
+
+    private void GestionarestadoCayendo(double delta)
+    {
+        _timer += (float)delta;
+        Position += Vector2.Down * VelocidadCaida * (float)delta;
+
+        if (_timer >= TiempoCayendo)
+        {
+            _estado = EstadoPlataforma.Reiniciando;
+            _collisionShape2D.Disabled = true;
+        }
+        else if (_timer >= TiempoCayendo * 0.90f && !_animacionDesvanecimientoIniciada)
+        {
+            IniciarAnimacionDesvanecimiento();
+        }
+    }
+
+    private void GestionarestadoReiniciando(double delta)
+    {
+        Position = PosicionInicial;
+        _timer = 0f;
+        _aceleracionActual = 0f;
+        _haciaFin = true;
+        _estado = EstadoPlataforma.Restaurando;
+    }
+
+    private void GestionarestadoRestaurando(double delta)
+    {
+        RestablecerSprite();
+        // Volvemos a activar las colisiones.
+        _collisionShape2D.Disabled = false;
+        _estado = EstadoPlataforma.Normal;
     }
 
     private void OnSensorJugadorBodyEntered(Node2D body)
@@ -169,7 +216,6 @@ public partial class PlataformaMovil : Plataforma
         }
     }
 
-
     // Llamar cuando el jugador pisa la plataforma
     public void ActivarCaida()
     {
@@ -178,5 +224,48 @@ public partial class PlataformaMovil : Plataforma
             _estado = EstadoPlataforma.EsperandoCaida;
             _timer = 0f;
         }
+    }
+
+    private void IniciarAnimacionTemblor()
+    {
+        _animacionTemblorIniciado = true;
+
+        _tweenTemblor?.Kill();
+        _tweenTemblor = CreateTween().SetLoops();
+        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+        {
+            _sprite.Offset = offset;
+        }), Vector2.Zero, new Vector2(3, 0), 0.05f);
+        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+        {
+            _sprite.Offset = offset;
+        }), new Vector2(3, 0), new Vector2(-3, 0), 0.05f);
+        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+        {
+            _sprite.Offset = offset;
+        }), new Vector2(-3, 0), Vector2.Zero, 0.05f);
+    }
+
+    private void DetenerAnimacionTemblor()
+    {
+        _animacionTemblorIniciado = false;
+
+        _tweenTemblor?.Kill();
+        _tweenTemblor = null;
+        _sprite.Offset = Vector2.Zero;
+    }
+
+    private void IniciarAnimacionDesvanecimiento()
+    {
+        _animacionDesvanecimientoIniciada = true;
+        var tween = CreateTween();
+        tween.TweenProperty(_sprite, "modulate:a", 0f, TiempoCayendo * 0.1f);
+    }
+
+    private void RestablecerSprite()
+    {
+        _animacionDesvanecimientoIniciada = true;
+        _sprite.Modulate = Colors.White;
+        _sprite.Offset = Vector2.Zero;
     }
 }
