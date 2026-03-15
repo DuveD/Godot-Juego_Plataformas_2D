@@ -1,5 +1,6 @@
-using System;
+using System.Linq;
 using Godot;
+using Godot.Collections;
 using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
 namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
@@ -91,7 +92,7 @@ public partial class PlataformaMovil : Plataforma
 
         Vector2 target = _haciaFin ? PosicionB : PosicionA;
         Vector2 direccion = new Vector2(target.X - Position.X, 0);
-        float distancia = Math.Abs(direccion.X);
+        float distancia = System.Math.Abs(direccion.X);
 
         if (distancia < 0.01f)
         {
@@ -151,6 +152,13 @@ public partial class PlataformaMovil : Plataforma
 
     private void GestionarestadoNormal(double delta)
     {
+        Array<Node2D> cuerposEnContacto = _sensorJugador.GetOverlappingBodies();
+        if (cuerposEnContacto != null && cuerposEnContacto.Count > 0)
+        {
+            bool hayJugador = cuerposEnContacto.OfType<Jugador>().Any();
+            if (hayJugador)
+                ActivarCaida();
+        }
     }
 
     private void GestionarestadoEsperandoCaida(double delta)
