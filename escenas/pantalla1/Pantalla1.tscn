@@ -2,11 +2,17 @@
 
 [ext_resource type="Texture2D" uid="uid://bpvka3mlq3k7v" path="res://recursos/imagenes/fondo/sky.png" id="1_ak48n"]
 [ext_resource type="PackedScene" uid="uid://ktccjb3bw8o2" path="res://escenas/entidades/jugador/Jugador.tscn" id="1_x781s"]
+[ext_resource type="Texture2D" uid="uid://r5670ea4e8vc" path="res://recursos/imagenes/fondo/clouds_1_pixel.png" id="2_nax36"]
 [ext_resource type="Texture2D" uid="uid://c4avgjwjec546" path="res://recursos/sprites/mundo/mundo_tileset.png" id="2_pa6up"]
+[ext_resource type="Texture2D" uid="uid://ca3nvg0xomft8" path="res://recursos/imagenes/fondo/clouds_2_pixel.png" id="3_thhoc"]
 [ext_resource type="PackedScene" uid="uid://b0652biokeqhd" path="res://escenas/pantalla1/PlataformaMovil.tscn" id="4_hgoh6"]
+[ext_resource type="Texture2D" uid="uid://bj8oech2mremp" path="res://recursos/imagenes/fondo/clouds_3_pixel.png" id="4_ij7em"]
 [ext_resource type="Script" uid="uid://k855hb1kyd1x" path="res://escenas/pantalla1/ZonaMuerte.cs" id="5_ak48n"]
 [ext_resource type="PackedScene" uid="uid://dpqxpve5euv4d" path="res://escenas/pantalla1/PuntoControl.tscn" id="5_ilur8"]
+[ext_resource type="Texture2D" uid="uid://dfrdeb31chpw8" path="res://recursos/imagenes/fondo/clouds_4_pixel.png" id="5_yjk81"]
+[ext_resource type="Texture2D" uid="uid://cxflj1xjd8nls" path="res://recursos/imagenes/fondo/rocks_1_pixel.png" id="6_eq6k0"]
 [ext_resource type="PackedScene" uid="uid://bbabgv20g0cy3" path="res://escenas/entidades/enemigos/slime/Slime.tscn" id="7_aklpc"]
+[ext_resource type="Texture2D" uid="uid://bksxo6730eitu" path="res://recursos/imagenes/fondo/rocks_2_pixel.png" id="7_jov8f"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k2xlr"]
 texture = ExtResource("2_pa6up")
@@ -161,14 +167,115 @@ size = Vector2(3760, 610)
 
 [node name="Pantalla1" type="Node2D" unique_id=787986626]
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1435486771]
+[node name="Fondo" type="Node2D" parent="." unique_id=766917220]
+
+[node name="Parallax2D" type="Parallax2D" parent="Fondo" unique_id=1826910529]
 z_index = -100
-offset_left = -1312.0
-offset_top = -864.0
-offset_right = 2300.4443
-offset_bottom = 1168.0
+scroll_scale = Vector2(0, 0)
+scroll_offset = Vector2(0, 250)
+repeat_size = Vector2(720, 0)
+repeat_times = 3
+ignore_camera_scroll = true
+
+[node name="TextureRect" type="TextureRect" parent="Fondo/Parallax2D" unique_id=1435486771]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -500.0
+offset_right = 1440.0
+offset_bottom = 580.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_ak48n")
-metadata/_edit_lock_ = true
+stretch_mode = 3
+
+[node name="Nubes1" type="Parallax2D" parent="Fondo" unique_id=253563985]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 300)
+repeat_size = Vector2(720, 0)
+autoscroll = Vector2(10, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes1" unique_id=1761111223]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_nax36")
+
+[node name="Nubes2" type="Parallax2D" parent="Fondo" unique_id=1073180567]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 300)
+repeat_size = Vector2(720, 0)
+autoscroll = Vector2(-20, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes2" unique_id=977630653]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_thhoc")
+
+[node name="Rocas1" type="Parallax2D" parent="Fondo" unique_id=1381371774]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 300)
+repeat_size = Vector2(720, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Rocas1" unique_id=1663536578]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("6_eq6k0")
+
+[node name="Nubes3" type="Parallax2D" parent="Fondo" unique_id=1055163436]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 300)
+repeat_size = Vector2(720, 0)
+autoscroll = Vector2(30, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes3" unique_id=1670806076]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_ij7em")
+
+[node name="Rocas2" type="Parallax2D" parent="Fondo" unique_id=1769213382]
+visible = false
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 300)
+repeat_size = Vector2(720, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Rocas2" unique_id=1141107726]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("7_jov8f")
+
+[node name="Nubes4" type="Parallax2D" parent="Fondo" unique_id=1242291331]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 530)
+repeat_size = Vector2(720, 0)
+autoscroll = Vector2(-20, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes4" unique_id=1103694383]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_yjk81")
+
+[node name="Nubes5" type="Parallax2D" parent="Fondo" unique_id=982440488]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 400)
+repeat_size = Vector2(720, 0)
+autoscroll = Vector2(-10, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes5" unique_id=1554383918]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_ij7em")
+flip_h = true
 
 [node name="PuntoSpawnInicial" type="Marker2D" parent="." unique_id=1162242194]
 position = Vector2(-216, -80)
@@ -179,10 +286,11 @@ slide_on_ceiling = false
 PuntoSpawn = NodePath("../PuntoSpawnInicial")
 
 [node name="Camera2D" type="Camera2D" parent="Jugador" unique_id=706114990]
-position = Vector2(0, -8)
+position = Vector2(1, -8)
+offset = Vector2(0, -27)
 ignore_rotation = false
-zoom = Vector2(3, 3)
-limit_smoothed = true
+zoom = Vector2(4, 4)
+limit_bottom = 512
 position_smoothing_speed = 4.0
 editor_draw_screen = false
 
@@ -358,7 +466,7 @@ position = Vector2(1000, 32)
 position = Vector2(-216, 0)
 
 [node name="ZonaMuerte" type="Area2D" parent="." unique_id=1496392188]
-position = Vector2(568, 871)
+position = Vector2(568, 817)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("5_ak48n")

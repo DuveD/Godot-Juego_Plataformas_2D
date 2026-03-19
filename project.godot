@@ -21,6 +21,11 @@ run/main_scene="uid://c1j5nkhugw61n"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 config/icon="res://recursos/imagenes/icon.svg"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [dotnet]
 
 project/assembly_name="Primer juego Plataformas 2D"

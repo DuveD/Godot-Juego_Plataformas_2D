@@ -1,6 +1,6 @@
 # 🕹️ Primer Juego Plataformas 2D (Godot)
 
-Un juego simple de plataformas 2D hecho con Godot 4.x,  basado en el tutorial de Brackeys "[How to make a Video Game](https://www.youtube.com/watch?v=LOhfqjmasi0)".
+Un juego simple de plataformas 2D hecho con Godot 4.x, basado en el tutorial de Brackeys "[How to make a Video Game](https://www.youtube.com/watch?v=LOhfqjmasi0)".
 He ampliado el proyecto con características extra para aprender más sobre Godot y C#.
 
 ---
@@ -27,10 +27,12 @@ He ampliado el proyecto con características extra para aprender más sobre Godo
 
 ## Créditos
 
-- Los recursos de sprites son un mix usado en el tutorial de Brakeys creado por [analogStudios](https://kevins-moms-house.itch.io) y [RottingPixels](https://rottingpixels.itch.io).
+- Los recursos de sprites son un mix usado en el tutorial de Brakeys.
+- Sprites del jugador, enemigos y escenario creado por [analogStudios](https://kevins-moms-house.itch.io) y [RottingPixels](https://rottingpixels.itch.io).
 - Música de Brackeys, Sofia Thirslund
 - Sonido de Brackeys, Asbjørn Thirslund
 - Fuente de Jayvee Enaguas ([HarvettFox96](https://www.dafont.com/pixel-operator.font?l[]=10&l[]=1)).
+- Fondo parallax de craftpix.net ([Free Horizontal 2D Game Backgrounds](https://craftpix.net/freebies/free-horizontal-2d-game-backgrounds/?srsltid=AfmBOoqFUeKrgK4Z0vCh87BqO_fyM6hlRdAIKkE2pWz065sLcr2Pj83M))
 
 ## ⚖️ Aviso de uso
 
