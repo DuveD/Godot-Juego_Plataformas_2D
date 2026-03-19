@@ -132,6 +132,8 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Muerte
+
+    public bool Invulnerable = false;
     public bool DesactivarFisicas = false;
 
     private const float DISTANCIA_SUPERIOR_ANIMACION_MUERTE = 80f;
@@ -361,8 +363,8 @@ public partial class Jugador : CharacterBody2D
         {
             if (!Rodando)
                 IniciarRodar(inputJugador);
-            else
-                CambioDireccionRodar(velocidad, inputJugador);
+            // else
+            //CambioDireccionRodar(velocidad, inputJugador);
         }
     }
 
@@ -383,8 +385,13 @@ public partial class Jugador : CharacterBody2D
         if (_framesRodando < FRAMES_RODAR - 1)
             _rodandoIniciado = true;
 
+        // El jugador es invulnerable mientras estemos en la primera mitad de los frames de Rodar.
+        Invulnerable = _framesRodando >= (FRAMES_RODAR / 2);
+
         if (_framesRodando <= 0 && _enSuelo)
+        {
             Rodando = false;
+        }
     }
 
     private void IniciarRodar(InputJugador inputJugador)
@@ -418,7 +425,6 @@ public partial class Jugador : CharacterBody2D
         _velocidadInicialRodar = direccion * VELOCIDAD_RODAR;
         _animatedSprite2D.FlipH = direccion < 0;
         _direccion = direccion;
-        _framesRodando = FRAMES_RODAR;
     }
 
     private Vector2 AplicarAceleracionHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
@@ -689,7 +695,8 @@ public partial class Jugador : CharacterBody2D
 
     private void OnBodyEnteredSlime()
     {
-        this.Muerte();
+        if (!Invulnerable)
+            this.Muerte();
     }
 
 }
