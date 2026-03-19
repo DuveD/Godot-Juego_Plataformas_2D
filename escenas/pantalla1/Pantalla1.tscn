@@ -168,6 +168,7 @@ size = Vector2(3760, 610)
 [node name="Pantalla1" type="Node2D" unique_id=787986626]
 
 [node name="Fondo" type="Node2D" parent="." unique_id=766917220]
+metadata/_edit_lock_ = true
 
 [node name="Parallax2D" type="Parallax2D" parent="Fondo" unique_id=1826910529]
 z_index = -100
@@ -267,10 +268,11 @@ texture = ExtResource("5_yjk81")
 [node name="Nubes5" type="Parallax2D" parent="Fondo" unique_id=982440488]
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 400)
+scroll_offset = Vector2(1, 400)
 repeat_size = Vector2(720, 0)
 autoscroll = Vector2(-10, 0)
 repeat_times = 3
+metadata/_edit_lock_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes5" unique_id=1554383918]
 scale = Vector2(0.5, 0.5)

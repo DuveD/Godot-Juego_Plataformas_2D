@@ -14,6 +14,7 @@ public partial class PlataformaMovil : Plataforma
     public bool Movimiento { get; set; } = false;
 
     public Vector2 PosicionInicial { get; set; }
+    private Vector2 _posicionMovimiento;
 
     [Export]
     public Vector2 PosicionA { get; set; } = Vector2.Zero;
@@ -61,7 +62,7 @@ public partial class PlataformaMovil : Plataforma
 
     public override void _Ready()
     {
-        PosicionInicial = _posicionAnterior = GlobalPosition;
+        _posicionMovimiento = PosicionInicial = _posicionAnterior = Position;
         _sensorJugador = GetNode<Area2D>("SensorJugador");
         _collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
         _sprite = GetNode<Sprite2D>("Sprite2D"); // ajusta el nombre si es distinto
@@ -91,12 +92,13 @@ public partial class PlataformaMovil : Plataforma
             return;
 
         Vector2 target = _haciaFin ? PosicionB : PosicionA;
-        Vector2 direccion = new Vector2(target.X - Position.X, 0);
+        // Usar _posicionMovimiento en lugar de Position
+        Vector2 direccion = new Vector2(target.X - _posicionMovimiento.X, 0);
         float distancia = System.Math.Abs(direccion.X);
 
         if (distancia < 0.01f)
         {
-            Position = new Vector2(target.X, Position.Y);
+            _posicionMovimiento = new Vector2(target.X, _posicionMovimiento.Y);
             _haciaFin = !_haciaFin;
             _aceleracionActual = 0f;
         }
@@ -116,7 +118,15 @@ public partial class PlataformaMovil : Plataforma
             }
 
             float movimientoX = Mathf.Min(velocidad * (float)delta, distancia);
-            Position += new Vector2(Mathf.Sign(direccion.X) * movimientoX, 0);
+            _posicionMovimiento += new Vector2(Mathf.Sign(direccion.X) * movimientoX, 0);
+        }
+
+        // Solo aplicar X a Position si no está cayendo
+        if (_estado != EstadoPlataforma.Cayendo &&
+            _estado != EstadoPlataforma.Reiniciando &&
+            _estado != EstadoPlataforma.Restaurando)
+        {
+            Position = new Vector2(_posicionMovimiento.X, Position.Y);
         }
     }
 
@@ -128,29 +138,29 @@ public partial class PlataformaMovil : Plataforma
         switch (_estado)
         {
             case EstadoPlataforma.Normal:
-                GestionarestadoNormal(delta);
+                GestionarEstadoNormal(delta);
                 break;
 
             case EstadoPlataforma.EsperandoCaida:
-                GestionarestadoEsperandoCaida(delta);
+                GestionarEstadoEsperandoCaida(delta);
                 break;
 
             case EstadoPlataforma.Cayendo:
-                GestionarestadoCayendo(delta);
+                GestionarEstadoCayendo(delta);
                 break;
 
             case EstadoPlataforma.Reiniciando:
-                GestionarestadoReiniciando(delta);
+                GestionarEstadoReiniciando(delta);
                 break;
 
 
             case EstadoPlataforma.Restaurando:
-                GestionarestadoRestaurando(delta);
+                GestionarEstadoRestaurando(delta);
                 break;
         }
     }
 
-    private void GestionarestadoNormal(double delta)
+    private void GestionarEstadoNormal(double delta)
     {
         Array<Node2D> cuerposEnContacto = _sensorJugador.GetOverlappingBodies();
         if (cuerposEnContacto != null && cuerposEnContacto.Count > 0)
@@ -161,7 +171,7 @@ public partial class PlataformaMovil : Plataforma
         }
     }
 
-    private void GestionarestadoEsperandoCaida(double delta)
+    private void GestionarEstadoEsperandoCaida(double delta)
     {
         _timer += (float)delta;
         if (_timer >= TiempoEsperaCaida)
@@ -176,7 +186,7 @@ public partial class PlataformaMovil : Plataforma
         }
     }
 
-    private void GestionarestadoCayendo(double delta)
+    private void GestionarEstadoCayendo(double delta)
     {
         _timer += (float)delta;
         Position += Vector2.Down * VelocidadCaida * (float)delta;
@@ -192,16 +202,14 @@ public partial class PlataformaMovil : Plataforma
         }
     }
 
-    private void GestionarestadoReiniciando(double delta)
+    private void GestionarEstadoReiniciando(double delta)
     {
-        Position = PosicionInicial;
+        Position = _posicionMovimiento;
         _timer = 0f;
-        _aceleracionActual = 0f;
-        _haciaFin = true;
         _estado = EstadoPlataforma.Restaurando;
     }
 
-    private void GestionarestadoRestaurando(double delta)
+    private void GestionarEstadoRestaurando(double delta)
     {
         RestablecerSprite();
         // Volvemos a activar las colisiones.
