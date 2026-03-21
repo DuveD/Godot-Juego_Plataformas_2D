@@ -112,7 +112,7 @@ shape = SubResource("CapsuleShape2D_8gdgi")
 
 [node name="DetectorParedDerecha" type="RayCast2D" parent="." unique_id=524396535]
 position = Vector2(0, -6)
-target_position = Vector2(15, 0)
+target_position = Vector2(10, 0)
 hit_from_inside = true
 
 [node name="DetectorSueloDerechaArriba" type="RayCast2D" parent="." unique_id=686382335]
@@ -127,7 +127,7 @@ hit_from_inside = true
 
 [node name="DetectorParedIzquierda" type="RayCast2D" parent="." unique_id=409124055]
 position = Vector2(0, -6)
-target_position = Vector2(-15, 0)
+target_position = Vector2(-10, 0)
 hit_from_inside = true
 
 [node name="DetectorSueloIzquierdaArriba" type="RayCast2D" parent="." unique_id=157212782]

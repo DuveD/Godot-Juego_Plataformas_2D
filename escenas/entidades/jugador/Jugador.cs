@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
+using PrimerjuegoPlataformas2D.escenas.pantalla1;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
@@ -17,7 +18,10 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Spawn
-    [Export] public Marker2D PuntoSpawn;
+    [Export]
+    public Marker2D PuntoSpawn;
+    [Export]
+    public int DireccionSpawn = 1;
     #endregion
 
     #region Físicas
@@ -342,7 +346,7 @@ public partial class Jugador : CharacterBody2D
     {
         ProcesarRodar(velocidad, inputJugador);
         if (Rodando)
-            return MantenerVelocidadRodar(velocidad);
+            return MantenerVelocidadRodar(delta, velocidad);
 
         velocidad = AplicarAceleracionHorizontal(delta, velocidad, inputJugador);
 
@@ -359,18 +363,35 @@ public partial class Jugador : CharacterBody2D
     {
         ActualizarRodar();
 
-        if (_enSuelo && inputJugador.Rodar)
+        if (_enSuelo)
         {
-            if (!Rodando)
+            // Si estamos en el suelo, queremos rodar y no estamos ya rodando, iniciamos el rodar.
+            if (inputJugador.Rodar && !Rodando)
                 IniciarRodar(inputJugador);
-            // else
-            //CambioDireccionRodar(velocidad, inputJugador);
         }
     }
 
-    private Vector2 MantenerVelocidadRodar(Vector2 velocidad)
+    private Vector2 MantenerVelocidadRodar(double delta, Vector2 velocidad)
     {
-        velocidad.X = _velocidadInicialRodar;
+        if (_enSuelo)
+        {
+            // Si estamos en el suelo, mantenemos la velocidad de rodar todo el rato.
+            velocidad.X = _velocidadInicialRodar;
+        }
+        else
+        {
+            // Si estamos en el aire, mantenemos la velocidad los frames de la animación restante y a partir de cero decrementamos.
+            if (_framesRodando > -(FRAMES_RODAR * 2))
+            {
+                velocidad.X = _velocidadInicialRodar;
+            }
+            else
+            {
+                float deceleracion = 150f; // píxeles/segundo²
+                velocidad.X = Mathf.MoveToward(velocidad.X, 0, deceleracion * (float)delta);
+            }
+        }
+
         return velocidad;
     }
 
@@ -390,17 +411,24 @@ public partial class Jugador : CharacterBody2D
 
         if (_framesRodando <= 0 && _enSuelo)
         {
-            Rodando = false;
+            DejarDeRodar();
         }
     }
 
     private void IniciarRodar(InputJugador inputJugador)
     {
         Rodando = true;
+        _framesRodando = FRAMES_RODAR;
         _rodandoIniciado = false;
         int direccion = inputJugador.Direccion != 0 ? inputJugador.Direccion : _direccion;
         _velocidadInicialRodar = direccion * VELOCIDAD_RODAR;
-        _framesRodando = FRAMES_RODAR;
+    }
+
+    private void DejarDeRodar()
+    {
+        Rodando = false;
+        _framesRodando = 0;
+        _rodandoIniciado = false;
     }
 
     private void OnRodando()
@@ -411,20 +439,6 @@ public partial class Jugador : CharacterBody2D
     private void OnDejarRodar()
     {
         GD.Print("Jugador dejar de rodar.");
-        _rodandoIniciado = false;
-    }
-
-    private void CambioDireccionRodar(Vector2 velocidad, InputJugador inputJugador)
-    {
-        _rodandoIniciado = true;
-
-        int direccion = (inputJugador.Direccion == 0 || !_enSuelo)
-            ? Mathf.Sign(_velocidadInicialRodar)
-            : Mathf.Sign(inputJugador.Direccion);
-
-        _velocidadInicialRodar = direccion * VELOCIDAD_RODAR;
-        _animatedSprite2D.FlipH = direccion < 0;
-        _direccion = direccion;
     }
 
     private Vector2 AplicarAceleracionHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
@@ -611,9 +625,10 @@ public partial class Jugador : CharacterBody2D
         _animatedSprite2D.Play(animacion.Nombre);
     }
 
-    public void InformarPuntoSpawn(Marker2D marker2D)
+    public void InformarPuntoSpawn(PuntoControl puntoControl)
     {
-        this.PuntoSpawn = marker2D;
+        this.PuntoSpawn = puntoControl;
+        this.DireccionSpawn = puntoControl.Direccion;
     }
 
     public async void Muerte()
@@ -630,7 +645,7 @@ public partial class Jugador : CharacterBody2D
     {
         DesactivarFisicas = true;
         Velocity = Vector2.Zero;
-        Rodando = false;
+        DejarDeRodar();
     }
 
     private async Task EjecutarAnimacionMuerte()
@@ -674,8 +689,7 @@ public partial class Jugador : CharacterBody2D
 
     private void Revivir()
     {
-        // Movemos el jugador al últimpo punto de Spawn.
-        Position = PuntoSpawn.Position;
+        RespawnEnPuntoSpawn();
 
         // Devolvemos la cámara al jugador, ahora ya en el punto de spawn.
         _camera2D.Reparent(this);
@@ -684,6 +698,15 @@ public partial class Jugador : CharacterBody2D
         // Devolvemos el estado de muerto a false.
         DesactivarFisicas = false;
     }
+
+    private void RespawnEnPuntoSpawn()
+    {
+        // Movemos el jugador al últimpo punto de Spawn.
+        this.Position = PuntoSpawn.GlobalPosition;
+        this._direccion = this.DireccionSpawn;
+        _animatedSprite2D.FlipH = _direccion < 0;
+    }
+
 
     private void OnBodyEntered(Node2D body)
     {

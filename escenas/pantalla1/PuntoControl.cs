@@ -1,4 +1,3 @@
-using System;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
@@ -10,6 +9,9 @@ public partial class PuntoControl : Marker2D
 
 	private Area2D _area2D;
 	private Sprite2D _sprite2D;
+
+	[Export]
+	public int Direccion = 1;
 
 	// Called when the node enters the scene tree for the first time.
 
@@ -62,7 +64,6 @@ public partial class PuntoControl : Marker2D
 			);
 
 			duracion *= 1.5f; // cada vuelta más lenta
-
 		}
 	}
 }

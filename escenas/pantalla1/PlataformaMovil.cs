@@ -66,9 +66,6 @@ public partial class PlataformaMovil : Plataforma
         _sensorJugador = GetNode<Area2D>("SensorJugador");
         _collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
         _sprite = GetNode<Sprite2D>("Sprite2D"); // ajusta el nombre si es distinto
-
-        if (Caida)
-            _sensorJugador.BodyEntered += OnSensorJugadorBodyEntered;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -162,12 +159,30 @@ public partial class PlataformaMovil : Plataforma
 
     private void GestionarEstadoNormal(double delta)
     {
+        DetectarJugador();
+    }
+
+    private void DetectarJugador()
+    {
+        if (!Caida)
+            return;
+
         Array<Node2D> cuerposEnContacto = _sensorJugador.GetOverlappingBodies();
-        if (cuerposEnContacto != null && cuerposEnContacto.Count > 0)
+        if (cuerposEnContacto == null) return;
+
+        foreach (var body in cuerposEnContacto)
         {
-            bool hayJugador = cuerposEnContacto.OfType<Jugador>().Any();
-            if (hayJugador)
-                ActivarCaida();
+            if (body is Jugador jugador)
+            {
+                bool estaEncima = jugador.GlobalPosition.Y < GlobalPosition.Y;
+                bool estaPosado = jugador.IsOnFloor();
+
+                if (estaEncima && estaPosado)
+                {
+                    ActivarCaida();
+                    return;
+                }
+            }
         }
     }
 
@@ -215,21 +230,6 @@ public partial class PlataformaMovil : Plataforma
         // Volvemos a activar las colisiones.
         _collisionShape2D.Disabled = false;
         _estado = EstadoPlataforma.Normal;
-    }
-
-    private void OnSensorJugadorBodyEntered(Node2D body)
-    {
-        if (body is Jugador jugador)
-        {
-            if (jugador.IsOnFloor())
-            {
-                KinematicCollision2D collider = jugador.GetLastSlideCollision();
-                if (collider != null && collider.GetCollider() == this)
-                {
-                    ActivarCaida();
-                }
-            }
-        }
     }
 
     // Llamar cuando el jugador pisa la plataforma
