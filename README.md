@@ -18,7 +18,17 @@ He ampliado el proyecto con características extra para aprender más sobre Godo
 ### v1.0
 
 - Juego base implementado.
-- Añadida acción de muerte.
+- Añadido sistema a jugador para atravesar plataformas.
+- Añadidas animaciones al jugador para idle, saltar, rodar y morir.
+- Añadidas plataformas.
+- Añadidas funcionalidades a plataformas: Movimiento, caida y sólo ida.
+- Implementado coyote time.
+- Implementado baja graverdad en umbral apex.
+- Implementado frames de invulnerabilidad al rodar.
+- Implementado buffer de salto.
+- Creados puntos de control con dirección.
+- Añadido fondo con parallax.
+- Implementado enemigo slime con movimiento y salto.
 
 ## 📖 Referencias
 
