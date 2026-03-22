@@ -7,11 +7,11 @@ namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
 
 public partial class PlataformaMovil : Plataforma
 {
-    public Vector2 DeltaMovimiento { get; private set; }
-    public Vector2 VelocidadActual { get; private set; }
-
     [Export]
     public bool Movimiento { get; set; } = false;
+
+    [Export]
+    public bool Unidireccional { get; set; } = false;
 
     public Vector2 PosicionInicial { get; set; }
     private Vector2 _posicionMovimiento;
@@ -22,6 +22,8 @@ public partial class PlataformaMovil : Plataforma
     public Vector2 PosicionB { get; set; } = Vector2.Zero;
 
     [Export]
+    public bool FrenarAlLlegar { get; set; } = true;
+    [Export]
     public float DistanciaFrenado = 20f;
     [Export]
     public float VelocidadMaxima = 50f;
@@ -29,7 +31,7 @@ public partial class PlataformaMovil : Plataforma
     public float Aceleracion = 30f;
 
     private Vector2 _posicionAnterior;
-    private float _aceleracionActual = 0f;
+    private float _aceleracionActual;
     private bool _haciaFin = true;
 
     [Export]
@@ -48,6 +50,9 @@ public partial class PlataformaMovil : Plataforma
     // --- Estados de la plataforma ---
     private enum EstadoPlataforma { Normal, EsperandoCaida, Cayendo, Reiniciando, Restaurando }
     private EstadoPlataforma _estado = EstadoPlataforma.Normal;
+
+    const int FramesEstadoRestaurando = 2;
+    private int _framesEstadoRestaurandoActuales = 0;
 
     private float _timer = 0f;
 
@@ -70,16 +75,13 @@ public partial class PlataformaMovil : Plataforma
 
     public override void _PhysicsProcess(double delta)
     {
-        // Movimiento horizontal independiente
+        // Movimiento horizontal independiente.
         GestionarMovimiento(delta);
 
-        // Gestión de caída vertical según estado
-        GestionarCaida(delta);
+        // Gestión del estado de la plataforma.
+        GestionarEstado(delta);
 
-        // Guardar velocidad y delta
         Vector2 posicionActual = GlobalPosition;
-        DeltaMovimiento = posicionActual - _posicionAnterior;
-        VelocidadActual = DeltaMovimiento / (float)delta;
         _posicionAnterior = posicionActual;
     }
 
@@ -89,33 +91,47 @@ public partial class PlataformaMovil : Plataforma
             return;
 
         Vector2 target = _haciaFin ? PosicionB : PosicionA;
-        // Usar _posicionMovimiento en lugar de Position
-        Vector2 direccion = new Vector2(target.X - _posicionMovimiento.X, 0);
-        float distancia = System.Math.Abs(direccion.X);
+        Vector2 direccion = new Vector2(target.X - _posicionMovimiento.X, target.Y - _posicionMovimiento.Y);
+        float distancia = direccion.Length();
 
         if (distancia < 0.01f)
         {
-            _posicionMovimiento = new Vector2(target.X, _posicionMovimiento.Y);
-            _haciaFin = !_haciaFin;
-            _aceleracionActual = 0f;
+            if (FrenarAlLlegar)
+            {
+                _aceleracionActual = 0f;
+            }
+
+            if (!Unidireccional)
+            {
+                _posicionMovimiento = target;
+                _haciaFin = !_haciaFin;
+            }
         }
         else
         {
-            _aceleracionActual += Aceleracion * (float)delta;
-            _aceleracionActual = Mathf.Min(_aceleracionActual, VelocidadMaxima);
-
-            float velocidad = _aceleracionActual;
-
-            if (distancia < DistanciaFrenado)
+            float velocidad;
+            if (FrenarAlLlegar)
             {
-                float t = Mathf.Clamp(distancia / DistanciaFrenado, 0f, 1f);
-                float factor = Mathf.SmoothStep(0f, 1f, t);
-                velocidad *= factor;
-                velocidad = Mathf.Max(velocidad, 10);
+                _aceleracionActual += Aceleracion * (float)delta;
+                _aceleracionActual = Mathf.Min(_aceleracionActual, VelocidadMaxima);
+
+                velocidad = _aceleracionActual;
+
+                if (distancia < DistanciaFrenado)
+                {
+                    float t = Mathf.Clamp(distancia / DistanciaFrenado, 0f, 1f);
+                    float factor = Mathf.SmoothStep(0f, 1f, t);
+                    velocidad *= factor;
+                    velocidad = Mathf.Max(velocidad, 10);
+                }
+            }
+            else
+            {
+                velocidad = Aceleracion;
             }
 
-            float movimientoX = Mathf.Min(velocidad * (float)delta, distancia);
-            _posicionMovimiento += new Vector2(Mathf.Sign(direccion.X) * movimientoX, 0);
+            float movimiento = Mathf.Min(velocidad * (float)delta, distancia);
+            _posicionMovimiento += new Vector2(Mathf.Sign(direccion.X) * movimiento, Mathf.Sign(direccion.Y) * movimiento);
         }
 
         // Solo aplicar X a Position si no está cayendo
@@ -123,15 +139,12 @@ public partial class PlataformaMovil : Plataforma
             _estado != EstadoPlataforma.Reiniciando &&
             _estado != EstadoPlataforma.Restaurando)
         {
-            Position = new Vector2(_posicionMovimiento.X, Position.Y);
+            Position = _posicionMovimiento;
         }
     }
 
-    private void GestionarCaida(double delta)
+    private void GestionarEstado(double delta)
     {
-        if (!Caida)
-            return;
-
         switch (_estado)
         {
             case EstadoPlataforma.Normal:
@@ -160,6 +173,12 @@ public partial class PlataformaMovil : Plataforma
     private void GestionarEstadoNormal(double delta)
     {
         DetectarJugador();
+
+        if (Unidireccional && (_posicionMovimiento - PosicionB).Length() < 0.01f)
+        {
+            _estado = EstadoPlataforma.Reiniciando;
+            _collisionShape2D.Disabled = true;
+        }
     }
 
     private void DetectarJugador()
@@ -183,6 +202,16 @@ public partial class PlataformaMovil : Plataforma
                     return;
                 }
             }
+        }
+    }
+
+    // Llamar cuando el jugador pisa la plataforma
+    public void ActivarCaida()
+    {
+        if (_estado == EstadoPlataforma.Normal)
+        {
+            _estado = EstadoPlataforma.EsperandoCaida;
+            _timer = 0f;
         }
     }
 
@@ -219,27 +248,28 @@ public partial class PlataformaMovil : Plataforma
 
     private void GestionarEstadoReiniciando(double delta)
     {
+
+        ++_framesEstadoRestaurandoActuales;
+        if (_framesEstadoRestaurandoActuales < FramesEstadoRestaurando)
+            return;
+
+        if (Unidireccional)
+            _posicionMovimiento = PosicionA;
+
         Position = _posicionMovimiento;
         _timer = 0f;
         _estado = EstadoPlataforma.Restaurando;
+
+        _framesEstadoRestaurandoActuales = 0;
     }
 
     private void GestionarEstadoRestaurando(double delta)
     {
         RestablecerSprite();
+
         // Volvemos a activar las colisiones.
         _collisionShape2D.Disabled = false;
         _estado = EstadoPlataforma.Normal;
-    }
-
-    // Llamar cuando el jugador pisa la plataforma
-    public void ActivarCaida()
-    {
-        if (_estado == EstadoPlataforma.Normal)
-        {
-            _estado = EstadoPlataforma.EsperandoCaida;
-            _timer = 0f;
-        }
     }
 
     private void IniciarAnimacionTemblor()
@@ -280,7 +310,7 @@ public partial class PlataformaMovil : Plataforma
 
     private void RestablecerSprite()
     {
-        _animacionDesvanecimientoIniciada = true;
+        _animacionDesvanecimientoIniciada = false;
         _sprite.Modulate = Colors.White;
         _sprite.Offset = Vector2.Zero;
     }

@@ -14,6 +14,9 @@
 [ext_resource type="PackedScene" uid="uid://bbabgv20g0cy3" path="res://escenas/entidades/enemigos/slime/Slime.tscn" id="7_aklpc"]
 [ext_resource type="Texture2D" uid="uid://bksxo6730eitu" path="res://recursos/imagenes/fondo/rocks_2_pixel.png" id="7_jov8f"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aklpc"]
+size = Vector2(5336, 610)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k2xlr"]
 texture = ExtResource("2_pa6up")
 1:0/0 = 0
@@ -162,42 +165,37 @@ size = Vector2(16, 0.5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hgoh6"]
 size = Vector2(16, 0.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_aklpc"]
-size = Vector2(3760, 610)
-
 [node name="Pantalla1" type="Node2D" unique_id=787986626]
+
+[node name="ZonaMuerte" type="Area2D" parent="." unique_id=1496392188]
+position = Vector2(560, 656)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_ak48n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZonaMuerte" unique_id=1366608334]
+position = Vector2(1284, 14)
+shape = SubResource("RectangleShape2D_aklpc")
 
 [node name="Fondo" type="Node2D" parent="." unique_id=766917220]
 metadata/_edit_lock_ = true
+metadata/_edit_group_ = true
 
-[node name="Parallax2D" type="Parallax2D" parent="Fondo" unique_id=1826910529]
+[node name="Rocas3" type="Parallax2D" parent="Fondo" unique_id=554646247]
 z_index = -100
-scroll_scale = Vector2(0, 0)
-scroll_offset = Vector2(0, 250)
+scroll_scale = Vector2(0.2, 0.3)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
 repeat_times = 3
-ignore_camera_scroll = true
 
-[node name="TextureRect" type="TextureRect" parent="Fondo/Parallax2D" unique_id=1435486771]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -480.0
-offset_top = -500.0
-offset_right = 1440.0
-offset_bottom = 580.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Sprite2D" type="Sprite2D" parent="Fondo/Rocas3" unique_id=226110124]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_ak48n")
-stretch_mode = 3
 
 [node name="Nubes1" type="Parallax2D" parent="Fondo" unique_id=253563985]
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 300)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
 autoscroll = Vector2(10, 0)
 repeat_times = 3
@@ -209,7 +207,7 @@ texture = ExtResource("2_nax36")
 [node name="Nubes2" type="Parallax2D" parent="Fondo" unique_id=1073180567]
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 300)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
 autoscroll = Vector2(-20, 0)
 repeat_times = 3
@@ -221,7 +219,7 @@ texture = ExtResource("3_thhoc")
 [node name="Rocas1" type="Parallax2D" parent="Fondo" unique_id=1381371774]
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 300)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
 repeat_times = 3
 
@@ -232,9 +230,9 @@ texture = ExtResource("6_eq6k0")
 [node name="Nubes3" type="Parallax2D" parent="Fondo" unique_id=1055163436]
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 300)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
-autoscroll = Vector2(30, 0)
+autoscroll = Vector2(-30, 0)
 repeat_times = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="Fondo/Nubes3" unique_id=1670806076]
@@ -245,7 +243,7 @@ texture = ExtResource("4_ij7em")
 visible = false
 z_index = -100
 scroll_scale = Vector2(0.2, 0.3)
-scroll_offset = Vector2(0, 300)
+scroll_offset = Vector2(0, 350)
 repeat_size = Vector2(720, 0)
 repeat_times = 3
 
@@ -279,24 +277,31 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_ij7em")
 flip_h = true
 
-[node name="PuntoSpawnInicial" type="Marker2D" parent="." unique_id=1162242194]
+[node name="PuntoSpawnInicial" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
 position = Vector2(-216, -80)
+Activado = true
+Animar = false
 
-[node name="Jugador" parent="." unique_id=892271509 node_paths=PackedStringArray("PuntoSpawn") instance=ExtResource("1_x781s")]
+[node name="Sprite2D" parent="PuntoSpawnInicial" index="1" unique_id=1216706036]
+visible = false
+
+[node name="Jugador" parent="." unique_id=892271509 node_paths=PackedStringArray("PuntoControl") instance=ExtResource("1_x781s")]
 position = Vector2(-216, -80)
 slide_on_ceiling = false
-PuntoSpawn = NodePath("../PuntoSpawnInicial")
+PuntoControl = NodePath("../PuntoSpawnInicial")
 
 [node name="Camera2D" type="Camera2D" parent="Jugador" unique_id=706114990]
-position = Vector2(1, -8)
+position = Vector2(0, -8)
 offset = Vector2(0, -27)
 ignore_rotation = false
 zoom = Vector2(4, 4)
-limit_bottom = 512
+limit_top = -300
+limit_bottom = 350
 position_smoothing_speed = 4.0
 editor_draw_screen = false
 
 [node name="Isla1" type="Node2D" parent="." unique_id=342990222]
+metadata/_edit_group_ = true
 
 [node name="Suelo" type="TileMapLayer" parent="Isla1" unique_id=606741150]
 z_index = -10
@@ -317,12 +322,16 @@ z_index = 10
 tile_map_data = PackedByteArray("AAABAPz/AgACAAQAAAABAP3/AgACAAUAAAABAP7/AgACAAYAAAACAPz/AgADAAQAAAACAP3/AgADAAUAAAACAP7/AgADAAYAAAACAP//AgADAAcAAAACAAAAAgADAAgAAAADAPz/AgAEAAQAAAADAP3/AgAEAAUAAAADAP7/AgAEAAYAAAD2//z/AgACAAQAAAD2//3/AgACAAUAAAD2//7/AgACAAYAAAD3//z/AgADAAQAAAD3//3/AgADAAUAAAD3//7/AgADAAYAAAD3////AgADAAcAAAD4//z/AgAEAAQAAAD4//3/AgAEAAUAAAD4//7/AgAEAAYAAAD3/wAAAgADAAgAAAAFAP7/AgACAAQAAAAFAP//AgACAAUAAAAGAP7/AgADAAQAAAAGAP//AgADAAUAAAAGAAAAAgADAAYAAAAHAP7/AgAEAAQAAAAHAP//AgAEAAUAAADx////AgABAAUAAAD9//z/AgACAAUAAAD9//3/AgACAAYAAAD+//z/AgADAAUAAAD+//3/AgADAAYAAAD+//7/AgADAAcAAAD+////AgADAAgAAAD///z/AgAEAAUAAAD///3/AgAEAAYAAAD9//v/AgACAAQAAAD+//v/AgADAAQAAAD///v/AgAEAAQAAAD+/wAAAgADAAcAAAA=")
 tile_set = SubResource("TileSet_itltq")
 
+[node name="PuntoControl" parent="Isla1" unique_id=341059051 instance=ExtResource("5_ilur8")]
+position = Vector2(-216, 0)
+
 [node name="Isla2" type="Node2D" parent="." unique_id=1059375242]
-position = Vector2(352, 256)
+position = Vector2(352, 208)
+metadata/_edit_group_ = true
 
 [node name="Suelo" type="TileMapLayer" parent="Isla2" unique_id=1450217819]
 z_index = -10
-tile_map_data = PackedByteArray("AAD1//3/AAAAAAAAABD1//7/AAAAAAEAABD2//3/AAAAAAAAABD2//7/AAAAAAEAABD2////AAAAAAEAABD3//3/AAAAAAAAABD3//7/AAAAAAEAABD3////AAAAAAEAABD3/wAAAAAAAAEAABD3/wEAAAAAAAEAABD4//7/AAAAAAAAABD4////AAAAAAEAABD4/wAAAAAAAAEAABD4/wEAAAABAAAAABD4/wIAAAAAAAEAABD4/wMAAAAAAAEAABD5//7/AAAAAAAAABD5////AAAAAAEAABD5/wAAAAAAAAEAABD5/wEAAAAAAAEAABD6//7/AAAAAAAAABD6////AAABAAEAABD6/wAAAAAAAAEAABD7////AAAAAAAAABD7/wAAAAAAAAEAABD7/wEAAAAAAAEAABD8////AAAAAAAAABD8/wAAAAAAAAEAABD8/wEAAAAAAAEAABD8/wIAAAAAAAEAABD9////AAAAAAAAABD9/wAAAAAAAAEAABD9/wEAAAAAAAEAABD9/wIAAAAAAAEAABD9/wMAAAAAAAEAABD+////AAAAAAAAABD+/wAAAAAAAAEAABD+/wEAAAABAAAAABD+/wIAAAAAAAEAABD/////AAAAAAAAABD//wAAAAAAAAEAABD//wEAAAAAAAEAABD//wIAAAAAAAEAABAAAP//AAAAAAAAABAAAAAAAAAAAAEAABAAAAEAAAAAAAEAABAAAAIAAAAAAAEAABAAAAMAAAABAAAAABABAAAAAAAAAAAAABABAAEAAAABAAEAABABAAIAAAAAAAEAABACAAAAAAAAAAAAABACAAEAAAAAAAEAABACAAIAAAAAAAEAABACAAMAAAAAAAEAABADAAAAAAAAAAAAABADAAEAAAAAAAEAABADAAIAAAAAAAEAABADAAMAAAAAAAEAABADAAQAAAABAAAAABADAAUAAAAAAAEAABAEAAAAAAAAAAAAABAEAAEAAAAAAAEAABAEAAIAAAAAAAEAABAEAAMAAAAAAAEAABAEAAQAAAAAAAEAABAEAAUAAAAAAAEAABAEAAYAAAAAAAEAABAEAAcAAAAAAAEAABAFAAAAAAAAAAEAABAFAAEAAAABAAAAABAFAAIAAAAAAAEAABAFAAMAAAAAAAEAABAFAAQAAAAAAAEAABD1////AAAAAAEAABD2/wAAAAAAAAEAABD3/wIAAAAAAAEAABD4/wQAAAAAAAEAABD5/wIAAAAAAAEAABD6/wEAAAAAAAEAABD7/wIAAAABAAEAABD8/wMAAAABAAEAABD9/wQAAAAAAAEAABD+/wMAAAAAAAEAABD//wMAAAAAAAEAABAAAAQAAAAAAAEAABABAAMAAAAAAAEAABACAAQAAAAAAAEAABADAAYAAAAAAAEAABAEAAgAAAAAAAEAABAFAAUAAAAAAAEAABAGAAAAAAAAAAEAABAGAAEAAAAAAAEAABAGAAIAAAAAAAEAABAGAAMAAAAAAAEAABAGAAQAAAABAAEAABAHAP//AAAAAAAAABAHAAAAAAAAAAEAABAHAAEAAAAAAAEAABAHAAIAAAABAAEAABAIAP//AAAAAAAAABAIAAAAAAAAAAEAABAIAAEAAAAAAAEAABAFAP//AAAAAAAAABAGAP//AAAAAAAAABA=")
+tile_map_data = PackedByteArray("AAD1//3/AAAAAAAAABD1//7/AAAAAAEAABD2//3/AAAAAAAAABD2//7/AAAAAAEAABD2////AAAAAAEAABD3//3/AAAAAAAAABD3//7/AAAAAAEAABD3////AAAAAAEAABD3/wAAAAAAAAEAABD3/wEAAAAAAAEAABD4//7/AAAAAAAAABD4////AAAAAAEAABD4/wAAAAAAAAEAABD4/wEAAAABAAAAABD4/wIAAAAAAAEAABD4/wMAAAAAAAEAABD5//7/AAAAAAAAABD5////AAAAAAEAABD5/wAAAAAAAAEAABD5/wEAAAAAAAEAABD6//7/AAAAAAAAABD6////AAABAAEAABD6/wAAAAAAAAEAABD7////AAAAAAAAABD7/wAAAAAAAAEAABD7/wEAAAAAAAEAABD8////AAAAAAAAABD8/wAAAAAAAAEAABD8/wEAAAAAAAEAABD8/wIAAAAAAAEAABD9////AAAAAAAAABD9/wAAAAAAAAEAABD9/wEAAAAAAAEAABD9/wIAAAAAAAEAABD9/wMAAAAAAAEAABD+////AAAAAAAAABD+/wAAAAAAAAEAABD+/wEAAAABAAAAABD+/wIAAAAAAAEAABD/////AAAAAAAAABD//wAAAAAAAAEAABD//wEAAAAAAAEAABD//wIAAAAAAAEAABAAAP//AAAAAAAAABAAAAAAAAAAAAEAABAAAAEAAAAAAAEAABAAAAIAAAAAAAEAABAAAAMAAAABAAAAABABAAAAAAAAAAAAABABAAEAAAABAAEAABABAAIAAAAAAAEAABACAAAAAAAAAAAAABACAAEAAAAAAAEAABACAAIAAAAAAAEAABACAAMAAAAAAAEAABADAAAAAAAAAAAAABADAAEAAAAAAAEAABADAAIAAAAAAAEAABADAAMAAAAAAAEAABADAAQAAAABAAAAABADAAUAAAAAAAEAABAEAAAAAAAAAAAAABAEAAEAAAAAAAEAABAEAAIAAAAAAAEAABAEAAMAAAAAAAEAABAEAAQAAAAAAAEAABAEAAUAAAAAAAEAABAEAAYAAAAAAAEAABAFAAAAAAAAAAEAABAFAAEAAAABAAAAABAFAAIAAAAAAAEAABAFAAMAAAAAAAEAABAFAAQAAAAAAAEAABD1////AAAAAAEAABD2/wAAAAAAAAEAABD3/wIAAAAAAAEAABD4/wQAAAAAAAEAABD5/wIAAAAAAAEAABD6/wEAAAAAAAEAABD7/wIAAAABAAEAABD8/wMAAAABAAEAABD9/wQAAAAAAAEAABD//wMAAAAAAAEAABAAAAQAAAAAAAEAABABAAMAAAAAAAEAABACAAQAAAAAAAEAABAGAAAAAAAAAAEAABAGAAEAAAAAAAEAABAGAAIAAAAAAAEAABAGAAMAAAAAAAEAABAHAP//AAAAAAAAABAHAAAAAAAAAAEAABAHAAEAAAAAAAEAABAHAAIAAAABAAEAABAIAP//AAAAAAAAABAIAAAAAAAAAAEAABAFAP//AAAAAAAAABAGAP//AAAAAAAAABA=")
 tile_set = SubResource("TileSet_itltq")
 
 [node name="Elementos" type="TileMapLayer" parent="Isla2" unique_id=2135332030]
@@ -338,8 +347,11 @@ z_index = 10
 tile_map_data = PackedByteArray("AAD2//z/AgABAAYAAAD8//7/AgABAAUAAAADAP//AgABAAYAAAAIAP7/AgABAAQAAAA=")
 tile_set = SubResource("TileSet_itltq")
 
+[node name="Slime" parent="Isla2" unique_id=1969950463 instance=ExtResource("7_aklpc")]
+position = Vector2(-16, -16)
+
 [node name="PlataformaMovil" parent="." unique_id=1838497158 instance=ExtResource("4_hgoh6")]
-position = Vector2(160, 24)
+position = Vector2(161, 24)
 rotation = -0.00012324427
 Movimiento = true
 PosicionA = Vector2(160, 24)
@@ -351,12 +363,13 @@ Movimiento = true
 PosicionA = Vector2(288, 24)
 PosicionB = Vector2(384, 24)
 Caida = true
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="PlataformaMovil2" index="0" unique_id=649151839]
 region_rect = Rect2(16, 16, 32, 9)
 
 [node name="PlataformaMovil3" parent="." unique_id=2104790782 instance=ExtResource("4_hgoh6")]
-position = Vector2(416, 24)
+position = Vector2(418, 24)
 Movimiento = true
 PosicionA = Vector2(416, 24)
 PosicionB = Vector2(512, 24)
@@ -364,26 +377,22 @@ PosicionB = Vector2(512, 24)
 [node name="PlataformaCaida4" parent="." unique_id=665399246 instance=ExtResource("4_hgoh6")]
 position = Vector2(176, 72)
 Caida = true
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="PlataformaCaida4" index="0" unique_id=649151839]
 region_rect = Rect2(16, 16, 32, 9)
 
 [node name="PlataformaCaida3" parent="." unique_id=1485536605 instance=ExtResource("4_hgoh6")]
-position = Vector2(160, 120)
+position = Vector2(192, 120)
 Caida = true
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="PlataformaCaida3" index="0" unique_id=649151839]
 region_rect = Rect2(16, 16, 32, 9)
 
-[node name="PlataformaCaida2" parent="." unique_id=529609543 instance=ExtResource("4_hgoh6")]
-position = Vector2(176, 168)
-Caida = true
-
-[node name="Sprite2D" parent="PlataformaCaida2" index="0" unique_id=649151839]
-region_rect = Rect2(16, 16, 32, 9)
-
 [node name="Isla3" type="Node2D" parent="." unique_id=1916884601]
 position = Vector2(560, 48)
+metadata/_edit_group_ = true
 
 [node name="Suelo" type="TileMapLayer" parent="Isla3" unique_id=1838168285]
 z_index = -10
@@ -403,6 +412,7 @@ tile_set = SubResource("TileSet_itltq")
 
 [node name="Isla4" type="Node2D" parent="." unique_id=564057651]
 position = Vector2(656, 32)
+metadata/_edit_group_ = true
 
 [node name="Suelo" type="TileMapLayer" parent="Isla4" unique_id=1633879630]
 z_index = -10
@@ -427,6 +437,7 @@ tile_set = SubResource("TileSet_itltq")
 position = Vector2(760, 24)
 Caida = true
 TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="PlataformaCaida5" index="0" unique_id=649151839]
 position = Vector2(7.6293945e-06, -4)
@@ -437,10 +448,12 @@ region_rect = Rect2(0, 16, 16, 9)
 shape = SubResource("RectangleShape2D_k2xlr")
 
 [node name="CollisionShape2D" parent="PlataformaCaida5/SensorJugador" parent_id_path=PackedInt32Array(516497769, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
 shape = SubResource("RectangleShape2D_hgoh6")
 
 [node name="Isla5" type="Node2D" parent="." unique_id=1060620682]
 position = Vector2(864, 96)
+metadata/_edit_group_ = true
 
 [node name="Suelo" type="TileMapLayer" parent="Isla5" unique_id=1893979135]
 z_index = -10
@@ -461,26 +474,743 @@ z_index = 10
 tile_map_data = PackedByteArray("AAD9//r/AgACAAUAAAD9//v/AgACAAYAAAD+//r/AgADAAUAAAD+//v/AgADAAYAAAD///r/AgAEAAUAAAD///v/AgAEAAYAAAAAAPn/AgACAAUAAAAAAPr/AgACAAYAAAABAPn/AgADAAUAAAABAPr/AgADAAYAAAACAPn/AgAEAAUAAAACAPr/AgAEAAYAAAD9//n/AgACAAQAAAD+//n/AgADAAQAAAD///n/AgAEAAQAAAAAAPj/AgACAAQAAAABAPj/AgADAAQAAAACAPj/AgAEAAQAAAABAPv/AgADAAcAAAD+//z/AgADAAgAAAA=")
 tile_set = SubResource("TileSet_itltq")
 
-[node name="PuntoControl" parent="." unique_id=1696714220 instance=ExtResource("5_ilur8")]
-position = Vector2(1000, 32)
+[node name="PuntoControl" parent="Isla5" unique_id=1696714220 instance=ExtResource("5_ilur8")]
+position = Vector2(136, -64)
 
-[node name="PuntoControl2" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
-position = Vector2(-216, 0)
+[node name="PlataformaCaida6" parent="." unique_id=329569245 instance=ExtResource("4_hgoh6")]
+position = Vector2(1064, 48)
+Caida = true
+TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
 
-[node name="ZonaMuerte" type="Area2D" parent="." unique_id=1496392188]
-position = Vector2(568, 817)
-collision_layer = 0
-collision_mask = 2
-script = ExtResource("5_ak48n")
+[node name="Sprite2D" parent="PlataformaCaida6" index="0" unique_id=649151839]
+position = Vector2(7.6293945e-06, -4)
+scale = Vector2(0.99999905, 0.8888889)
+region_rect = Rect2(0, 16, 16, 9)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ZonaMuerte" unique_id=1366608334]
-shape = SubResource("RectangleShape2D_aklpc")
+[node name="CollisionShape2D" parent="PlataformaCaida6" index="1" unique_id=766896365]
+shape = SubResource("RectangleShape2D_k2xlr")
 
-[node name="Slime" parent="." unique_id=1969950463 instance=ExtResource("7_aklpc")]
-position = Vector2(336, 240)
+[node name="CollisionShape2D" parent="PlataformaCaida6/SensorJugador" parent_id_path=PackedInt32Array(329569245, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
+shape = SubResource("RectangleShape2D_hgoh6")
 
+[node name="PlataformaCaida7" parent="." unique_id=741987467 instance=ExtResource("4_hgoh6")]
+position = Vector2(1112, 32)
+Caida = true
+TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="PlataformaCaida7" index="0" unique_id=649151839]
+position = Vector2(7.6293945e-06, -4)
+scale = Vector2(0.99999905, 0.8888889)
+region_rect = Rect2(0, 16, 16, 9)
+
+[node name="CollisionShape2D" parent="PlataformaCaida7" index="1" unique_id=766896365]
+shape = SubResource("RectangleShape2D_k2xlr")
+
+[node name="CollisionShape2D" parent="PlataformaCaida7/SensorJugador" parent_id_path=PackedInt32Array(741987467, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
+shape = SubResource("RectangleShape2D_hgoh6")
+
+[node name="Isla6" type="Node2D" parent="." unique_id=1133835595]
+position = Vector2(1184, 48)
+metadata/_edit_group_ = true
+
+[node name="Suelo" type="TileMapLayer" parent="Isla6" unique_id=1164863659]
+z_index = -10
+tile_map_data = PackedByteArray("AAD+//7/AAAAAAAAAAD+////AAAAAAEAAAD+/wAAAAABAAEAAAD+/wEAAAAAAAEAAAD///7/AAAAAAAAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAABAAAAAAD//wIAAAAAAAEAAAAAAP7/AAAAAAAAAAAAAP//AAABAAEAAAAAAAAAAAAAAAEAAAD///3/AgABAAUAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla6" unique_id=665431779]
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla6" unique_id=1563051235]
+z_index = -10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla6" unique_id=253745665]
+z_index = 10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="PlataformaCaida8" parent="." unique_id=294777511 instance=ExtResource("4_hgoh6")]
+position = Vector2(1240, 16)
+Caida = true
+TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="PlataformaCaida8" index="0" unique_id=649151839]
+position = Vector2(7.6293945e-06, -4)
+scale = Vector2(0.99999905, 0.8888889)
+region_rect = Rect2(0, 16, 16, 9)
+
+[node name="CollisionShape2D" parent="PlataformaCaida8" index="1" unique_id=766896365]
+shape = SubResource("RectangleShape2D_k2xlr")
+
+[node name="CollisionShape2D" parent="PlataformaCaida8/SensorJugador" parent_id_path=PackedInt32Array(294777511, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
+shape = SubResource("RectangleShape2D_hgoh6")
+
+[node name="PlataformaCaida9" parent="." unique_id=446953251 instance=ExtResource("4_hgoh6")]
+position = Vector2(1289, 0)
+Caida = true
+TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="PlataformaCaida9" index="0" unique_id=649151839]
+position = Vector2(7.6293945e-06, -4)
+scale = Vector2(0.99999905, 0.8888889)
+region_rect = Rect2(0, 16, 16, 9)
+
+[node name="CollisionShape2D" parent="PlataformaCaida9" index="1" unique_id=766896365]
+shape = SubResource("RectangleShape2D_k2xlr")
+
+[node name="CollisionShape2D" parent="PlataformaCaida9/SensorJugador" parent_id_path=PackedInt32Array(446953251, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
+shape = SubResource("RectangleShape2D_hgoh6")
+
+[node name="PlataformaCaida10" parent="." unique_id=701415542 instance=ExtResource("4_hgoh6")]
+position = Vector2(1352, 8)
+Caida = true
+TiempoEsperaCaida = 0.5
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="PlataformaCaida10" index="0" unique_id=649151839]
+position = Vector2(7.6293945e-06, -4)
+scale = Vector2(0.99999905, 0.8888889)
+region_rect = Rect2(0, 16, 16, 9)
+
+[node name="CollisionShape2D" parent="PlataformaCaida10" index="1" unique_id=766896365]
+shape = SubResource("RectangleShape2D_k2xlr")
+
+[node name="CollisionShape2D" parent="PlataformaCaida10/SensorJugador" parent_id_path=PackedInt32Array(701415542, 912158850) index="0" unique_id=366910657]
+position = Vector2(0, -8.25)
+shape = SubResource("RectangleShape2D_hgoh6")
+
+[node name="Isla7" type="Node2D" parent="." unique_id=1903472396]
+position = Vector2(1424, 40)
+metadata/_edit_group_ = true
+
+[node name="Suelo" type="TileMapLayer" parent="Isla7" unique_id=1622397104]
+z_index = -10
+position = Vector2(16, 0)
+tile_map_data = PackedByteArray("AAD+//7/AAAAAAAAAAD+////AAAAAAEAAAD+/wAAAAABAAEAAAD+/wEAAAAAAAEAAAD///7/AAAAAAAAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAABAAAAAAD//wIAAAAAAAEAAAAAAP7/AAAAAAAAAAAAAP//AAABAAEAAAAAAAAAAAAAAAEAAAAAAAEAAAAAAAEAAAAAAAIAAAAAAAEAAAABAAIAAAAAAAEAAAABAAMAAAAAAAEAAAACAAMAAAAAAAEAAAADAAMAAAAAAAEAAAADAAQAAAAAAAEAAAAEAAQAAAAAAAEAAAAFAAUAAAAAAAEAAAAGAAYAAAAAAAEAAAAWAAQAAAAAAAEAAAAXAAQAAAAAAAEAAAAXAAMAAAAAAAEAAAAYAAMAAAAAAAEAAAAYAAIAAAAAAAEAAAAYAAEAAAAAAAEAAAAZAAEAAAAAAAEAAAAZAAAAAAAAAAEAAAAZAP//AAAAAAEAAAAZAP7/AAAAAAEAAAAaAP7/AAAAAAEAAAAaAP//AAAAAAEAAAAaAAAAAAAAAAEAAAABAAEAAAAAAAEAAAACAAEAAAAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAEAAAAJAP7/AAAAAAAAAAAJAP//AAAAAAEAAAAJAAAAAAAAAAEAAAAJAAEAAAAAAAEAAAAKAP7/AAAAAAEAAAAKAP//AAAAAAEAAAAKAAAAAAAAAAEAAAAKAAEAAAAAAAEAAAALAP7/AAAAAAEAAAALAP//AAAAAAEAAAALAAAAAAAAAAEAAAALAAEAAAAAAAEAAAAMAP7/AAAAAAAAAAAMAP//AAAAAAEAAAAMAAAAAAAAAAEAAAAMAAEAAAAAAAEAAAANAAAAAAAAAAAAAAANAAEAAAAAAAEAAAAOAAAAAAAAAAAAAAAOAAEAAAAAAAEAAAAPAAEAAAAAAAAAAAAQAAEAAAAAAAAAAAARAAEAAAAAAAAAAAASAAEAAAAAAAAAAAATAAAAAAAAAAAAAAATAAEAAAAAAAEAAAAUAAAAAAAAAAAAAAAUAAEAAAAAAAEAAAAVAAAAAAAAAAAAAAAVAAEAAAAAAAEAAAAWAAAAAAAAAAEAAAAWAAEAAAAAAAEAAAAXAP7/AAAAAAEAAAAXAP//AAAAAAEAAAAXAAAAAAAAAAEAAAAXAAEAAAAAAAEAAAAYAP7/AAAAAAEAAAAYAP//AAAAAAEAAAAYAAAAAAAAAAEAAAACAAIAAAAAAAEAAAADAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAAEAAMAAAAAAAEAAAAFAAIAAAAAAAEAAAAFAAMAAAAAAAEAAAAGAAIAAAAAAAEAAAAGAAMAAAAAAAEAAAAHAAIAAAAAAAEAAAAHAAMAAAAAAAEAAAAIAAIAAAAAAAEAAAAIAAMAAAAAAAEAAAAJAAIAAAAAAAEAAAAKAAIAAAAAAAEAAAALAAIAAAAAAAEAAAALAAMAAAAAAAEAAAAMAAIAAAAAAAEAAAAMAAMAAAAAAAEAAAANAAIAAAAAAAEAAAANAAMAAAAAAAEAAAAOAAIAAAAAAAEAAAAOAAMAAAAAAAEAAAAPAAIAAAAAAAEAAAAPAAMAAAAAAAEAAAAQAAIAAAAAAAEAAAAQAAMAAAAAAAEAAAARAAIAAAAAAAEAAAARAAMAAAAAAAEAAAASAAIAAAAAAAEAAAASAAMAAAAAAAEAAAATAAIAAAAAAAEAAAATAAMAAAAAAAEAAAAUAAIAAAAAAAEAAAAUAAMAAAAAAAEAAAAWAAIAAAAAAAEAAAAWAAMAAAAAAAEAAAAXAAIAAAAAAAEAAAAFAAQAAAAAAAEAAAAGAAQAAAAAAAEAAAAGAAUAAAAAAAEAAAAHAAQAAAAAAAEAAAAHAAUAAAAAAAEAAAAIAAQAAAAAAAEAAAALAAQAAAAAAAEAAAALAAUAAAAAAAEAAAANAAQAAAAAAAEAAAANAAUAAAAAAAEAAAAOAAQAAAAAAAEAAAAOAAUAAAAAAAEAAAAPAAQAAAAAAAEAAAAPAAUAAAAAAAEAAAAQAAQAAAAAAAEAAAAQAAUAAAAAAAEAAAARAAQAAAAAAAEAAAARAAUAAAAAAAEAAAASAAQAAAAAAAEAAAASAAUAAAAAAAEAAAATAAQAAAAAAAEAAAAUAAQAAAAAAAEAAAANAAYAAAAAAAEAAAAPAAYAAAAAAAEAAAD//wMAAAAAAAEAAAAAAAMAAAAAAAEAAAD+/wIAAAAAAAEAAAABAAQAAAAAAAEAAAACAAQAAAAAAAEAAAADAAUAAAAAAAEAAAAEAAUAAAAAAAEAAAAEAAYAAAAAAAEAAAAGAAcAAAAAAAEAAAABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAJAAMAAAAAAAEAAAAKAAMAAAAAAAEAAAAKAAQAAAAAAAEAAAAMAAQAAAAAAAEAAAAVAAIAAAAAAAEAAAAVAAMAAAAAAAEAAAABAAUAAAAAAAEAAAAAAAQAAAAAAAEAAAAQAAYAAAAAAAEAAAAQAAcAAAAAAAEAAAAXAAUAAAAAAAEAAAAXAP3/AAAAAAAAAAAYAP3/AAAAAAAAAAAZAP3/AAAAAAEAAAAaAP3/AAAAAAEAAAAWAP//AAAAAAAAAAAZAPz/AAAAAAAAAAAaAPz/AAAAAAAAAAALAP3/AAAAAAAAAAAKAP3/AAAAAAAAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla7" unique_id=1140555265]
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla7" unique_id=538527313]
+z_index = -10
+tile_map_data = PackedByteArray("AAAMAPz/AgADAAYAAAALAPr/AgACAAQAAAAMAPr/AgADAAQAAAAMAPv/AgADAAUAAAANAPr/AgAEAAQAAAALAPv/AgACAAUAAAALAPz/AgACAAYAAAANAPv/AgAEAAUAAAANAPz/AgAEAAYAAAAYAPj/AgACAAQAAAAYAPn/AgACAAUAAAAYAPr/AgACAAYAAAAZAPj/AgADAAQAAAAZAPn/AgADAAUAAAAZAPr/AgADAAYAAAAZAPv/AgADAAcAAAAZAPz/AgADAAgAAAAaAPj/AgAEAAQAAAAaAPn/AgAEAAUAAAAaAPr/AgAEAAYAAAD///n/AgACAAQAAAD///r/AgACAAUAAAD///v/AgACAAYAAAAAAPn/AgADAAQAAAAAAPr/AgADAAUAAAAAAPv/AgADAAYAAAAAAPz/AgADAAcAAAAAAP3/AgADAAgAAAABAPn/AgAEAAQAAAABAPr/AgAEAAUAAAABAPv/AgAEAAYAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla7" unique_id=154090957]
+z_index = 10
+tile_map_data = PackedByteArray("AAARAAAAAgABAAQAAAAKAPj/AgACAAQAAAAKAPn/AgACAAUAAAAKAPr/AgACAAYAAAALAPj/AgADAAQAAAALAPn/AgADAAUAAAALAPr/AgADAAYAAAALAPv/AgADAAcAAAALAPz/AgADAAgAAAAMAPj/AgAEAAQAAAAMAPn/AgAEAAUAAAAMAPr/AgAEAAYAAAABAP3/AgABAAQAAAAHAAAAAgABAAQAAAAZAPn/AgACAAQAAAAZAPr/AgACAAUAAAAZAPv/AgACAAYAAAAaAPn/AgADAAQAAAAaAPr/AgADAAUAAAAaAPv/AgADAAYAAAAbAPn/AgAEAAQAAAAbAPr/AgAEAAUAAAAbAPv/AgAEAAYAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Slime" parent="Isla7" unique_id=1708275172 instance=ExtResource("7_aklpc")]
+position = Vector2(40, 2)
+
+[node name="Slime2" parent="Isla7" unique_id=2109431484 instance=ExtResource("7_aklpc")]
+position = Vector2(232, 2)
+
+[node name="Slime3" parent="Isla7" unique_id=338811276 instance=ExtResource("7_aklpc")]
+position = Vector2(360, 2)
+
+[node name="PlataformasDescendentes" type="Node2D" parent="." unique_id=1699145488]
+position = Vector2(1920, -48)
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil15" parent="PlataformasDescendentes" unique_id=183279896 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil4" parent="PlataformasDescendentes" unique_id=1087386757 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil5" parent="PlataformasDescendentes" unique_id=115556807 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil6" parent="PlataformasDescendentes" unique_id=1373214480 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil7" parent="PlataformasDescendentes" unique_id=1236884379 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil8" parent="PlataformasDescendentes" unique_id=1479035193 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil9" parent="PlataformasDescendentes" unique_id=939469788 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil10" parent="PlataformasDescendentes" unique_id=1222606332 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil11" parent="PlataformasDescendentes" unique_id=1033407629 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil12" parent="PlataformasDescendentes" unique_id=217898160 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil13" parent="PlataformasDescendentes" unique_id=1459338829 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 352)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil14" parent="PlataformasDescendentes" unique_id=2116730469 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 416)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="Isla8" type="Node2D" parent="." unique_id=1009428104]
+position = Vector2(2000, -48)
+
+[node name="Suelo" type="TileMapLayer" parent="Isla8" unique_id=116510994]
+z_index = -10
+tile_map_data = PackedByteArray("AAD+/wAAAAABAAEAAAD+/wEAAAAAAAEAAAD///7/AAAAAAAAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAABAAAAAAD//wIAAAAAAAEAAAAAAP7/AAAAAAAAAAAAAP//AAABAAEAAAAAAAAAAAAAAAEAAAD///3/AgABAAUAAAD+////AAAAAAAAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla8" unique_id=1956756707]
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla8" unique_id=1258051510]
+z_index = -10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla8" unique_id=2066796452]
+z_index = 10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Isla11" type="Node2D" parent="." unique_id=241189129]
+position = Vector2(2000, 144)
+metadata/_edit_group_ = true
+
+[node name="Suelo" type="TileMapLayer" parent="Isla11" unique_id=785065939]
+z_index = -10
+tile_map_data = PackedByteArray("AAD+//7/AAABAAEAAAD///7/AAAAAAEAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAABAAAAAAAAAP7/AAAAAAAAAAAAAP//AAABAAEAAAAAAAAAAAAAAAEAAAD///3/AAAAAAAAAAD+//3/AAAAAAAAAAD+////AAAAAAEAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla11" unique_id=1641091456]
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla11" unique_id=515474737]
+z_index = -10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla11" unique_id=959158617]
+z_index = 10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="PlataformasAscendentes" type="Node2D" parent="." unique_id=449576734]
+position = Vector2(2064, -64)
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil4" parent="PlataformasAscendentes" unique_id=742089155 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil5" parent="PlataformasAscendentes" unique_id=1681932114 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil6" parent="PlataformasAscendentes" unique_id=100367983 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil7" parent="PlataformasAscendentes" unique_id=983980993 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil8" parent="PlataformasAscendentes" unique_id=351707361 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil9" parent="PlataformasAscendentes" unique_id=1443316952 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil10" parent="PlataformasAscendentes" unique_id=1868769844 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil11" parent="PlataformasAscendentes" unique_id=150660983 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil12" parent="PlataformasAscendentes" unique_id=529609543 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil13" parent="PlataformasAscendentes" unique_id=1349452052 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 352)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil14" parent="PlataformasAscendentes" unique_id=308349033 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 416)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil15" parent="PlataformasAscendentes" unique_id=1619293628 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 480)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="Isla9" type="Node2D" parent="." unique_id=996074802]
+position = Vector2(2144, -144)
+metadata/_edit_group_ = true
+
+[node name="Suelo" type="TileMapLayer" parent="Isla9" unique_id=373864108]
+z_index = -10
+position = Vector2(0, 48)
+tile_map_data = PackedByteArray("AAD+//7/AAAAAAAAAAD+////AAAAAAEAAAD///7/AAAAAAAAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAABAAAAAAAAAP7/AAAAAAAAAAAAAP//AAABAAEAAAAAAAAAAAAAAAEAAAD///3/AgABAAUAAAABAP7/AAAAAAAAAAACAP7/AAAAAAAAAAABAAAAAAAAAAEAAAACAP//AAAAAAEAAAABAP//AAAAAAEAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla9" unique_id=643674425]
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla9" unique_id=1787637684]
+z_index = -10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla9" unique_id=354355206]
+z_index = 10
+tile_set = SubResource("TileSet_itltq")
+
+[node name="PlataformasDescendentes2" type="Node2D" parent="." unique_id=858811462]
+position = Vector2(2256, -48)
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil15" parent="PlataformasDescendentes2" unique_id=1506453406 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil4" parent="PlataformasDescendentes2" unique_id=223226547 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil5" parent="PlataformasDescendentes2" unique_id=1829767701 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil6" parent="PlataformasDescendentes2" unique_id=820104817 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil7" parent="PlataformasDescendentes2" unique_id=604131869 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil8" parent="PlataformasDescendentes2" unique_id=651024861 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil9" parent="PlataformasDescendentes2" unique_id=1528724165 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil10" parent="PlataformasDescendentes2" unique_id=694056815 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil11" parent="PlataformasDescendentes2" unique_id=722126530 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil12" parent="PlataformasDescendentes2" unique_id=1235417805 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil13" parent="PlataformasDescendentes2" unique_id=438167861 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 352)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil14" parent="PlataformasDescendentes2" unique_id=43700908 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 416)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, -288)
+PosicionB = Vector2(0, 480)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformasAscendentes2" type="Node2D" parent="." unique_id=2078858563]
+position = Vector2(2336, -64)
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil4" parent="PlataformasAscendentes2" unique_id=1296718039 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil5" parent="PlataformasAscendentes2" unique_id=305459127 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil6" parent="PlataformasAscendentes2" unique_id=1490530152 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil7" parent="PlataformasAscendentes2" unique_id=1670708076 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, -32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil8" parent="PlataformasAscendentes2" unique_id=74222561 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 32)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil9" parent="PlataformasAscendentes2" unique_id=960999405 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 96)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil10" parent="PlataformasAscendentes2" unique_id=1592726337 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 160)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil11" parent="PlataformasAscendentes2" unique_id=753567428 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 224)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil12" parent="PlataformasAscendentes2" unique_id=1326481075 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 288)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil13" parent="PlataformasAscendentes2" unique_id=1850061321 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 352)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil14" parent="PlataformasAscendentes2" unique_id=821607216 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 416)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="PlataformaMovil15" parent="PlataformasAscendentes2" unique_id=1247899765 instance=ExtResource("4_hgoh6")]
+position = Vector2(0, 480)
+Movimiento = true
+Unidireccional = true
+PosicionA = Vector2(0, 480)
+PosicionB = Vector2(0, -288)
+FrenarAlLlegar = false
+Aceleracion = 40.0
+metadata/_edit_group_ = true
+
+[node name="Isla10" type="Node2D" parent="." unique_id=564510359]
+position = Vector2(2592, -192)
+metadata/_edit_group_ = true
+
+[node name="Suelo" type="TileMapLayer" parent="Isla10" unique_id=2027069950]
+z_index = -10
+tile_map_data = PackedByteArray("AAD9/wEAAAAAAAAAAAD9/wIAAAAAAAEAAAD9/wMAAAAAAAEAAAD+/wEAAAAAAAAAAAD+/wIAAAABAAAAAAD+/wMAAAAAAAEAAAD+/wQAAAAAAAEAAAD+/wUAAAAAAAEAAAD//wQAAAAAAAEAAAAAAAEAAAAAAAAAAAAAAAIAAAAAAAEAAAAAAAMAAAAAAAEAAAAAAAQAAAAAAAEAAAAAAAUAAAAAAAEAAAAAAAYAAAAAAAEAAAABAAEAAAAAAAAAAAABAAIAAAAAAAEAAAABAAMAAAAAAAEAAAABAAQAAAABAAEAAAABAAUAAAAAAAEAAAACAAEAAAAAAAAAAAACAAIAAAABAAAAAAACAAMAAAAAAAEAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAEAAAAGAAMAAAABAAEAAAAGAAQAAAAAAAEAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAEAAAAHAAMAAAAAAAEAAAAHAAQAAAABAAAAAAAHAAUAAAAAAAEAAAAIAAEAAAAAAAAAAAAIAAIAAAABAAEAAAAIAAMAAAAAAAEAAAD0/wEAAAAAAAAAAAD0/wIAAAAAAAEAAAD1/wEAAAAAAAAAAAD1/wIAAAAAAAEAAAD1/wMAAAAAAAEAAAD1/wQAAAAAAAEAAAD2/wEAAAAAAAAAAAD2/wIAAAABAAEAAAD2/wMAAAAAAAEAAAD2/wQAAAAAAAEAAAD3/wEAAAAAAAAAAAD3/wIAAAAAAAEAAAD3/wMAAAAAAAEAAAD3/wQAAAABAAAAAAD4/wEAAAAAAAAAAAD4/wIAAAAAAAEAAAD4/wMAAAAAAAEAAAD1/wUAAAAAAAEAAAD3/wUAAAAAAAEAAAD//wEAAAAAAAAAAAD//wIAAAAAAAEAAAD//wMAAAABAAEAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="Elementos" type="TileMapLayer" parent="Isla10" unique_id=1595725100]
+tile_map_data = PackedByteArray("AAD6/wEAAQAKAAAAAAD7/wEAAQAKAAAAAAD8/wEAAQALAAAAAAADAAEAAQAJAAAAAAAEAAEAAQAKAAAAAAAFAAEAAQALAAAAAAD5/wEAAQAJAAAAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDetras" type="TileMapLayer" parent="Isla10" unique_id=1893296703]
+z_index = -10
+tile_map_data = PackedByteArray("AAAGAPz/AgACAAQAAAAGAP3/AgACAAUAAAAGAP7/AgACAAYAAAAHAPz/AgADAAQAAAAHAP3/AgADAAUAAAAHAP7/AgADAAYAAAAHAP//AgADAAcAAAAHAAAAAgADAAgAAAAIAPz/AgAEAAQAAAAIAP3/AgAEAAUAAAAIAP7/AgAEAAYAAAD8//3/AgACAAQAAAD8//7/AgACAAUAAAD9//3/AgADAAQAAAD9//7/AgADAAUAAAD9/wAAAgADAAcAAAD+//3/AgAEAAQAAAD+//7/AgAEAAUAAAD+////AgAEAAYAAAD9////AgADAAYAAAD8////AgACAAYAAAD1//7/AgADAAQAAAD1////AgADAAUAAAD2//7/AgAEAAQAAAD2////AgAEAAUAAAD3//7/AgACAAUAAAD3////AgACAAYAAAD4//3/AgADAAQAAAD4//7/AgADAAUAAAD4////AgADAAYAAAD0//7/AgACAAQAAAD0////AgACAAUAAAD1/wAAAgADAAYAAAD3//3/AgACAAQAAAD4/wAAAgADAAcAAAD5//3/AgAEAAQAAAD5//7/AgAEAAUAAAD5////AgAEAAYAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="DecoracionDelante" type="TileMapLayer" parent="Isla10" unique_id=274428624]
+z_index = 10
+tile_map_data = PackedByteArray("AAABAPz/AgACAAQAAAABAP3/AgACAAUAAAABAP7/AgACAAYAAAACAPz/AgADAAQAAAACAP3/AgADAAUAAAACAP7/AgADAAYAAAACAP//AgADAAcAAAACAAAAAgADAAgAAAADAPz/AgAEAAQAAAADAP3/AgAEAAUAAAADAP7/AgAEAAYAAAD2//z/AgACAAQAAAD2//3/AgACAAUAAAD2//7/AgACAAYAAAD3//z/AgADAAQAAAD3//3/AgADAAUAAAD3//7/AgADAAYAAAD3////AgADAAcAAAD4//z/AgAEAAQAAAD4//3/AgAEAAUAAAD4//7/AgAEAAYAAAD3/wAAAgADAAgAAAAFAP7/AgACAAQAAAAFAP//AgACAAUAAAAGAP7/AgADAAQAAAAGAP//AgADAAUAAAAGAAAAAgADAAYAAAAHAP7/AgAEAAQAAAAHAP//AgAEAAUAAAD9//z/AgACAAUAAAD9//3/AgACAAYAAAD+//z/AgADAAUAAAD+//3/AgADAAYAAAD+//7/AgADAAcAAAD+////AgADAAgAAAD///z/AgAEAAUAAAD///3/AgAEAAYAAAD9//v/AgACAAQAAAD+//v/AgADAAQAAAD///v/AgAEAAQAAAD+/wAAAgADAAcAAAA=")
+tile_set = SubResource("TileSet_itltq")
+
+[node name="PuntoControl" parent="Isla10" unique_id=712327199 instance=ExtResource("5_ilur8")]
+position = Vector2(7, 16)
+
+[node name="Slime" parent="." unique_id=1308693879 instance=ExtResource("7_aklpc")]
+position = Vector2(2168, -126)
+
+[editable path="PuntoSpawnInicial"]
 [editable path="PlataformaMovil2"]
 [editable path="PlataformaCaida4"]
 [editable path="PlataformaCaida3"]
-[editable path="PlataformaCaida2"]
 [editable path="PlataformaCaida5"]
+[editable path="PlataformaCaida6"]
+[editable path="PlataformaCaida7"]
+[editable path="PlataformaCaida8"]
+[editable path="PlataformaCaida9"]
+[editable path="PlataformaCaida10"]

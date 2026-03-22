@@ -5,7 +5,8 @@ namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
 
 public partial class PuntoControl : Marker2D
 {
-	private bool _activado = false;
+	[Export]
+	public bool Activado = false;
 
 	private Area2D _area2D;
 	private Sprite2D _sprite2D;
@@ -13,7 +14,8 @@ public partial class PuntoControl : Marker2D
 	[Export]
 	public int Direccion = 1;
 
-	// Called when the node enters the scene tree for the first time.
+	[Export]
+	public bool Animar = true;
 
 	public override void _Ready()
 	{
@@ -36,13 +38,14 @@ public partial class PuntoControl : Marker2D
 
 	private void OnJugadorEntered(Jugador jugador)
 	{
-		if (_activado)
+		if (Activado)
 			return;
 
-		jugador.InformarPuntoSpawn(this);
-		_activado = true;
+		jugador.PuntoControl = this;
+		Activado = true;
 
-		ActivarAnimacion();
+		if (Animar)
+			ActivarAnimacion();
 	}
 
 	private void ActivarAnimacion()

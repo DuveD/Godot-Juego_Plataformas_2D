@@ -19,9 +19,7 @@ public partial class Jugador : CharacterBody2D
 
     #region Spawn
     [Export]
-    public Marker2D PuntoSpawn;
-    [Export]
-    public int DireccionSpawn = 1;
+    public PuntoControl PuntoControl;
     #endregion
 
     #region Físicas
@@ -158,6 +156,8 @@ public partial class Jugador : CharacterBody2D
 
         this.SistemaPlataformas = new SistemaPlataformas(this);
         AddChild(SistemaPlataformas);
+
+        RespawnEnPuntoSpawn();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -625,12 +625,6 @@ public partial class Jugador : CharacterBody2D
         _animatedSprite2D.Play(animacion.Nombre);
     }
 
-    public void InformarPuntoSpawn(PuntoControl puntoControl)
-    {
-        this.PuntoSpawn = puntoControl;
-        this.DireccionSpawn = puntoControl.Direccion;
-    }
-
     public async void Muerte()
     {
         if (DesactivarFisicas)
@@ -701,9 +695,12 @@ public partial class Jugador : CharacterBody2D
 
     private void RespawnEnPuntoSpawn()
     {
+        if (PuntoControl == null)
+            return;
+
         // Movemos el jugador al últimpo punto de Spawn.
-        this.Position = PuntoSpawn.GlobalPosition;
-        this._direccion = this.DireccionSpawn;
+        this.Position = PuntoControl.GlobalPosition;
+        this._direccion = PuntoControl.Direccion;
         _animatedSprite2D.FlipH = _direccion < 0;
     }
 
