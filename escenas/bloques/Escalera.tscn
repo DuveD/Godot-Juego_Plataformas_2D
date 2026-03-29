@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://v77qmgqu6y3p"]
+
+[ext_resource type="Script" uid="uid://crn078k4silnm" path="res://escenas/bloques/Escalera.cs" id="1_elotl"]
+[ext_resource type="Texture2D" uid="uid://c4avgjwjec546" path="res://recursos/sprites/mundo/mundo_tileset.png" id="2_ac6h2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_elotl"]
+size = Vector2(16, 16)
+
+[node name="Escalera" type="Area2D" unique_id=1178533361]
+position = Vector2(8, 8)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_elotl")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1479131512]
+shape = SubResource("RectangleShape2D_elotl")
+
+[node name="SpriteInicio" type="Sprite2D" parent="." unique_id=479555307]
+visible = false
+z_index = -10
+texture = ExtResource("2_ac6h2")
+region_enabled = true
+region_rect = Rect2(240, 48, 16, 16)
+
+[node name="SpritesMedio" type="Node2D" parent="." unique_id=1084065552]
+visible = false
+
+[node name="Template" type="Sprite2D" parent="SpritesMedio" unique_id=838850753]
+visible = false
+z_index = -10
+texture = ExtResource("2_ac6h2")
+region_enabled = true
+region_rect = Rect2(224, 48, 16, 16)
+
+[node name="SpriteFin" type="Sprite2D" parent="." unique_id=1356440984]
+visible = false
+z_index = -10
+position = Vector2(0, -16)
+texture = ExtResource("2_ac6h2")
+region_enabled = true
+region_rect = Rect2(176, 48, 16, 16)
+
+[node name="SpriteUnico" type="Sprite2D" parent="." unique_id=1852459708]
+z_index = -10
+texture = ExtResource("2_ac6h2")
+region_enabled = true
+region_rect = Rect2(160, 48, 16, 16)

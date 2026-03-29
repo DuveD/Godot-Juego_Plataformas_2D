@@ -15,8 +15,8 @@ public partial class SistemaPlataformas : Node
 
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
-    private HashSet<PhysicsBody2D> _plataformasDebajo = [];
-    private HashSet<PhysicsBody2D> _plataformasIgnoradas = [];
+    private HashSet<Plataforma> _plataformasDebajo = [];
+    private HashSet<Plataforma> _plataformasIgnoradas = [];
 
     public SistemaPlataformas(Jugador jugador)
     {
@@ -71,7 +71,7 @@ public partial class SistemaPlataformas : Node
         return velocidad;
     }
 
-    private void AplicarExcepceionesDeColision(List<PhysicsBody2D> plataformas)
+    private void AplicarExcepceionesDeColision(List<Plataforma> plataformas)
     {
         foreach (var plataforma in plataformas)
         {
@@ -93,12 +93,12 @@ public partial class SistemaPlataformas : Node
         _plataformasIgnoradas.Clear();
     }
 
-    public List<PhysicsBody2D> ObtenerPlataformasDebajoJugador()
+    public List<Plataforma> ObtenerPlataformasDebajoJugador()
     {
         return _plataformasDebajo.ToList();
     }
 
-    public PhysicsBody2D ObtenerPlataformaDebajoJugadorPredominante()
+    public Plataforma ObtenerPlataformaDebajoJugadorPredominante()
     {
         PlataformaMovil plataformaCercana = null;
         float minDistancia = float.MaxValue;

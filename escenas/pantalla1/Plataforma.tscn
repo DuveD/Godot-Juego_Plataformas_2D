@@ -1,29 +1,52 @@
 [gd_scene format=3 uid="uid://ku77mcgbkwis"]
 
 [ext_resource type="Script" uid="uid://bxkxt1ljw2pbd" path="res://escenas/pantalla1/Plataforma.cs" id="1_x2byh"]
+[ext_resource type="Texture2D" uid="uid://cmcu17lqdcapa" path="res://recursos/sprites/plataformas/plataformas.png" id="2_ttaem"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pa6up"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ttaem"]
+size = Vector2(16, 1)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pa6up"]
 load_path = "res://.godot/imported/plataformas.png-3f5f873ae9bf4fe95e0329466436ab40.ctex"
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pa6up"]
-size = Vector2(32, 0.5)
-
-[node name="Plataforma" type="AnimatableBody2D" unique_id=529609543]
-position = Vector2(16, 4.5)
-physics_material_override = SubResource("PhysicsMaterial_pa6up")
+[node name="Plataforma" type="StaticBody2D" unique_id=987337931]
+position = Vector2(8, 8)
 script = ExtResource("1_x2byh")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=649151839]
-position = Vector2(0, -4)
-scale = Vector2(1, 0.8888889)
-texture = SubResource("CompressedTexture2D_pa6up")
-region_enabled = true
-region_rect = Rect2(16, 0, 32, 9)
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=766896365]
 z_index = -10
-position = Vector2(0, -7.75)
-shape = SubResource("RectangleShape2D_pa6up")
+position = Vector2(0, -7.5)
+shape = SubResource("RectangleShape2D_ttaem")
 one_way_collision = true
+
+[node name="SpriteInicio" type="Sprite2D" parent="." unique_id=701869653]
+visible = false
+z_index = -10
+texture = ExtResource("2_ttaem")
+region_enabled = true
+region_rect = Rect2(16, 0, 16, 16)
+
+[node name="SpritesMedio" type="Node2D" parent="." unique_id=922865952]
+visible = false
+
+[node name="Template" type="Sprite2D" parent="SpritesMedio" unique_id=2104030878]
+visible = false
+z_index = -10
+position = Vector2(8, 0)
+texture = ExtResource("2_ttaem")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+
+[node name="SpriteFin" type="Sprite2D" parent="." unique_id=1860652933]
+visible = false
+z_index = -10
+position = Vector2(16, 0)
+texture = ExtResource("2_ttaem")
+region_enabled = true
+region_rect = Rect2(48, 0, 16, 16)
+
+[node name="SpriteUnico" type="Sprite2D" parent="." unique_id=649151839]
+texture = SubResource("CompressedTexture2D_pa6up")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)

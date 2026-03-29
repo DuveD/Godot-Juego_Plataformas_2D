@@ -1,7 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Godot;
+using PrimerjuegoPlataformas2D.escenas.bloques;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
-using PrimerjuegoPlataformas2D.escenas.pantalla1;
+using BloqueRompible = PrimerjuegoPlataformas2D.escenas.bloques.BloqueRompible;
+using PuntoControl = PrimerjuegoPlataformas2D.escenas.bloques.PuntoControl;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
@@ -35,13 +38,15 @@ public partial class Jugador : CharacterBody2D
 
     private const float ACELERACION_SUELO = 1000f;
     private const float ACELERACION_AIRE = 500f;
+
+    private const float VELOCIDAD_ESCALAR = 80;
     #endregion
 
     #region Estado de locomoción
     /// <summary>
     /// Describe el estado físico vertical del jugador.
     /// </summary>
-    public enum EstadoLocomocionJugador { EnSuelo, Saltando, Cayendo }
+    public enum EstadoLocomocionJugador { EnSuelo, Saltando, Cayendo, Escalando }
 
     public EstadoLocomocionJugador EstadoLocomocionAnterior = EstadoLocomocionJugador.EnSuelo;
     public EstadoLocomocionJugador EstadoLocomocion = EstadoLocomocionJugador.EnSuelo;
@@ -121,13 +126,26 @@ public partial class Jugador : CharacterBody2D
     }
     #endregion
 
+    #region Escalar
+    private Escalera _escaleraActual = null;
+    private bool _agarradoEscalera = false;
+
+    private int _frameEscalera = 0;
+    private float _distanciaEscalada = 0f;
+    private bool _moviendoseEscaleraAnterior = false;
+    private const float DISTANCIA_CAMBIO_FRAME_ESCALAR = 18f;
+    #endregion 
+
     #region Inputs
     private struct InputJugador
     {
         public int Direccion;
         public bool SaltoPresionado;
-        public bool SaltoMantenido;
-        public bool Rodar;
+        public bool ArribaPresionado;
+        public bool AbajoPresionado;
+        public bool Salto;
+        public bool RodarPresionado;
+        public bool Arriba;
         public bool Abajo;
     }
     #endregion
@@ -195,7 +213,6 @@ public partial class Jugador : CharacterBody2D
         }
     }
 
-
     private InputJugador ActualizarInputs()
     {
         InputJugador inputJugador = LeerInput();
@@ -212,8 +229,11 @@ public partial class Jugador : CharacterBody2D
         {
             Direccion = (int)Input.GetAxis("ui_left", "ui_right"),
             SaltoPresionado = Input.IsActionJustPressed("ui_accept"),
-            SaltoMantenido = Input.IsActionPressed("ui_accept"),
-            Rodar = Input.IsActionJustPressed("rodar"),
+            ArribaPresionado = Input.IsActionJustPressed("ui_up"),
+            AbajoPresionado = Input.IsActionJustPressed("ui_down"),
+            RodarPresionado = Input.IsActionJustPressed("rodar"),
+            Salto = Input.IsActionPressed("ui_accept"),
+            Arriba = Input.IsActionPressed("ui_up"),
             Abajo = Input.IsActionPressed("ui_down")
         };
     }
@@ -236,18 +256,90 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 CalcularMovimientoVertical(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
-        // Procesamos el salto.
-        velocidad = ProcesarSalto(delta, velocidad, inputJugador);
+        // Intentar agarrarse
+        (bool movimientoEscalera, Vector2 velocidadEscalera) = ProcesarMovimientoEscalera(delta, ref velocidad, inputJugador);
+        if (movimientoEscalera)
+            return velocidadEscalera;
 
-        // Aplicamos la gravedad.
+        // Física normal
+        velocidad = ProcesarSalto(delta, velocidad, inputJugador);
         velocidad = AplicarGravedad(delta, velocidad, inputJugador);
 
-        // Limitamos la velocidad máxima de caída.
         if (velocidad.Y > MAXIMA_VELOCIDAD_CAIDA)
             velocidad.Y = MAXIMA_VELOCIDAD_CAIDA;
 
         return velocidad;
     }
+
+    private (bool, Vector2) ProcesarMovimientoEscalera(double delta, ref Vector2 velocidad, InputJugador inputJugador)
+    {
+        if (_agarradoEscalera && _enSuelo)
+        {
+            _agarradoEscalera = false;
+            GD.Print("Escalera soltada al aterrizar.");
+        }
+
+        velocidad = ProcesarAgarrarEscalera(velocidad, inputJugador);
+
+        if (_agarradoEscalera && _escaleraActual != null)
+        {
+            (bool saltoEnEscalera, Vector2 velocidadSaltoEnEscalera) = ProcesarSaltoEnEscalera(ref velocidad);
+            if (saltoEnEscalera)
+                return (true, velocidadSaltoEnEscalera);
+
+            float dirY = inputJugador.Arriba ? -1f : inputJugador.Abajo ? 1f : 0f;
+            velocidad.Y = dirY * VELOCIDAD_ESCALAR;
+
+            // Snap suave al centro X
+            velocidad.X = Mathf.Clamp(
+                (_escaleraActual.CentroX - GlobalPosition.X) / (float)delta,
+                -200f, 200f
+            );
+
+            float movimiento = Mathf.Abs(velocidad.Y * (float)delta);
+            if (movimiento > 0)
+                _distanciaEscalada += movimiento;
+
+            return (true, velocidad); // sin gravedad
+        }
+
+        return (false, default);
+    }
+
+    private Vector2 ProcesarAgarrarEscalera(Vector2 velocidad, InputJugador inputJugador)
+    {
+        if (_escaleraActual != null && !_agarradoEscalera && !Rodando)
+        {
+            if (inputJugador.ArribaPresionado || (inputJugador.AbajoPresionado && !_enSuelo))
+            {
+                _agarradoEscalera = true;
+                _coyoteFrames = 0;
+                velocidad = Vector2.Zero;
+                _distanciaEscalada = 0f;
+                _moviendoseEscaleraAnterior = false;
+            }
+        }
+
+        return velocidad;
+    }
+
+    private (bool, Vector2) ProcesarSaltoEnEscalera(ref Vector2 velocidad)
+    {
+        if (HayInputSalto())
+        {
+            _agarradoEscalera = false;
+            velocidad.Y = -VELOCIDAD_SALTO;
+            _coyoteFrames = 0;
+            _jumpBufferFrames = 0;
+
+            return (true, velocidad);
+        }
+        else
+        {
+            return (false, default);
+        }
+    }
+
 
     private Vector2 CancelarSalto(Vector2 velocidad)
     {
@@ -348,7 +440,7 @@ public partial class Jugador : CharacterBody2D
                 velocidad = CancelarSalto(velocidad);
             }
             // Jump cut: soltar salto antes de tiempo
-            else if (!inputJugador.SaltoMantenido)
+            else if (!inputJugador.Salto)
             {
                 velocidad = FrenarSalto(delta, velocidad);
             }
@@ -359,31 +451,42 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 CalcularMovimientoHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
-        ProcesarRodar(velocidad, inputJugador);
-        if (Rodando)
-            return MantenerVelocidadRodar(delta, velocidad);
+        (bool rodando, Vector2 velocidadRodar) = ProcesarRodar(delta, velocidad, inputJugador);
+        if (rodando)
+            return velocidadRodar;
 
         velocidad = AplicarAceleracionHorizontal(delta, velocidad, inputJugador);
 
+        CalcularDireccionSprite(velocidad);
+
+        return velocidad;
+    }
+
+    private void CalcularDireccionSprite(Vector2 velocidad)
+    {
         if (velocidad.X != 0)
         {
             AnimatedSprite2D.FlipH = velocidad.X < 0;
             _direccion = Mathf.Sign(velocidad.X);
         }
-
-        return velocidad;
     }
 
-    private void ProcesarRodar(Vector2 velocidad, InputJugador inputJugador)
+
+    private (bool, Vector2) ProcesarRodar(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         ActualizarRodar();
 
         if (_enSuelo)
         {
             // Si estamos en el suelo, queremos rodar y no estamos ya rodando, iniciamos el rodar.
-            if (inputJugador.Rodar && !Rodando)
+            if (inputJugador.RodarPresionado && !Rodando)
                 IniciarRodar(inputJugador);
         }
+
+        if (Rodando)
+            return (true, MantenerVelocidadRodar(delta, velocidad));
+        else
+            return (false, default);
     }
 
     private Vector2 MantenerVelocidadRodar(double delta, Vector2 velocidad)
@@ -494,6 +597,11 @@ public partial class Jugador : CharacterBody2D
 
     public EstadoLocomocionJugador CalcularEstadoLocomocion()
     {
+        if (_agarradoEscalera)
+        {
+            return EstadoLocomocionJugador.Escalando;
+        }
+
         if (_enSuelo)
         {
             return EstadoLocomocionJugador.EnSuelo;
@@ -503,8 +611,10 @@ public partial class Jugador : CharacterBody2D
         {
             return EstadoLocomocionJugador.Saltando;
         }
-
-        return EstadoLocomocionJugador.Cayendo;
+        else
+        {
+            return EstadoLocomocionJugador.Cayendo;
+        }
     }
 
     private void CambiarEstadoLocomocion(EstadoLocomocionJugador nuevoEstado)
@@ -548,6 +658,10 @@ public partial class Jugador : CharacterBody2D
                 case EstadoLocomocionJugador.Cayendo:
                     OnCayendo();
                     break;
+
+                case EstadoLocomocionJugador.Escalando:
+                    OnEscalando();
+                    break;
             }
         }
     }
@@ -582,6 +696,11 @@ public partial class Jugador : CharacterBody2D
         GD.Print("Jugador cayendo.");
     }
 
+    private void OnEscalando()
+    {
+        GD.Print("Jugador escalando.");
+    }
+
     private void ActualizarAnimacion(InputJugador inputJugador)
     {
         if (Rodando)
@@ -603,6 +722,10 @@ public partial class Jugador : CharacterBody2D
             case EstadoLocomocionJugador.Cayendo:
                 ActualizarAnimacionCayendo();
                 break;
+
+            case EstadoLocomocionJugador.Escalando:
+                ActualizarAnimacionEscalando(inputJugador);
+                break;
         }
     }
 
@@ -622,6 +745,37 @@ public partial class Jugador : CharacterBody2D
     private void ActualizarAnimacionCayendo()
     {
         ReproducirAnimacion(AnimacionJugador.Caer);
+    }
+
+    private void ActualizarAnimacionEscalando(InputJugador inputJugador)
+    {
+        bool moviendose = inputJugador.Arriba || inputJugador.Abajo;
+
+        ReproducirAnimacion(AnimacionJugador.Escalando);
+
+        if (moviendose)
+        {
+            // Al empezar a moverse, avanzar un frame inmediatamente
+            if (!_moviendoseEscaleraAnterior)
+            {
+                _frameEscalera = 1 - AnimatedSprite2D.Frame;
+                _distanciaEscalada = 0f; // resetear para que el siguiente cambio sea limpio
+            }
+            else
+            {
+                _distanciaEscalada += Mathf.Abs(Velocity.Y * (float)GetPhysicsProcessDeltaTime());
+
+                if (_distanciaEscalada >= DISTANCIA_CAMBIO_FRAME_ESCALAR)
+                {
+                    _distanciaEscalada -= DISTANCIA_CAMBIO_FRAME_ESCALAR;
+                    _frameEscalera = 1 - _frameEscalera;
+                }
+            }
+
+            AnimatedSprite2D.Frame = _frameEscalera;
+        }
+
+        _moviendoseEscaleraAnterior = moviendose;
     }
 
     private void ActualizarAnimacionRodando()
@@ -734,4 +888,23 @@ public partial class Jugador : CharacterBody2D
             this.Muerte();
     }
 
+    public void EntrarZonaEscalera(Escalera escalera)
+    {
+        if (escalera == null)
+            return;
+
+        _escaleraActual = escalera;
+    }
+
+    public void SalirZonaEscalera(Escalera escalera)
+    {
+        if (escalera == null)
+            return;
+
+        else if (_escaleraActual != escalera)
+            return;
+
+        _escaleraActual = null;
+        _agarradoEscalera = false;
+    }
 }

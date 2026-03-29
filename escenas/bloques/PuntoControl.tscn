@@ -1,13 +1,13 @@
-[gd_scene format=3 uid="uid://dpqxpve5euv4d"]
+[gd_scene format=3 uid="uid://jewi3xt8d0dd"]
 
-[ext_resource type="Script" uid="uid://dtkdaegkmtnxu" path="res://escenas/pantalla1/PuntoControl.cs" id="1_1x7st"]
 [ext_resource type="Texture2D" uid="uid://c4avgjwjec546" path="res://recursos/sprites/mundo/mundo_tileset.png" id="1_l2uso"]
+[ext_resource type="Script" uid="uid://dtkdaegkmtnxu" path="res://escenas/bloques/PuntoControl.cs" id="1_v6iyh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ilur8"]
 size = Vector2(16, 16)
 
 [node name="PuntoControl" type="Marker2D" unique_id=302288010]
-script = ExtResource("1_1x7st")
+script = ExtResource("1_v6iyh")
 
 [node name="Area2D" type="Area2D" parent="." unique_id=480066271]
 collision_layer = 0

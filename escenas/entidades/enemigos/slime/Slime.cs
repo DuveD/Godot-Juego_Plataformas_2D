@@ -6,7 +6,6 @@ namespace PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
 public partial class Slime : CharacterBody2D
 {
     #region Nodos
-
     private AnimatedSprite2D _animatedSprite2D;
     public CollisionShape2D CollisionShape2D;
     public RayCast2D DetectorParedDerecha;
@@ -15,11 +14,9 @@ public partial class Slime : CharacterBody2D
     public RayCast2D DetectorParedIzquierda;
     public RayCast2D DetectorSueloIzquierdaArriba;
     public RayCast2D DetectorSueloIzquierdaAbajo;
-
     #endregion
 
     #region Físicas
-
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
     [Export]
@@ -34,11 +31,9 @@ public partial class Slime : CharacterBody2D
 
     private const float ACELERACION_SUELO = 1000f;
     private const float ACELERACION_AIRE = 500f;
-
     #endregion
 
     #region Estado de locomoción
-
     /// <summary>
     /// Describe el estado físico vertical del jugador.
     /// </summary>
@@ -56,7 +51,6 @@ public partial class Slime : CharacterBody2D
     bool _enPared = false;
 
     private const float MULTIPLICADOR_CAIDA = 1.8f;
-
     #endregion
 
     #region Inputs
@@ -316,10 +310,10 @@ public partial class Slime : CharacterBody2D
 
     private void ActualizarAnimacionEnSuelo()
     {
-        if (true)//_direccion != 0)
-            ReproducirAnimacion(AnimacionEnemigo.Caminar);
-        else
-            ReproducirAnimacion(AnimacionEnemigo.Idle);
+        // if (_direccion != 0)
+        ReproducirAnimacion(AnimacionEnemigo.Caminar);
+        // else
+        //     ReproducirAnimacion(AnimacionEnemigo.Idle);
     }
 
     private void ActualizarAnimacionSaltando()

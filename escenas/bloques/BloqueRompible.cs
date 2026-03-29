@@ -1,7 +1,7 @@
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
-namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
+namespace PrimerjuegoPlataformas2D.escenas.bloques;
 
 public partial class BloqueRompible : StaticBody2D
 {

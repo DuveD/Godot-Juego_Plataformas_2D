@@ -1,20 +1,21 @@
 using Godot;
+using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
-namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
+namespace PrimerjuegoPlataformas2D.escenas.bloques;
 
 [Tool]
-public partial class Plataforma : StaticBody2D
+public partial class Escalera : Area2D
 {
     #region Exports
-    private int _ancho = 1;
+    private int _alto = 1;
 
     [Export]
-    public int Ancho
+    public int Alto
     {
-        get => _ancho;
+        get => _alto;
         set
         {
-            _ancho = Mathf.Max(1, value);
+            _alto = Mathf.Max(1, value);
             ActualizarTamano();
         }
     }
@@ -25,8 +26,8 @@ public partial class Plataforma : StaticBody2D
     public float LimiteTop => GlobalPosition.Y;
     public float LimiteBottom => GlobalPosition.Y + TamanoTotal();
     private int _tamanoTramo = 16;
-    private float TamanoTotal() => _tamanoTramo * _ancho;
-    private float _altoColision = 1f;
+    private float TamanoTotal() => _tamanoTramo * _alto;
+    private float _anchoColision = 16f;
     #endregion
 
     #region Nodos
@@ -48,9 +49,16 @@ public partial class Plataforma : StaticBody2D
         _collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
 
         if (_collisionShape?.Shape is RectangleShape2D rect)
-            _altoColision = rect.Size.Y;
+            _anchoColision = rect.Size.X;
 
         ActualizarTamano();
+
+        // En runtime conectamos el Area2D
+        if (!Engine.IsEditorHint())
+        {
+            this.BodyEntered += OnBodyEntered;
+            this.BodyExited += OnBodyExited;
+        }
     }
 
     #region Generación visual
@@ -77,7 +85,7 @@ public partial class Plataforma : StaticBody2D
     {
         LimpiarMedios();
 
-        if (_ancho == 1)
+        if (_alto == 1)
         {
             MostrarSolo(_spriteUnico);
             _spriteUnico.Position = new Vector2(0, 0);
@@ -91,14 +99,14 @@ public partial class Plataforma : StaticBody2D
         _spriteInicio.Visible = true;
         _spriteInicio.Position = new Vector2(0, 0);
 
-        if (Ancho > 2)
+        if (Alto > 2)
         {
             _contenedorMedio.Visible = true;
-            for (int i = 0; i < _ancho - 2; i++)
+            for (int i = 0; i < _alto - 2; i++)
             {
                 var medio = (Sprite2D)_templateMedio.Duplicate();
                 medio.Visible = true;
-                medio.Position = new Vector2(_tamanoTramo * (i + 1), 0);
+                medio.Position = new Vector2(0, _tamanoTramo * -(i + 1));
                 _contenedorMedio.AddChild(medio);
 
                 // Necesario para que aparezca en el editor con @tool
@@ -112,7 +120,7 @@ public partial class Plataforma : StaticBody2D
         }
 
         _spriteFin.Visible = true;
-        _spriteFin.Position = new Vector2(_tamanoTramo * (_ancho - 1), 0);
+        _spriteFin.Position = new Vector2(0, _tamanoTramo * -(_alto - 1));
     }
 
     private void LimpiarMedios()
@@ -148,12 +156,28 @@ public partial class Plataforma : StaticBody2D
             return;
 
         float tamano = TamanoTotal();
-        var rect = new RectangleShape2D();
-        rect.Size = new Vector2(tamano, _altoColision);
+        tamano = (tamano > _tamanoTramo) ? tamano - _tamanoTramo : tamano;
 
-        float offset = (tamano / 2 - _tamanoTramo / 2);
-        _collisionShape.Position = new Vector2(offset, -7.5f);
+        var rect = new RectangleShape2D();
+        rect.Size = new Vector2(_anchoColision, tamano);
+
+        float offset = (-tamano / 2 + _tamanoTramo / 2);
+        _collisionShape.Position = new Vector2(0, offset);
         _collisionShape.Shape = rect;
+    }
+    #endregion
+
+    #region Detección de jugador
+    private void OnBodyEntered(Node2D body)
+    {
+        if (body is Jugador jugador)
+            jugador.EntrarZonaEscalera(this);
+    }
+
+    private void OnBodyExited(Node2D body)
+    {
+        if (body is Jugador jugador)
+            jugador.SalirZonaEscalera(this);
     }
     #endregion
 }

@@ -1,7 +1,7 @@
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
-namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
+namespace PrimerjuegoPlataformas2D.escenas.bloques;
 
 public partial class PuntoControl : Marker2D
 {
@@ -9,6 +9,7 @@ public partial class PuntoControl : Marker2D
 	public bool Activado = false;
 
 	private Area2D _area2D;
+	private CollisionShape2D _collisionShape2D;
 	private Sprite2D _sprite2D;
 
 	[Export]
@@ -20,8 +21,10 @@ public partial class PuntoControl : Marker2D
 	public override void _Ready()
 	{
 		_area2D = GetNode<Area2D>("Area2D");
-		_area2D.BodyEntered += OnBodyEntered;
+		_collisionShape2D = _area2D.GetNode<CollisionShape2D>("CollisionShape2D");
 		_sprite2D = GetNode<Sprite2D>("Sprite2D");
+
+		_area2D.BodyEntered += OnBodyEntered;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -43,9 +46,15 @@ public partial class PuntoControl : Marker2D
 
 		jugador.PuntoControl = this;
 		Activado = true;
+		CallDeferred("DesactivarFisicas");
 
 		if (Animar)
 			ActivarAnimacion();
+	}
+
+	private void DesactivarFisicas()
+	{
+		_collisionShape2D.Disabled = true;
 	}
 
 	private void ActivarAnimacion()
