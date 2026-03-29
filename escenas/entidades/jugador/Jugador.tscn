@@ -357,14 +357,14 @@ animations = [{
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ueo0d"]
 radius = 4.5
-height = 16.0
+height = 15.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ueo0d"]
 size = Vector2(10, 4)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7jr6d"]
 radius = 4.5
-height = 16.0
+height = 15.0
 
 [node name="Jugador" type="CharacterBody2D" unique_id=495711804]
 position = Vector2(-1, 0)
@@ -378,7 +378,7 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=448350725]
-position = Vector2(0, -8)
+position = Vector2(0, -7.5)
 shape = SubResource("CapsuleShape2D_ueo0d")
 
 [node name="SensorSuelo" type="Area2D" parent="." unique_id=653536031]
@@ -391,5 +391,5 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=1085967192]
-position = Vector2(0, -8)
+position = Vector2(0, -7.5)
 shape = SubResource("CapsuleShape2D_7jr6d")

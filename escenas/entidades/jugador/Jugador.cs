@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
@@ -9,7 +8,7 @@ namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 public partial class Jugador : CharacterBody2D
 {
     #region Nodos
-    private AnimatedSprite2D _animatedSprite2D;
+    public AnimatedSprite2D AnimatedSprite2D;
     public CollisionShape2D CollisionShape2D;
     public Area2D SensorSuelo;
     private Camera2D _camera2D;
@@ -146,7 +145,7 @@ public partial class Jugador : CharacterBody2D
 
     public override void _Ready()
     {
-        this._animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        this.AnimatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         this.CollisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
         this.SensorSuelo = GetNode<Area2D>("SensorSuelo");
         this._camera2D = GetNode<Camera2D>("Camera2D");
@@ -170,16 +169,32 @@ public partial class Jugador : CharacterBody2D
 
         InputJugador inputJugador = ActualizarInputs();
 
-        velocidad = GestionarMovimientoHorizontal(delta, velocidad, inputJugador);
-        velocidad = GestionarMovimientoVertical(delta, velocidad, inputJugador);
+        velocidad = CalcularMovimientoHorizontal(delta, velocidad, inputJugador);
+        velocidad = CalcularMovimientoVertical(delta, velocidad, inputJugador);
 
         Velocity = velocidad;
 
         MoveAndSlide();
 
+        ComprobarContactoBloquesRompibles();
+
         EvaluarEstadoLocomocion();
         ActualizarAnimacion(inputJugador);
     }
+
+    private void ComprobarContactoBloquesRompibles()
+    {
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
+        {
+            KinematicCollision2D collision = GetSlideCollision(i);
+
+            if (collision.GetCollider() is BloqueRompible bloque)
+            {
+                bloque.TryBreak(this, collision.GetNormal());
+            }
+        }
+    }
+
 
     private InputJugador ActualizarInputs()
     {
@@ -219,7 +234,7 @@ public partial class Jugador : CharacterBody2D
             _jumpBufferFrames--;
     }
 
-    private Vector2 GestionarMovimientoVertical(double delta, Vector2 velocidad, InputJugador inputJugador)
+    private Vector2 CalcularMovimientoVertical(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         // Procesamos el salto.
         velocidad = ProcesarSalto(delta, velocidad, inputJugador);
@@ -342,7 +357,7 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private Vector2 GestionarMovimientoHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
+    private Vector2 CalcularMovimientoHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         ProcesarRodar(velocidad, inputJugador);
         if (Rodando)
@@ -352,7 +367,7 @@ public partial class Jugador : CharacterBody2D
 
         if (velocidad.X != 0)
         {
-            _animatedSprite2D.FlipH = velocidad.X < 0;
+            AnimatedSprite2D.FlipH = velocidad.X < 0;
             _direccion = Mathf.Sign(velocidad.X);
         }
 
@@ -619,10 +634,10 @@ public partial class Jugador : CharacterBody2D
 
     private void ReproducirAnimacion(AnimacionJugador animacion, bool forzarReproducir = false)
     {
-        if (_animatedSprite2D.Animation == animacion.Nombre && !forzarReproducir)
+        if (AnimatedSprite2D.Animation == animacion.Nombre && !forzarReproducir)
             return;
 
-        _animatedSprite2D.Play(animacion.Nombre);
+        AnimatedSprite2D.Play(animacion.Nombre);
     }
 
     public async void Muerte()
@@ -701,7 +716,7 @@ public partial class Jugador : CharacterBody2D
         // Movemos el jugador al últimpo punto de Spawn.
         this.Position = PuntoControl.GlobalPosition;
         this._direccion = PuntoControl.Direccion;
-        _animatedSprite2D.FlipH = _direccion < 0;
+        AnimatedSprite2D.FlipH = _direccion < 0;
     }
 
 
@@ -709,7 +724,7 @@ public partial class Jugador : CharacterBody2D
     {
         if (body is Slime)
         {
-            this.CallDeferred(nameof(OnBodyEnteredSlime));
+            OnBodyEnteredSlime();
         }
     }
 

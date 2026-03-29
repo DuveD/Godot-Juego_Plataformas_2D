@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://nqix86hip1uq"]
+
+[ext_resource type="Script" uid="uid://dvd0cfwlyfgnc" path="res://escenas/pantalla1/BloqueRompible.cs" id="1_4p0n0"]
+[ext_resource type="Texture2D" uid="uid://c4avgjwjec546" path="res://recursos/sprites/mundo/mundo_tileset.png" id="2_dkrlw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dkrlw"]
+size = Vector2(16, 16)
+
+[node name="BloqueRompible" type="StaticBody2D" unique_id=830140928]
+position = Vector2(1, 0)
+collision_mask = 0
+script = ExtResource("1_4p0n0")
+
+[node name="FragmentoArribaIzquierda" type="Sprite2D" parent="." unique_id=575301746]
+texture = ExtResource("2_dkrlw")
+region_enabled = true
+region_rect = Rect2(192, 0, 16, 16)
+
+[node name="FragmentoArribaDerecha" type="Sprite2D" parent="." unique_id=1893337004]
+texture = ExtResource("2_dkrlw")
+region_enabled = true
+region_rect = Rect2(208, 0, 16, 16)
+
+[node name="FragmentoAbajoIzquierda" type="Sprite2D" parent="." unique_id=1187595547]
+texture = ExtResource("2_dkrlw")
+region_enabled = true
+region_rect = Rect2(224, 0, 16, 16)
+
+[node name="FragmentoAbajoDerecha" type="Sprite2D" parent="." unique_id=1449867633]
+texture = ExtResource("2_dkrlw")
+region_enabled = true
+region_rect = Rect2(240, 0, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1628868097]
+shape = SubResource("RectangleShape2D_dkrlw")
