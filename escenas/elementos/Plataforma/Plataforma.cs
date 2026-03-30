@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
+namespace PrimerjuegoPlataformas2D.escenas.elementos.Plataforma;
 
 [Tool]
 public partial class Plataforma : AnimatableBody2D

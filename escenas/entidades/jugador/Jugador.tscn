@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ktccjb3bw8o2"]
 
 [ext_resource type="Texture2D" uid="uid://dtdemr5ppofaf" path="res://recursos/sprites/caballero/caballero.png" id="1_8hr1h"]
-[ext_resource type="Script" uid="uid://cpd45dy6cgjcf" path="res://escenas/entidades/jugador/Jugador.cs" id="1_rk7g7"]
+[ext_resource type="Script" uid="uid://cpd45dy6cgjcf" path="res://escenas/entidades/Jugador/Jugador.cs" id="1_rk7g7"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_78jlr"]
 atlas = ExtResource("1_8hr1h")
@@ -407,10 +407,8 @@ script = ExtResource("1_rk7g7")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601074081]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_a0tr0")
-animation = &"escalando"
+animation = &"idle"
 autoplay = "idle"
-frame = 1
-frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=448350725]
 position = Vector2(0, -7.5)

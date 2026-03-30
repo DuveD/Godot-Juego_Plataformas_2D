@@ -1,6 +1,6 @@
 using System;
 using Godot;
-using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+using PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public partial class ZonaMuerte : Area2D
 {

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bbabgv20g0cy3"]
 
-[ext_resource type="Script" uid="uid://c4mr0ke172tno" path="res://escenas/entidades/enemigos/slime/Slime.cs" id="1_4wxfh"]
+[ext_resource type="Script" uid="uid://c4mr0ke172tno" path="res://escenas/entidades/enemigos/Slime/Slime.cs" id="1_4wxfh"]
 [ext_resource type="Texture2D" uid="uid://cd261evhb0qq" path="res://recursos/sprites/slime/slime_verde.png" id="1_ujtjk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4wxfh"]

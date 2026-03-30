@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
 
 public partial class Slime : CharacterBody2D
 {

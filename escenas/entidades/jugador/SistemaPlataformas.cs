@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using PrimerjuegoPlataformas2D.escenas.pantalla1;
+using PrimerjuegoPlataformas2D.escenas.elementos.Plataforma;
 
-namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public partial class SistemaPlataformas : Node
 {

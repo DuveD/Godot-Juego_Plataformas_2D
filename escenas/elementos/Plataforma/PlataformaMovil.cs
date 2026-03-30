@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
-using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+using PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
-namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
+namespace PrimerjuegoPlataformas2D.escenas.elementos.Plataforma;
 
 [Tool]
 public partial class PlataformaMovil : Plataforma

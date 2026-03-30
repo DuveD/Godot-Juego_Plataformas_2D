@@ -1,4 +1,4 @@
-namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public readonly struct AnimacionJugador(string nombre)
 {

@@ -1,12 +1,11 @@
-using System;
 using System.Threading.Tasks;
 using Godot;
-using PrimerjuegoPlataformas2D.escenas.bloques;
-using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.slime;
+using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
 using BloqueRompible = PrimerjuegoPlataformas2D.escenas.bloques.BloqueRompible;
-using PuntoControl = PrimerjuegoPlataformas2D.escenas.bloques.PuntoControl;
+using Escalera = PrimerjuegoPlataformas2D.escenas.elementos.Escalera.Escalera;
+using PuntoControl = PrimerjuegoPlataformas2D.escenas.elementos.PuntoControl.PuntoControl;
 
-namespace PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public partial class Jugador : CharacterBody2D
 {

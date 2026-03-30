@@ -1,5 +1,5 @@
 using Godot;
-using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
+using PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 namespace PrimerjuegoPlataformas2D.escenas.bloques;
 
