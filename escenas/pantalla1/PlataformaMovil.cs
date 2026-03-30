@@ -43,6 +43,7 @@ public partial class PlataformaMovil : Plataforma
         set
         {
             field = value;
+            if (!IsNodeReady() || Engine.IsEditorHint()) return;
             Callable.From(() => _sensorJugador.ProcessMode = value ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled).CallDeferred();
         }
     } = false;
