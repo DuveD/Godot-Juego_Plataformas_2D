@@ -160,11 +160,59 @@ sources/0 = SubResource("TileSetAtlasSource_k2xlr")
 sources/1 = SubResource("TileSetAtlasSource_pa6up")
 sources/2 = SubResource("TileSetAtlasSource_hgoh6")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_k2xlr"]
-size = Vector2(16, 0.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_thhoc"]
+size = Vector2(32, 1)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hgoh6"]
-size = Vector2(16, 0.5)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ij7em"]
+size = Vector2(32, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yjk81"]
+size = Vector2(32, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eq6k0"]
+size = Vector2(32, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jov8f"]
+size = Vector2(32, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sitx7"]
+size = Vector2(32, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hn75g"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1dpe2"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gf3q2"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_no3nq"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5udwb"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_77x2r"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sr86f"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qrx8y"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_013q3"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hf555"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6olfw"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jkgan"]
+size = Vector2(16, 1)
 
 [node name="Pantalla1" type="Node2D" unique_id=787986626]
 
@@ -279,8 +327,9 @@ texture = ExtResource("4_ij7em")
 flip_h = true
 
 [node name="PuntoSpawnInicial" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
-position = Vector2(2480, -272)
+position = Vector2(-216, -64)
 Activado = true
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" parent="PuntoSpawnInicial/Area2D" parent_id_path=PackedInt32Array(302288010, 480066271) index="0" unique_id=852917073]
 disabled = true
@@ -359,40 +408,98 @@ rotation = -0.00012324427
 Movimiento = true
 PosicionA = Vector2(160, 24)
 PosicionB = Vector2(256, 24)
+Ancho = 2
 
-[node name="PlataformaMovil2" parent="." unique_id=1740930889 instance=ExtResource("4_hgoh6")]
+[node name="PlataformaMovilConCaida" parent="." unique_id=1740930889 instance=ExtResource("4_hgoh6")]
 position = Vector2(384, 24)
 Movimiento = true
 PosicionA = Vector2(288, 24)
 PosicionB = Vector2(384, 24)
 Caida = true
 TiempoEsperaCaida = 2.0
-metadata/_edit_group_ = true
+Ancho = 2
 
-[node name="Sprite2D" parent="PlataformaMovil2" index="0" unique_id=649151839]
-region_rect = Rect2(16, 16, 32, 9)
+[node name="CollisionShape2D" parent="PlataformaMovilConCaida/SensorJugador" parent_id_path=PackedInt32Array(1740930889, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_thhoc")
+
+[node name="CollisionShape2D" parent="PlataformaMovilConCaida" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_ij7em")
+
+[node name="SpriteInicio" parent="PlataformaMovilConCaida" index="2" unique_id=1446687518]
+visible = true
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="PlataformaMovilConCaida/SpritesMedio" parent_id_path=PackedInt32Array(1740930889, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="PlataformaMovilConCaida" index="4" unique_id=1599629374]
+visible = true
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="PlataformaMovilConCaida" index="5" unique_id=1169620103]
+visible = false
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="PlataformaMovil3" parent="." unique_id=2104790782 instance=ExtResource("4_hgoh6")]
-position = Vector2(418, 24)
+position = Vector2(416, 24)
 Movimiento = true
 PosicionA = Vector2(416, 24)
 PosicionB = Vector2(512, 24)
+Ancho = 2
 
 [node name="PlataformaCaida4" parent="." unique_id=665399246 instance=ExtResource("4_hgoh6")]
 position = Vector2(176, 72)
+FrenarAlLlegar = false
 Caida = true
-metadata/_edit_group_ = true
+Ancho = 2
 
-[node name="Sprite2D" parent="PlataformaCaida4" index="0" unique_id=649151839]
-region_rect = Rect2(16, 16, 32, 9)
+[node name="CollisionShape2D" parent="PlataformaCaida4/SensorJugador" parent_id_path=PackedInt32Array(665399246, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_yjk81")
+
+[node name="CollisionShape2D" parent="PlataformaCaida4" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_eq6k0")
+
+[node name="SpriteInicio" parent="PlataformaCaida4" index="2" unique_id=1446687518]
+visible = true
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="PlataformaCaida4/SpritesMedio" parent_id_path=PackedInt32Array(665399246, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="PlataformaCaida4" index="4" unique_id=1599629374]
+visible = true
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="PlataformaCaida4" index="5" unique_id=1169620103]
+visible = false
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="PlataformaCaida3" parent="." unique_id=1485536605 instance=ExtResource("4_hgoh6")]
 position = Vector2(192, 120)
+FrenarAlLlegar = false
 Caida = true
-metadata/_edit_group_ = true
+Ancho = 2
 
-[node name="Sprite2D" parent="PlataformaCaida3" index="0" unique_id=649151839]
-region_rect = Rect2(16, 16, 32, 9)
+[node name="CollisionShape2D" parent="PlataformaCaida3/SensorJugador" parent_id_path=PackedInt32Array(1485536605, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_jov8f")
+
+[node name="CollisionShape2D" parent="PlataformaCaida3" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_sitx7")
+
+[node name="SpriteInicio" parent="PlataformaCaida3" index="2" unique_id=1446687518]
+visible = true
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="PlataformaCaida3/SpritesMedio" parent_id_path=PackedInt32Array(1485536605, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="PlataformaCaida3" index="4" unique_id=1599629374]
+visible = true
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="PlataformaCaida3" index="5" unique_id=1169620103]
+visible = false
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="Isla3" type="Node2D" parent="." unique_id=1916884601]
 position = Vector2(560, 48)
@@ -437,23 +544,28 @@ z_index = 10
 tile_map_data = PackedByteArray("AAD+//j/AgACAAQAAAD+//n/AgACAAUAAAD+//r/AgACAAYAAAD///j/AgADAAQAAAD///n/AgADAAUAAAD///r/AgADAAYAAAD///v/AgADAAcAAAAAAPj/AgAEAAQAAAAAAPn/AgAEAAUAAAAAAPr/AgAEAAYAAAD///z/AgADAAgAAAD///3/AgADAAcAAAA=")
 tile_set = SubResource("TileSet_itltq")
 
-[node name="PlataformaCaida5" parent="." unique_id=516497769 instance=ExtResource("4_hgoh6")]
-position = Vector2(760, 24)
+[node name="PlataformaMovilConCaida" parent="Isla4" unique_id=1329258565 instance=ExtResource("4_hgoh6")]
+position = Vector2(104, -8)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida5" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla4/PlataformaMovilConCaida/SensorJugador" parent_id_path=PackedInt32Array(1329258565, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_hn75g")
 
-[node name="CollisionShape2D" parent="PlataformaCaida5" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla4/PlataformaMovilConCaida" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_1dpe2")
 
-[node name="CollisionShape2D" parent="PlataformaCaida5/SensorJugador" parent_id_path=PackedInt32Array(516497769, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla4/PlataformaMovilConCaida" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="Isla4/PlataformaMovilConCaida/SpritesMedio" parent_id_path=PackedInt32Array(1329258565, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla4/PlataformaMovilConCaida" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla4/PlataformaMovilConCaida" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="Isla5" type="Node2D" parent="." unique_id=1060620682]
 position = Vector2(864, 96)
@@ -481,41 +593,51 @@ tile_set = SubResource("TileSet_itltq")
 [node name="PuntoControl" parent="Isla5" unique_id=1696714220 instance=ExtResource("5_ilur8")]
 position = Vector2(136, -64)
 
-[node name="PlataformaCaida6" parent="." unique_id=329569245 instance=ExtResource("4_hgoh6")]
-position = Vector2(1064, 48)
+[node name="PlataformaMovilConCaida" parent="Isla5" unique_id=873355973 instance=ExtResource("4_hgoh6")]
+position = Vector2(200, -65)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida6" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla5/PlataformaMovilConCaida/SensorJugador" parent_id_path=PackedInt32Array(873355973, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_gf3q2")
 
-[node name="CollisionShape2D" parent="PlataformaCaida6" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla5/PlataformaMovilConCaida" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_no3nq")
 
-[node name="CollisionShape2D" parent="PlataformaCaida6/SensorJugador" parent_id_path=PackedInt32Array(329569245, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla5/PlataformaMovilConCaida" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
 
-[node name="PlataformaCaida7" parent="." unique_id=741987467 instance=ExtResource("4_hgoh6")]
-position = Vector2(1112, 32)
+[node name="Template" parent="Isla5/PlataformaMovilConCaida/SpritesMedio" parent_id_path=PackedInt32Array(873355973, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla5/PlataformaMovilConCaida" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla5/PlataformaMovilConCaida" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
+
+[node name="PlataformaMovilConCaida2" parent="Isla5" unique_id=1285052485 instance=ExtResource("4_hgoh6")]
+position = Vector2(248, -80)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida7" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla5/PlataformaMovilConCaida2/SensorJugador" parent_id_path=PackedInt32Array(1285052485, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_5udwb")
 
-[node name="CollisionShape2D" parent="PlataformaCaida7" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla5/PlataformaMovilConCaida2" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_77x2r")
 
-[node name="CollisionShape2D" parent="PlataformaCaida7/SensorJugador" parent_id_path=PackedInt32Array(741987467, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla5/PlataformaMovilConCaida2" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="Isla5/PlataformaMovilConCaida2/SpritesMedio" parent_id_path=PackedInt32Array(1285052485, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla5/PlataformaMovilConCaida2" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla5/PlataformaMovilConCaida2" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="Isla6" type="Node2D" parent="." unique_id=1133835595]
 position = Vector2(1184, 48)
@@ -537,59 +659,74 @@ tile_set = SubResource("TileSet_itltq")
 z_index = 10
 tile_set = SubResource("TileSet_itltq")
 
-[node name="PlataformaCaida8" parent="." unique_id=294777511 instance=ExtResource("4_hgoh6")]
-position = Vector2(1240, 16)
+[node name="PlataformaMovilConCaida" parent="Isla6" unique_id=1656248358 instance=ExtResource("4_hgoh6")]
+position = Vector2(64, -25)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida8" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida/SensorJugador" parent_id_path=PackedInt32Array(1656248358, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_sr86f")
 
-[node name="CollisionShape2D" parent="PlataformaCaida8" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_qrx8y")
 
-[node name="CollisionShape2D" parent="PlataformaCaida8/SensorJugador" parent_id_path=PackedInt32Array(294777511, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla6/PlataformaMovilConCaida" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
 
-[node name="PlataformaCaida9" parent="." unique_id=446953251 instance=ExtResource("4_hgoh6")]
-position = Vector2(1289, 0)
+[node name="Template" parent="Isla6/PlataformaMovilConCaida/SpritesMedio" parent_id_path=PackedInt32Array(1656248358, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla6/PlataformaMovilConCaida" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla6/PlataformaMovilConCaida" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
+
+[node name="PlataformaMovilConCaida2" parent="Isla6" unique_id=2098804562 instance=ExtResource("4_hgoh6")]
+position = Vector2(120, -33)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida9" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida2/SensorJugador" parent_id_path=PackedInt32Array(2098804562, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_013q3")
 
-[node name="CollisionShape2D" parent="PlataformaCaida9" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida2" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_hf555")
 
-[node name="CollisionShape2D" parent="PlataformaCaida9/SensorJugador" parent_id_path=PackedInt32Array(446953251, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla6/PlataformaMovilConCaida2" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
 
-[node name="PlataformaCaida10" parent="." unique_id=701415542 instance=ExtResource("4_hgoh6")]
-position = Vector2(1352, 8)
+[node name="Template" parent="Isla6/PlataformaMovilConCaida2/SpritesMedio" parent_id_path=PackedInt32Array(2098804562, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla6/PlataformaMovilConCaida2" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla6/PlataformaMovilConCaida2" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
+
+[node name="PlataformaMovilConCaida3" parent="Isla6" unique_id=1970962143 instance=ExtResource("4_hgoh6")]
+position = Vector2(176, -39)
+FrenarAlLlegar = false
 Caida = true
-TiempoEsperaCaida = 0.5
-metadata/_edit_group_ = true
 
-[node name="Sprite2D" parent="PlataformaCaida10" index="0" unique_id=649151839]
-position = Vector2(7.6293945e-06, -4)
-scale = Vector2(0.99999905, 0.8888889)
-region_rect = Rect2(0, 16, 16, 9)
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida3/SensorJugador" parent_id_path=PackedInt32Array(1970962143, 912158850) index="0" unique_id=366910657]
+shape = SubResource("RectangleShape2D_6olfw")
 
-[node name="CollisionShape2D" parent="PlataformaCaida10" index="1" unique_id=766896365]
-shape = SubResource("RectangleShape2D_k2xlr")
+[node name="CollisionShape2D" parent="Isla6/PlataformaMovilConCaida3" index="1" unique_id=625737474]
+shape = SubResource("RectangleShape2D_jkgan")
 
-[node name="CollisionShape2D" parent="PlataformaCaida10/SensorJugador" parent_id_path=PackedInt32Array(701415542, 912158850) index="0" unique_id=366910657]
-position = Vector2(0, -8.25)
-shape = SubResource("RectangleShape2D_hgoh6")
+[node name="SpriteInicio" parent="Isla6/PlataformaMovilConCaida3" index="2" unique_id=1446687518]
+region_rect = Rect2(16, 16, 16, 16)
+
+[node name="Template" parent="Isla6/PlataformaMovilConCaida3/SpritesMedio" parent_id_path=PackedInt32Array(1970962143, 1538173659) index="0" unique_id=849420620]
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="SpriteFin" parent="Isla6/PlataformaMovilConCaida3" index="4" unique_id=1599629374]
+region_rect = Rect2(48, 16, 16, 16)
+
+[node name="SpriteUnico" parent="Isla6/PlataformaMovilConCaida3" index="5" unique_id=1169620103]
+region_rect = Rect2(0, 16, 16, 16)
 
 [node name="Isla7" type="Node2D" parent="." unique_id=1903472396]
 position = Vector2(1424, 40)
@@ -635,7 +772,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil4" parent="PlataformasDescendentes" unique_id=1087386757 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -224)
@@ -645,7 +782,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasDescendentes" unique_id=115556807 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -160)
@@ -655,7 +792,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasDescendentes" unique_id=1373214480 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -96)
@@ -665,7 +802,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasDescendentes" unique_id=1236884379 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -32)
@@ -675,7 +812,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasDescendentes" unique_id=1479035193 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 32)
@@ -685,7 +822,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasDescendentes" unique_id=939469788 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 96)
@@ -695,7 +832,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasDescendentes" unique_id=1222606332 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 160)
@@ -705,7 +842,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasDescendentes" unique_id=1033407629 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 224)
@@ -715,7 +852,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasDescendentes" unique_id=217898160 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 288)
@@ -725,7 +862,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasDescendentes" unique_id=1459338829 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 352)
@@ -735,7 +872,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasDescendentes" unique_id=2116730469 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 416)
@@ -745,7 +882,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="Isla8" type="Node2D" parent="." unique_id=1009428104]
 position = Vector2(2000, -48)
@@ -798,7 +935,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasAscendentes" unique_id=1681932114 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -160)
@@ -808,7 +945,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasAscendentes" unique_id=100367983 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -96)
@@ -818,7 +955,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasAscendentes" unique_id=983980993 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -32)
@@ -828,7 +965,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasAscendentes" unique_id=351707361 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 32)
@@ -838,7 +975,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasAscendentes" unique_id=1443316952 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 96)
@@ -848,7 +985,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasAscendentes" unique_id=1868769844 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 160)
@@ -858,7 +995,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasAscendentes" unique_id=150660983 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 224)
@@ -868,7 +1005,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasAscendentes" unique_id=529609543 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 288)
@@ -878,7 +1015,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasAscendentes" unique_id=1349452052 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 352)
@@ -888,7 +1025,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasAscendentes" unique_id=308349033 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 416)
@@ -898,7 +1035,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil15" parent="PlataformasAscendentes" unique_id=1619293628 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 480)
@@ -908,7 +1045,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="Isla9" type="Node2D" parent="." unique_id=996074802]
 position = Vector2(2144, -144)
@@ -943,7 +1080,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil4" parent="PlataformasDescendentes2" unique_id=223226547 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -224)
@@ -953,7 +1090,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasDescendentes2" unique_id=1829767701 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -160)
@@ -963,7 +1100,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasDescendentes2" unique_id=820104817 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -96)
@@ -973,7 +1110,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasDescendentes2" unique_id=604131869 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -32)
@@ -983,7 +1120,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasDescendentes2" unique_id=651024861 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 32)
@@ -993,7 +1130,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasDescendentes2" unique_id=1528724165 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 96)
@@ -1003,7 +1140,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasDescendentes2" unique_id=694056815 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 160)
@@ -1013,7 +1150,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasDescendentes2" unique_id=722126530 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 224)
@@ -1023,7 +1160,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasDescendentes2" unique_id=1235417805 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 288)
@@ -1033,7 +1170,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasDescendentes2" unique_id=438167861 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 352)
@@ -1043,7 +1180,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasDescendentes2" unique_id=43700908 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 416)
@@ -1053,7 +1190,7 @@ PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformasAscendentes2" type="Node2D" parent="." unique_id=2078858563]
 position = Vector2(2336, -64)
@@ -1067,7 +1204,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasAscendentes2" unique_id=305459127 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -160)
@@ -1077,7 +1214,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasAscendentes2" unique_id=1490530152 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -96)
@@ -1087,7 +1224,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasAscendentes2" unique_id=1670708076 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, -32)
@@ -1097,7 +1234,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasAscendentes2" unique_id=74222561 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 32)
@@ -1107,7 +1244,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasAscendentes2" unique_id=960999405 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 96)
@@ -1117,7 +1254,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasAscendentes2" unique_id=1592726337 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 160)
@@ -1127,7 +1264,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasAscendentes2" unique_id=753567428 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 224)
@@ -1137,7 +1274,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasAscendentes2" unique_id=1326481075 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 288)
@@ -1147,7 +1284,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasAscendentes2" unique_id=1850061321 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 352)
@@ -1157,7 +1294,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasAscendentes2" unique_id=821607216 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 416)
@@ -1167,7 +1304,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="PlataformaMovil15" parent="PlataformasAscendentes2" unique_id=1247899765 instance=ExtResource("4_hgoh6")]
 position = Vector2(0, 480)
@@ -1177,7 +1314,7 @@ PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
 Aceleracion = 40.0
-metadata/_edit_group_ = true
+Ancho = 2
 
 [node name="Isla10" type="Node2D" parent="." unique_id=564510359]
 position = Vector2(2592, -192)
@@ -1214,12 +1351,12 @@ position = Vector2(2712, -184)
 Alto = 8
 
 [editable path="PuntoSpawnInicial"]
-[editable path="PlataformaMovil2"]
+[editable path="PlataformaMovilConCaida"]
 [editable path="PlataformaCaida4"]
 [editable path="PlataformaCaida3"]
-[editable path="PlataformaCaida5"]
-[editable path="PlataformaCaida6"]
-[editable path="PlataformaCaida7"]
-[editable path="PlataformaCaida8"]
-[editable path="PlataformaCaida9"]
-[editable path="PlataformaCaida10"]
+[editable path="Isla4/PlataformaMovilConCaida"]
+[editable path="Isla5/PlataformaMovilConCaida"]
+[editable path="Isla5/PlataformaMovilConCaida2"]
+[editable path="Isla6/PlataformaMovilConCaida"]
+[editable path="Isla6/PlataformaMovilConCaida2"]
+[editable path="Isla6/PlataformaMovilConCaida3"]

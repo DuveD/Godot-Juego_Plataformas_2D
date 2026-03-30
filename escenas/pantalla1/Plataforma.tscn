@@ -9,7 +9,7 @@ size = Vector2(16, 1)
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pa6up"]
 load_path = "res://.godot/imported/plataformas.png-3f5f873ae9bf4fe95e0329466436ab40.ctex"
 
-[node name="Plataforma" type="StaticBody2D" unique_id=987337931]
+[node name="Plataforma" type="AnimatableBody2D" unique_id=2077931059]
 position = Vector2(8, 8)
 script = ExtResource("1_x2byh")
 metadata/_edit_group_ = true
@@ -23,6 +23,7 @@ one_way_collision = true
 [node name="SpriteInicio" type="Sprite2D" parent="." unique_id=701869653]
 visible = false
 z_index = -10
+position = Vector2(-8, 0)
 texture = ExtResource("2_ttaem")
 region_enabled = true
 region_rect = Rect2(16, 0, 16, 16)
@@ -41,7 +42,7 @@ region_rect = Rect2(32, 0, 16, 16)
 [node name="SpriteFin" type="Sprite2D" parent="." unique_id=1860652933]
 visible = false
 z_index = -10
-position = Vector2(16, 0)
+position = Vector2(8, 0)
 texture = ExtResource("2_ttaem")
 region_enabled = true
 region_rect = Rect2(48, 0, 16, 16)

@@ -1,10 +1,12 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 using PrimerjuegoPlataformas2D.escenas.entidades.jugador;
 
 namespace PrimerjuegoPlataformas2D.escenas.pantalla1;
 
+[Tool]
 public partial class PlataformaMovil : Plataforma
 {
     [Export]
@@ -57,20 +59,22 @@ public partial class PlataformaMovil : Plataforma
     private float _timer = 0f;
 
     #region Animaciones
-    private Tween _tweenTemblor;
     private Vector2 _offsetTemblor = Vector2.Zero;
     #endregion
 
     private Area2D _sensorJugador;
-    private CollisionShape2D _collisionShape2D;
-    private Sprite2D _sprite;
+    protected CollisionShape2D _collisionShape2DSensorJugador;
 
     public override void _Ready()
     {
         _posicionMovimiento = PosicionInicial = _posicionAnterior = Position;
         _sensorJugador = GetNode<Area2D>("SensorJugador");
-        _collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
-        _sprite = GetNode<Sprite2D>("Sprite2D"); // ajusta el nombre si es distinto
+        _collisionShape2DSensorJugador = GetNode<CollisionShape2D>("SensorJugador/CollisionShape2D");
+
+        base._Ready();
+
+        if (Engine.IsEditorHint())
+            SetPhysicsProcess(false);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -272,46 +276,84 @@ public partial class PlataformaMovil : Plataforma
         _estado = EstadoPlataforma.Normal;
     }
 
+    private List<Tween> _tweensTemblor;
+
     private void IniciarAnimacionTemblor()
     {
         _animacionTemblorIniciado = true;
 
-        _tweenTemblor?.Kill();
-        _tweenTemblor = CreateTween().SetLoops();
-        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+        _tweensTemblor?.ForEach(t => t.Kill());
+        _tweensTemblor = new List<Tween>();
+
+        foreach (var sprite in _sprites)
         {
-            _sprite.Offset = offset;
-        }), Vector2.Zero, new Vector2(3, 0), 0.05f);
-        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
-        {
-            _sprite.Offset = offset;
-        }), new Vector2(3, 0), new Vector2(-3, 0), 0.05f);
-        _tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
-        {
-            _sprite.Offset = offset;
-        }), new Vector2(-3, 0), Vector2.Zero, 0.05f);
+            var tweenTemblor = CreateTween().SetLoops();
+            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+            {
+                sprite.Offset = offset;
+            }), Vector2.Zero, new Vector2(3, 0), 0.05f);
+            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+            {
+                sprite.Offset = offset;
+            }), new Vector2(3, 0), new Vector2(-3, 0), 0.05f);
+            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
+            {
+                sprite.Offset = offset;
+            }), new Vector2(-3, 0), Vector2.Zero, 0.05f);
+
+            _tweensTemblor.Add(tweenTemblor);
+        }
     }
 
     private void DetenerAnimacionTemblor()
     {
         _animacionTemblorIniciado = false;
 
-        _tweenTemblor?.Kill();
-        _tweenTemblor = null;
-        _sprite.Offset = Vector2.Zero;
+        _tweensTemblor?.ForEach(t => t.Kill());
+        _tweensTemblor = null;
+        _sprites.ForEach(s => s.Offset = Vector2.Zero);
     }
 
     private void IniciarAnimacionDesvanecimiento()
     {
         _animacionDesvanecimientoIniciada = true;
-        var tween = CreateTween();
-        tween.TweenProperty(_sprite, "modulate:a", 0f, TiempoCayendo * 0.1f);
+        foreach (var sprite in _sprites)
+        {
+            var tween = CreateTween();
+            tween.TweenProperty(sprite, "modulate:a", 0f, TiempoCayendo * 0.1f);
+        }
     }
 
     private void RestablecerSprite()
     {
         _animacionDesvanecimientoIniciada = false;
-        _sprite.Modulate = Colors.White;
-        _sprite.Offset = Vector2.Zero;
+        _sprites.ForEach(s => s.Modulate = Colors.White);
+        _sprites.ForEach(s => s.Offset = Vector2.Zero);
     }
+
+    protected override void ActualizarTamano()
+    {
+        if (!IsInsideTree())
+            return;
+
+        _collisionShape2DSensorJugador ??= GetNode<CollisionShape2D>("SensorJugador/CollisionShape2D");
+
+        base.ActualizarTamano();
+
+        ActualizarColisionSensorJugador();
+    }
+
+    private void ActualizarColisionSensorJugador()
+    {
+        if (_collisionShape2DSensorJugador == null)
+            return;
+
+        float tamano = TamanoTotal();
+        var rect = new RectangleShape2D();
+        rect.Size = new Vector2(tamano, _altoColision);
+
+        _collisionShape2DSensorJugador.Position = new Vector2(0, -8.5f);
+        _collisionShape2DSensorJugador.Shape = rect;
+    }
+
 }

@@ -1,40 +1,66 @@
 [gd_scene format=3 uid="uid://b0652biokeqhd"]
 
 [ext_resource type="Script" uid="uid://bt8hatv13ytuo" path="res://escenas/pantalla1/PlataformaMovil.cs" id="1_a5xcf"]
+[ext_resource type="Texture2D" uid="uid://cmcu17lqdcapa" path="res://recursos/sprites/plataformas/plataformas.png" id="2_fjon0"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pa6up"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pa6up"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fjon0"]
+size = Vector2(16, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oqk18"]
+size = Vector2(16, 1)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3ri3k"]
 load_path = "res://.godot/imported/plataformas.png-3f5f873ae9bf4fe95e0329466436ab40.ctex"
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pa6up"]
-size = Vector2(32, 0.5)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a5xcf"]
-size = Vector2(32, 1)
-
-[node name="PlataformaMovil" type="AnimatableBody2D" unique_id=529609543]
-position = Vector2(16, 4.5)
+[node name="PlataformaMovil" type="AnimatableBody2D" unique_id=1329258565]
+position = Vector2(8, 8)
 physics_material_override = SubResource("PhysicsMaterial_pa6up")
 script = ExtResource("1_a5xcf")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=649151839]
-position = Vector2(0, -4)
-scale = Vector2(1, 0.8888889)
-texture = SubResource("CompressedTexture2D_pa6up")
-region_enabled = true
-region_rect = Rect2(16, 0, 32, 9)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=766896365]
-z_index = -10
-position = Vector2(0, -7.75)
-shape = SubResource("RectangleShape2D_pa6up")
-one_way_collision = true
+metadata/_edit_group_ = true
 
 [node name="SensorJugador" type="Area2D" parent="." unique_id=912158850]
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SensorJugador" unique_id=366910657]
 position = Vector2(0, -8.5)
-shape = SubResource("RectangleShape2D_a5xcf")
+shape = SubResource("RectangleShape2D_fjon0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=625737474]
+z_index = -10
+position = Vector2(0, -7.5)
+shape = SubResource("RectangleShape2D_oqk18")
 one_way_collision = true
+
+[node name="SpriteInicio" type="Sprite2D" parent="." unique_id=1446687518]
+visible = false
+z_index = -10
+position = Vector2(-8, 0)
+texture = ExtResource("2_fjon0")
+region_enabled = true
+region_rect = Rect2(16, 0, 16, 16)
+
+[node name="SpritesMedio" type="Node2D" parent="." unique_id=1538173659]
+visible = false
+
+[node name="Template" type="Sprite2D" parent="SpritesMedio" unique_id=849420620]
+visible = false
+z_index = -10
+position = Vector2(8, 0)
+texture = ExtResource("2_fjon0")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+
+[node name="SpriteFin" type="Sprite2D" parent="." unique_id=1599629374]
+visible = false
+z_index = -10
+position = Vector2(8, 0)
+texture = ExtResource("2_fjon0")
+region_enabled = true
+region_rect = Rect2(48, 0, 16, 16)
+
+[node name="SpriteUnico" type="Sprite2D" parent="." unique_id=1169620103]
+texture = SubResource("CompressedTexture2D_3ri3k")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
