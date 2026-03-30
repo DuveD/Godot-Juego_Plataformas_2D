@@ -328,11 +328,11 @@ flip_h = true
 
 [node name="PuntoSpawnInicial" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
 position = Vector2(-216, -64)
-Activado = true
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" parent="PuntoSpawnInicial/Area2D" parent_id_path=PackedInt32Array(302288010, 480066271) index="0" unique_id=852917073]
-disabled = true
+[node name="Area2D" parent="PuntoSpawnInicial" index="0" unique_id=480066271]
+process_mode = 4
+visible = false
 
 [node name="Sprite2D" parent="PuntoSpawnInicial" index="1" unique_id=1216706036]
 visible = false
@@ -416,7 +416,6 @@ Movimiento = true
 PosicionA = Vector2(288, 24)
 PosicionB = Vector2(384, 24)
 Caida = true
-TiempoEsperaCaida = 2.0
 Ancho = 2
 
 [node name="CollisionShape2D" parent="PlataformaMovilConCaida/SensorJugador" parent_id_path=PackedInt32Array(1740930889, 912158850) index="0" unique_id=366910657]
@@ -771,7 +770,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil4" parent="PlataformasDescendentes" unique_id=1087386757 instance=ExtResource("4_hgoh6")]
@@ -781,7 +779,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasDescendentes" unique_id=115556807 instance=ExtResource("4_hgoh6")]
@@ -791,7 +788,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasDescendentes" unique_id=1373214480 instance=ExtResource("4_hgoh6")]
@@ -801,7 +797,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasDescendentes" unique_id=1236884379 instance=ExtResource("4_hgoh6")]
@@ -811,7 +806,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasDescendentes" unique_id=1479035193 instance=ExtResource("4_hgoh6")]
@@ -821,7 +815,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasDescendentes" unique_id=939469788 instance=ExtResource("4_hgoh6")]
@@ -831,7 +824,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasDescendentes" unique_id=1222606332 instance=ExtResource("4_hgoh6")]
@@ -841,7 +833,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasDescendentes" unique_id=1033407629 instance=ExtResource("4_hgoh6")]
@@ -851,7 +842,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasDescendentes" unique_id=217898160 instance=ExtResource("4_hgoh6")]
@@ -861,7 +851,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasDescendentes" unique_id=1459338829 instance=ExtResource("4_hgoh6")]
@@ -871,7 +860,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasDescendentes" unique_id=2116730469 instance=ExtResource("4_hgoh6")]
@@ -881,7 +869,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="Isla8" type="Node2D" parent="." unique_id=1009428104]
@@ -934,7 +921,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasAscendentes" unique_id=1681932114 instance=ExtResource("4_hgoh6")]
@@ -944,7 +930,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasAscendentes" unique_id=100367983 instance=ExtResource("4_hgoh6")]
@@ -954,7 +939,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasAscendentes" unique_id=983980993 instance=ExtResource("4_hgoh6")]
@@ -964,7 +948,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasAscendentes" unique_id=351707361 instance=ExtResource("4_hgoh6")]
@@ -974,7 +957,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasAscendentes" unique_id=1443316952 instance=ExtResource("4_hgoh6")]
@@ -984,7 +966,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasAscendentes" unique_id=1868769844 instance=ExtResource("4_hgoh6")]
@@ -994,7 +975,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasAscendentes" unique_id=150660983 instance=ExtResource("4_hgoh6")]
@@ -1004,7 +984,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasAscendentes" unique_id=529609543 instance=ExtResource("4_hgoh6")]
@@ -1014,7 +993,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasAscendentes" unique_id=1349452052 instance=ExtResource("4_hgoh6")]
@@ -1024,7 +1002,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasAscendentes" unique_id=308349033 instance=ExtResource("4_hgoh6")]
@@ -1034,7 +1011,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil15" parent="PlataformasAscendentes" unique_id=1619293628 instance=ExtResource("4_hgoh6")]
@@ -1044,7 +1020,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="Isla9" type="Node2D" parent="." unique_id=996074802]
@@ -1079,7 +1054,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil4" parent="PlataformasDescendentes2" unique_id=223226547 instance=ExtResource("4_hgoh6")]
@@ -1089,7 +1063,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasDescendentes2" unique_id=1829767701 instance=ExtResource("4_hgoh6")]
@@ -1099,7 +1072,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasDescendentes2" unique_id=820104817 instance=ExtResource("4_hgoh6")]
@@ -1109,7 +1081,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasDescendentes2" unique_id=604131869 instance=ExtResource("4_hgoh6")]
@@ -1119,7 +1090,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasDescendentes2" unique_id=651024861 instance=ExtResource("4_hgoh6")]
@@ -1129,7 +1099,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasDescendentes2" unique_id=1528724165 instance=ExtResource("4_hgoh6")]
@@ -1139,7 +1108,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasDescendentes2" unique_id=694056815 instance=ExtResource("4_hgoh6")]
@@ -1149,7 +1117,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasDescendentes2" unique_id=722126530 instance=ExtResource("4_hgoh6")]
@@ -1159,7 +1126,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasDescendentes2" unique_id=1235417805 instance=ExtResource("4_hgoh6")]
@@ -1169,7 +1135,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasDescendentes2" unique_id=438167861 instance=ExtResource("4_hgoh6")]
@@ -1179,7 +1144,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasDescendentes2" unique_id=43700908 instance=ExtResource("4_hgoh6")]
@@ -1189,7 +1153,6 @@ Unidireccional = true
 PosicionA = Vector2(0, -288)
 PosicionB = Vector2(0, 480)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformasAscendentes2" type="Node2D" parent="." unique_id=2078858563]
@@ -1203,7 +1166,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil5" parent="PlataformasAscendentes2" unique_id=305459127 instance=ExtResource("4_hgoh6")]
@@ -1213,7 +1175,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil6" parent="PlataformasAscendentes2" unique_id=1490530152 instance=ExtResource("4_hgoh6")]
@@ -1223,7 +1184,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil7" parent="PlataformasAscendentes2" unique_id=1670708076 instance=ExtResource("4_hgoh6")]
@@ -1233,7 +1193,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil8" parent="PlataformasAscendentes2" unique_id=74222561 instance=ExtResource("4_hgoh6")]
@@ -1243,7 +1202,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil9" parent="PlataformasAscendentes2" unique_id=960999405 instance=ExtResource("4_hgoh6")]
@@ -1253,7 +1211,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil10" parent="PlataformasAscendentes2" unique_id=1592726337 instance=ExtResource("4_hgoh6")]
@@ -1263,7 +1220,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil11" parent="PlataformasAscendentes2" unique_id=753567428 instance=ExtResource("4_hgoh6")]
@@ -1273,7 +1229,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil12" parent="PlataformasAscendentes2" unique_id=1326481075 instance=ExtResource("4_hgoh6")]
@@ -1283,7 +1238,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil13" parent="PlataformasAscendentes2" unique_id=1850061321 instance=ExtResource("4_hgoh6")]
@@ -1293,7 +1247,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil14" parent="PlataformasAscendentes2" unique_id=821607216 instance=ExtResource("4_hgoh6")]
@@ -1303,7 +1256,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="PlataformaMovil15" parent="PlataformasAscendentes2" unique_id=1247899765 instance=ExtResource("4_hgoh6")]
@@ -1313,7 +1265,6 @@ Unidireccional = true
 PosicionA = Vector2(0, 480)
 PosicionB = Vector2(0, -288)
 FrenarAlLlegar = false
-Aceleracion = 40.0
 Ancho = 2
 
 [node name="Isla10" type="Node2D" parent="." unique_id=564510359]

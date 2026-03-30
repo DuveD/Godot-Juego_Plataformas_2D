@@ -6,7 +6,16 @@ namespace PrimerjuegoPlataformas2D.escenas.bloques;
 public partial class PuntoControl : Marker2D
 {
 	[Export]
-	public bool Activado = false;
+	public bool Activado
+	{
+		get;
+		set
+		{
+			field = value;
+			if (!IsNodeReady()) return;
+			Callable.From(() => _area2D.ProcessMode = value ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit).CallDeferred();
+		}
+	} = false;
 
 	private Area2D _area2D;
 	private CollisionShape2D _collisionShape2D;
@@ -25,6 +34,13 @@ public partial class PuntoControl : Marker2D
 		_sprite2D = GetNode<Sprite2D>("Sprite2D");
 
 		_area2D.BodyEntered += OnBodyEntered;
+
+		Inicializar();
+	}
+
+	private void Inicializar()
+	{
+		Activado = Activado;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -46,15 +62,9 @@ public partial class PuntoControl : Marker2D
 
 		jugador.PuntoControl = this;
 		Activado = true;
-		CallDeferred("DesactivarFisicas");
 
 		if (Animar)
 			ActivarAnimacion();
-	}
-
-	private void DesactivarFisicas()
-	{
-		_collisionShape2D.Disabled = true;
 	}
 
 	private void ActivarAnimacion()

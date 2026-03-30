@@ -37,7 +37,15 @@ public partial class PlataformaMovil : Plataforma
     private bool _haciaFin = true;
 
     [Export]
-    public bool Caida { get; set; } = false;
+    public bool Caida
+    {
+        get;
+        set
+        {
+            field = value;
+            Callable.From(() => _sensorJugador.ProcessMode = value ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled).CallDeferred();
+        }
+    } = false;
 
     [Export]
     public float TiempoEsperaCaida = 1f; // tiempo antes de caer
@@ -59,6 +67,7 @@ public partial class PlataformaMovil : Plataforma
     private float _timer = 0f;
 
     #region Animaciones
+    private List<Tween> _tweensTemblor;
     private Vector2 _offsetTemblor = Vector2.Zero;
     #endregion
 
@@ -75,6 +84,13 @@ public partial class PlataformaMovil : Plataforma
 
         if (Engine.IsEditorHint())
             SetPhysicsProcess(false);
+
+        Inicializar();
+    }
+
+    private void Inicializar()
+    {
+        Caida = Caida;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -276,8 +292,6 @@ public partial class PlataformaMovil : Plataforma
         _estado = EstadoPlataforma.Normal;
     }
 
-    private List<Tween> _tweensTemblor;
-
     private void IniciarAnimacionTemblor()
     {
         _animacionTemblorIniciado = true;
@@ -285,21 +299,18 @@ public partial class PlataformaMovil : Plataforma
         _tweensTemblor?.ForEach(t => t.Kill());
         _tweensTemblor = new List<Tween>();
 
+        Vector2 temblorDerecha = new Vector2(3, 0);
+        Vector2 temblorIzquierda = new Vector2(-3, 0);
+        float duracionTemblor = 0.05f;
+
         foreach (var sprite in _sprites)
         {
+            var callable = Callable.From((Vector2 offset) => sprite.Offset = offset);
+
             var tweenTemblor = CreateTween().SetLoops();
-            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
-            {
-                sprite.Offset = offset;
-            }), Vector2.Zero, new Vector2(3, 0), 0.05f);
-            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
-            {
-                sprite.Offset = offset;
-            }), new Vector2(3, 0), new Vector2(-3, 0), 0.05f);
-            tweenTemblor.TweenMethod(Callable.From((Vector2 offset) =>
-            {
-                sprite.Offset = offset;
-            }), new Vector2(-3, 0), Vector2.Zero, 0.05f);
+            tweenTemblor.TweenMethod(callable, Vector2.Zero, temblorDerecha, duracionTemblor);
+            tweenTemblor.TweenMethod(callable, temblorDerecha, temblorIzquierda, duracionTemblor);
+            tweenTemblor.TweenMethod(callable, temblorIzquierda, Vector2.Zero, duracionTemblor);
 
             _tweensTemblor.Add(tweenTemblor);
         }
