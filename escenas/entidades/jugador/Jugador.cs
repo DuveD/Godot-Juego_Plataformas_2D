@@ -132,7 +132,7 @@ public partial class Jugador : CharacterBody2D
     private int _frameEscalera = 0;
     private float _distanciaEscalada = 0f;
     private bool _moviendoseEscaleraAnterior = false;
-    private const float DISTANCIA_CAMBIO_FRAME_ESCALAR = 18f;
+    private const float DISTANCIA_CAMBIO_FRAME_ESCALAR = 20f;
     #endregion 
 
     #region Inputs
