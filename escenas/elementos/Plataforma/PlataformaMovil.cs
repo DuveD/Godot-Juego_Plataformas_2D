@@ -107,7 +107,7 @@ public partial class PlataformaMovil : Plataforma
 
     private void GestionarMovimiento(double delta)
     {
-        if (!Movimiento && (PosicionA == Vector2.Zero || PosicionB == Vector2.Zero))
+        if (!Movimiento)
             return;
 
         Vector2 target = _haciaFin ? PosicionB : PosicionA;
