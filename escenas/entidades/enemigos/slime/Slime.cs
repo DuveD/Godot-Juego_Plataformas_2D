@@ -1,5 +1,5 @@
-using System;
 using Godot;
+using PrimerjuegoPlataformas2D.nucleo.utilidades;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
 
@@ -17,8 +17,6 @@ public partial class Slime : CharacterBody2D
     #endregion
 
     #region Físicas
-    public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
-
     [Export]
     public float VELOCIDAD = 40f;
     [Export]
@@ -184,7 +182,7 @@ public partial class Slime : CharacterBody2D
         bool subiendo = velocidad.Y < 0;
         bool cayendo = velocidad.Y > 0;
 
-        float gravedadAplicada = Gravedad;
+        float gravedadAplicada = UtilidadesFisicas.ObtenerGravedad();
 
         if (subiendo && Mathf.Abs(velocidad.Y) < UMBRAL_APEX)
         {

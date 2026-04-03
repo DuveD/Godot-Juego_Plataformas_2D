@@ -202,7 +202,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_3gwfp")
 }],
 "loop": false,
-"name": &"aterrizar",
+"name": &"aterrizajeFuerte",
 "speed": 5.0
 }, {
 "frames": [{
@@ -407,8 +407,10 @@ script = ExtResource("1_rk7g7")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601074081]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_a0tr0")
-animation = &"idle"
+animation = &"aterrizajeFuerte"
 autoplay = "idle"
+frame = 4
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=448350725]
 position = Vector2(0, -7.5)

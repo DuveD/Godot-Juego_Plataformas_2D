@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
+using PrimerjuegoPlataformas2D.nucleo.utilidades;
 using BloqueRompible = PrimerjuegoPlataformas2D.escenas.bloques.BloqueRompible;
 using Escalera = PrimerjuegoPlataformas2D.escenas.elementos.Escalera.Escalera;
 using PuntoControl = PrimerjuegoPlataformas2D.escenas.elementos.PuntoControl.PuntoControl;
@@ -24,8 +25,6 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Físicas
-    public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
-
     private int _direccion = 1;
 
     [Export]
@@ -45,7 +44,10 @@ public partial class Jugador : CharacterBody2D
     /// <summary>
     /// Describe el estado físico vertical del jugador.
     /// </summary>
-    public enum EstadoLocomocionJugador { EnSuelo, Saltando, Cayendo, Escalando }
+    public enum EstadoLocomocionJugador
+    {
+        EnSuelo, Saltando, Cayendo, Escalando
+    }
 
     public EstadoLocomocionJugador EstadoLocomocionAnterior = EstadoLocomocionJugador.EnSuelo;
     public EstadoLocomocionJugador EstadoLocomocion = EstadoLocomocionJugador.EnSuelo;
@@ -54,6 +56,11 @@ public partial class Jugador : CharacterBody2D
 
     bool _enSuelo = false;
     bool _enPared = false;
+    #endregion
+
+    #region Estado Accion
+    public enum EstadoAccionJugador { Ninguno, AterrizajeFuerte, Atacando }
+    public EstadoAccionJugador EstadoAccion = EstadoAccionJugador.Ninguno;
     #endregion
 
     #region Salto
@@ -96,6 +103,9 @@ public partial class Jugador : CharacterBody2D
             }
         }
     }
+
+    private float _posYAlCaer = 0f;
+    private const float ALTURA_MINIMA_ATERRIZAJE_FUERTE = 200f;
     #endregion
 
     #region Rodar
@@ -214,6 +224,9 @@ public partial class Jugador : CharacterBody2D
 
     private InputJugador ActualizarInputs()
     {
+        if (EstadoAccion == EstadoAccionJugador.AterrizajeFuerte)
+            return new InputJugador();
+
         InputJugador inputJugador = LeerInput();
 
         ActualizarCoyoteTime();
@@ -343,6 +356,7 @@ public partial class Jugador : CharacterBody2D
     private Vector2 CancelarSalto(Vector2 velocidad)
     {
         GD.Print("Salto interrumpido.");
+
         velocidad.Y = Mathf.Max(velocidad.Y, 0);
         return velocidad;
     }
@@ -350,7 +364,9 @@ public partial class Jugador : CharacterBody2D
     private Vector2 FrenarSalto(double delta, Vector2 velocidad)
     {
         GD.Print("Frenando salto.");
-        velocidad.Y += Gravedad * GRAVEDAD_EXTRA_CORTE_SALTO * (float)delta;
+
+        float gravedad = UtilidadesFisicas.ObtenerGravedad();
+        velocidad.Y += gravedad * GRAVEDAD_EXTRA_CORTE_SALTO * (float)delta;
         return velocidad;
     }
 
@@ -359,7 +375,8 @@ public partial class Jugador : CharacterBody2D
         bool subiendo = velocidad.Y < 0;
         bool cayendo = velocidad.Y > 0;
 
-        float gravedadAplicada = Gravedad;
+        float gravedad = UtilidadesFisicas.ObtenerGravedad();
+        float gravedadAplicada = gravedad;
 
         if (subiendo && Mathf.Abs(velocidad.Y) < UMBRAL_APEX)
         {
@@ -456,18 +473,18 @@ public partial class Jugador : CharacterBody2D
 
         velocidad = AplicarAceleracionHorizontal(delta, velocidad, inputJugador);
 
-        CalcularDireccionSprite(velocidad);
+        ActualizarDireccion(velocidad);
 
         return velocidad;
     }
 
-    private void CalcularDireccionSprite(Vector2 velocidad)
+    private void ActualizarDireccion(Vector2 velocidad)
     {
-        if (velocidad.X != 0)
-        {
-            AnimatedSprite2D.FlipH = velocidad.X < 0;
-            _direccion = Mathf.Sign(velocidad.X);
-        }
+        if (velocidad.X == 0)
+            return;
+
+        _direccion = Mathf.Sign(velocidad.X);
+        AnimatedSprite2D.FlipH = velocidad.X < 0;
     }
 
 
@@ -667,8 +684,25 @@ public partial class Jugador : CharacterBody2D
 
     private void OnAterrizar()
     {
-        GD.Print("Aterrizando.");
+        float alturaCaida = GlobalPosition.Y - _posYAlCaer;
+        if (alturaCaida >= ALTURA_MINIMA_ATERRIZAJE_FUERTE)
+            OnAterrizajeFuerte();
+        else
+            GD.Print("Aterrizaje.");
+
         OnEnSuelo();
+    }
+
+    private async void OnAterrizajeFuerte()
+    {
+        GD.Print("Aterrizaje fuerte.");
+
+        EstadoAccion = EstadoAccionJugador.AterrizajeFuerte;
+
+        ReproducirAnimacion(AnimacionJugador.AterrizajeFuerte);
+        await ToSignal(AnimatedSprite2D, AnimatedSprite2D.SignalName.AnimationFinished);
+
+        EstadoAccion = EstadoAccionJugador.Ninguno;
     }
 
     private void OnDespegar()
@@ -693,6 +727,8 @@ public partial class Jugador : CharacterBody2D
     private void OnCayendo()
     {
         GD.Print("Jugador cayendo.");
+
+        _posYAlCaer = GlobalPosition.Y;
     }
 
     private void OnEscalando()
@@ -702,6 +738,10 @@ public partial class Jugador : CharacterBody2D
 
     private void ActualizarAnimacion(InputJugador inputJugador)
     {
+        // Mientras dure el estado temporal de AterrizajeFuerte, no permitimos que se interrumpa por cambios de locomoción normales, así que mientras dure no actualizamos la animación.
+        if (EstadoAccion == EstadoAccionJugador.AterrizajeFuerte)
+            return;
+
         if (Rodando)
         {
             ActualizarAnimacionRodando();
@@ -870,8 +910,8 @@ public partial class Jugador : CharacterBody2D
         this.Position = PuntoControl.GlobalPosition;
         this._direccion = PuntoControl.Direccion;
         AnimatedSprite2D.FlipH = _direccion < 0;
+        _posYAlCaer = GlobalPosition.Y;
     }
-
 
     private void OnBodyEntered(Node2D body)
     {
@@ -900,7 +940,7 @@ public partial class Jugador : CharacterBody2D
         if (escalera == null)
             return;
 
-        else if (_escaleraActual != escalera)
+        if (_escaleraActual != escalera)
             return;
 
         _escaleraActual = null;
