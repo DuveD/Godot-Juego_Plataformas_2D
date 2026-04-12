@@ -24,6 +24,8 @@ public partial class Slime : CharacterBody2D
     [Export]
     public float MAXIMA_VELOCIDAD_CAIDA = 350f;
 
+    private float _gravedad = UtilidadesFisicas.ObtenerGravedad();
+
     private const float UMBRAL_APEX = 40f;
     private const float MULTIPLICADOR_GRAVEDAD_APEX = 0.5f;
 
@@ -182,7 +184,7 @@ public partial class Slime : CharacterBody2D
         bool subiendo = velocidad.Y < 0;
         bool cayendo = velocidad.Y > 0;
 
-        float gravedadAplicada = UtilidadesFisicas.ObtenerGravedad();
+        float gravedadAplicada = _gravedad;
 
         if (subiendo && Mathf.Abs(velocidad.Y) < UMBRAL_APEX)
         {

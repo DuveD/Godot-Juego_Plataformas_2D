@@ -1,3 +1,5 @@
+using Godot;
+
 namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public readonly struct AnimacionJugador(string nombre)
@@ -15,4 +17,10 @@ public readonly struct AnimacionJugador(string nombre)
     public static readonly AnimacionJugador MuerteEnCaida = new("muerteEnCaida");
     public static readonly AnimacionJugador Escalando = new("escalando");
     public static readonly AnimacionJugador AterrizajeFuerte = new("aterrizajeFuerte");
+
+    public int ObtenerFramesAnimacion(Jugador jugador)
+    {
+        AnimatedSprite2D animatedSprite2D = jugador.SpriteJugador;
+        return animatedSprite2D.SpriteFrames.GetFrameCount(this.Nombre);
+    }
 }

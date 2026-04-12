@@ -18,9 +18,20 @@ public partial class SistemaPlataformas : Node
     private HashSet<Plataforma> _plataformasDebajo = [];
     private HashSet<Plataforma> _plataformasIgnoradas = [];
 
-    public SistemaPlataformas(Jugador jugador)
+    private SistemaPlataformas(Jugador jugador)
     {
         this._jugador = jugador;
+    }
+
+    public static SistemaPlataformas Inicializar(Jugador jugador)
+    {
+        var sistema = new SistemaPlataformas(jugador);
+        jugador.AddChild(sistema);
+        return sistema;
+    }
+
+    override public void _Ready()
+    {
         this._jugador.SensorSuelo.BodyEntered += OnSensorSueloBodyEntered;
         this._jugador.SensorSuelo.BodyExited += OnSensorSueloBodyExited;
     }

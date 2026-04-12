@@ -13,13 +13,15 @@ public partial class PuntoControl : Marker2D
 		{
 			field = value;
 			if (!IsNodeReady()) return;
-			Callable.From(() => _area2D.ProcessMode = value ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit).CallDeferred();
+			Callable.From(() => _detectorJugador.ProcessMode = value ? ProcessModeEnum.Disabled : ProcessModeEnum.Inherit).CallDeferred();
 		}
 	} = false;
 
-	private Area2D _area2D;
+	private Area2D _detectorJugador;
 	private CollisionShape2D _collisionShape2D;
 	private Sprite2D _sprite2D;
+
+	StaticBody2D _colisionCartel = null;
 
 	[Export]
 	public int Direccion = 1;
@@ -29,11 +31,12 @@ public partial class PuntoControl : Marker2D
 
 	public override void _Ready()
 	{
-		_area2D = GetNode<Area2D>("Area2D");
-		_collisionShape2D = _area2D.GetNode<CollisionShape2D>("CollisionShape2D");
+		_detectorJugador = GetNode<Area2D>("DetectorJugador");
+		_collisionShape2D = _detectorJugador.GetNode<CollisionShape2D>("CollisionShape2D");
 		_sprite2D = GetNode<Sprite2D>("Sprite2D");
+		_colisionCartel = GetNode<StaticBody2D>("ColisionCartel");
 
-		_area2D.BodyEntered += OnBodyEntered;
+		_detectorJugador.BodyEntered += OnBodyEntered;
 
 		Inicializar();
 	}
@@ -79,7 +82,7 @@ public partial class PuntoControl : Marker2D
 			escala *= -1;
 
 			tween.TweenProperty(
-				_sprite2D,
+				this,
 				"scale:x",
 				escala,
 				duracion

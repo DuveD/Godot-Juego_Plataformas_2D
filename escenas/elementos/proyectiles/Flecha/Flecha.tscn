@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cxj1mfwr0sfo4"]
+
+[ext_resource type="Texture2D" uid="uid://6brhu7s1irej" path="res://recursos/sprites/armas/arco_y_flechas.png" id="1_llbph"]
+[ext_resource type="Script" uid="uid://cyltf3h1gh3t7" path="res://escenas/elementos/proyectiles/Flecha/Flecha.cs" id="1_ss5aa"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_llbph"]
+size = Vector2(1, 1)
+
+[node name="Flecha" type="CharacterBody2D" unique_id=1334166536]
+collision_layer = 8
+collision_mask = 15
+script = ExtResource("1_ss5aa")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1343146503]
+texture = ExtResource("1_llbph")
+region_enabled = true
+region_rect = Rect2(104, 13, 16, 5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=879622901]
+position = Vector2(6, 0)
+rotation = 1.5707964
+shape = SubResource("RectangleShape2D_llbph")
+one_way_collision = true
