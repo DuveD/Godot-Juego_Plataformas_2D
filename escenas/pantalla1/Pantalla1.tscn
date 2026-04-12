@@ -327,7 +327,7 @@ texture = ExtResource("4_ij7em")
 flip_h = true
 
 [node name="PuntoSpawnInicial" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
-position = Vector2(-216, -64)
+position = Vector2(2512, -215)
 metadata/_edit_group_ = true
 
 [node name="Area2D" parent="PuntoSpawnInicial" index="0" unique_id=480066271]
@@ -338,7 +338,7 @@ visible = false
 visible = false
 
 [node name="Jugador" parent="." unique_id=892271509 node_paths=PackedStringArray("PuntoControl") instance=ExtResource("1_x781s")]
-position = Vector2(-216, -80)
+position = Vector2(-384, -88)
 slide_on_ceiling = false
 PuntoControl = NodePath("../PuntoSpawnInicial")
 
@@ -1295,11 +1295,11 @@ tile_set = SubResource("TileSet_itltq")
 position = Vector2(7, 16)
 
 [node name="Slime" parent="." unique_id=1308693879 instance=ExtResource("7_aklpc")]
-position = Vector2(2168, -126)
+position = Vector2(2116, -126)
 
 [node name="Escalera" parent="." unique_id=1178533361 instance=ExtResource("14_thhoc")]
 position = Vector2(2712, -184)
-Alto = 8
+Alto = 11
 
 [editable path="PuntoSpawnInicial"]
 [editable path="PlataformaMovilConCaida"]

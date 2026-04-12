@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Godot;
+using PrimerjuegoPlataformas2D.escenas.elementos.proyectiles.Flecha;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
 using PrimerjuegoPlataformas2D.nucleo.utilidades;
 using BloqueRompible = PrimerjuegoPlataformas2D.escenas.bloques.BloqueRompible;
@@ -11,12 +13,23 @@ namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 public partial class Jugador : CharacterBody2D
 {
     #region Nodos
-    public AnimatedSprite2D AnimatedSprite2D;
-    public CollisionShape2D CollisionShape2D;
+    public AnimatedSprite2D SpriteJugador;
     public Area2D SensorSuelo;
     private Camera2D _camera2D;
     public SistemaPlataformas SistemaPlataformas;
     public Area2D HitBox;
+    #endregion
+
+    #region Arco
+    public Node2D Carcaj;
+    public Sprite2D SpriteCarcaj;
+    public Node2D Arco;
+    public AnimatedSprite2D SpriteArco;
+
+    [Export]
+    public PackedScene PackedSceneFlecha;
+    public Flecha _flecha;
+    private Vector2 _direccionApuntado = Vector2.Right;
     #endregion
 
     #region Spawn
@@ -25,6 +38,12 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Físicas
+
+    private static float _gravedad = UtilidadesFisicas.ObtenerGravedad();
+
+    /// <summary>
+    /// Dirección: 1 = derecha, -1 = izquierda.
+    /// </summary>
     private int _direccion = 1;
 
     [Export]
@@ -59,7 +78,7 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Estado Accion
-    public enum EstadoAccionJugador { Ninguno, AterrizajeFuerte, Atacando }
+    public enum EstadoAccionJugador { Ninguno, AterrizajeFuerte, Atacando, Disparando }
     public EstadoAccionJugador EstadoAccion = EstadoAccionJugador.Ninguno;
     #endregion
 
@@ -148,14 +167,35 @@ public partial class Jugador : CharacterBody2D
     #region Inputs
     private struct InputJugador
     {
-        public int Direccion;
-        public bool SaltoPresionado;
-        public bool ArribaPresionado;
-        public bool AbajoPresionado;
-        public bool Salto;
         public bool RodarPresionado;
+
+        public bool SaltoPresionado;
+        public bool Salto;
+
+
+        public bool ArribaPresionado;
         public bool Arriba;
+        public bool AbajoPresionado;
         public bool Abajo;
+        public bool Izquierda;
+        public bool Derecha;
+
+        public bool DispararPresionado;
+        public bool Disparar;
+
+        /// <summary>
+        /// H -> 1 = derecha, -1 = izquierda.<br/>
+        /// V -> 1 = abajo, -1 = arriba.
+        /// </summary>
+        public readonly (int H, int V) Direccion
+        {
+            get
+            {
+                int h = (Derecha ? 1 : 0) - (Izquierda ? 1 : 0);
+                int v = (Abajo ? 1 : 0) - (Arriba ? 1 : 0);
+                return (h, v);
+            }
+        }
     }
     #endregion
 
@@ -172,11 +212,14 @@ public partial class Jugador : CharacterBody2D
 
     public override void _Ready()
     {
-        this.AnimatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-        this.CollisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
+        this.SpriteJugador = GetNode<AnimatedSprite2D>("SpriteJugador");
         this.SensorSuelo = GetNode<Area2D>("SensorSuelo");
         this._camera2D = GetNode<Camera2D>("Camera2D");
         this.HitBox = GetNode<Area2D>("HitBox");
+        this.Carcaj = GetNode<Node2D>("Carcaj");
+        this.SpriteCarcaj = GetNode<Sprite2D>("Carcaj/SpriteCarcaj");
+        this.Arco = GetNode<Node2D>("Arco");
+        this.SpriteArco = GetNode<AnimatedSprite2D>("Arco/SpriteArco");
 
         HitBox.BodyEntered += OnBodyEntered;
 
@@ -196,6 +239,8 @@ public partial class Jugador : CharacterBody2D
 
         InputJugador inputJugador = ActualizarInputs();
 
+        ProcesarDisparar(delta, inputJugador);
+
         velocidad = CalcularMovimientoHorizontal(delta, velocidad, inputJugador);
         velocidad = CalcularMovimientoVertical(delta, velocidad, inputJugador);
 
@@ -207,6 +252,136 @@ public partial class Jugador : CharacterBody2D
 
         EvaluarEstadoLocomocion();
         ActualizarAnimacion(inputJugador);
+    }
+    private float _tiempoDisparar = 0f;
+    private const float TIEMPO_DISPARO = 1f; // segundos
+    private bool _disparoPreparado = false;
+
+    private void ProcesarDisparar(double delta, InputJugador inputJugador)
+    {
+        if (EstadoAccion != EstadoAccionJugador.Ninguno && EstadoAccion != EstadoAccionJugador.Disparando)
+        {
+            InterrumpirDisparo();
+            return;
+        }
+
+        if (EstadoLocomocion == EstadoLocomocionJugador.Escalando || Rodando)
+            return;
+
+        ActualizarDireccionDisparo(inputJugador);
+
+        if (inputJugador.DispararPresionado)
+        {
+            PrepararDisparo();
+        }
+        else if (inputJugador.Disparar)
+        {
+            _tiempoDisparar += (float)delta;
+
+            if (_tiempoDisparar < TIEMPO_DISPARO)
+            {
+                int Frame = Mathf.Min((int)(_tiempoDisparar / TIEMPO_DISPARO * 4), 3);
+                SpriteArco.Frame = Frame;
+                if (Frame == 1 && !_disparoPreparado)
+                {
+                    _disparoPreparado = true;
+                    GD.Print("Disparo preparado.");
+                    _flecha?.Position = new Vector2(_flecha.Position.X - 1, _flecha.Position.Y);
+                }
+            }
+        }
+        else
+        {
+            if (_disparoPreparado)
+            {
+                Disparar(inputJugador);
+            }
+            else
+            {
+                InterrumpirDisparo();
+            }
+        }
+    }
+    private void ActualizarDireccionDisparo(InputJugador inputJugador)
+    {
+        if (inputJugador.Direccion.H != 0)
+            _direccion = (int)inputJugador.Direccion.H;
+
+        SpriteJugador.FlipH = _direccion < 0;
+
+        float rotacion = 0f;
+        if (inputJugador.Direccion.V == -1)
+            rotacion = -40f;
+        else if (inputJugador.Direccion.V == 1)
+            rotacion = 40f;
+
+        Arco.RotationDegrees = rotacion * _direccion;
+        Arco.Scale = new Vector2(_direccion, 1);
+
+        Carcaj.Scale = new Vector2(_direccion, 1);
+    }
+
+    private void Disparar(InputJugador inputJugador)
+    {
+        _disparoPreparado = false;
+
+        if (_flecha != null)
+        {
+            Vector2 posicionGlobal = _flecha.GlobalPosition; // capturar antes de reparentar
+
+            _flecha.GetParent().RemoveChild(_flecha);
+            GetParent().AddChild(_flecha);
+
+            _flecha.GlobalPosition = posicionGlobal; // restaurar la posición global
+
+            float fuerzaDeDisparo = Mathf.Clamp(_tiempoDisparar / TIEMPO_DISPARO, 0.5f, 1.5f);
+            _flecha.Disparar((_direccion, inputJugador.Direccion.V), fuerzaDeDisparo);
+            _flecha = null;
+        }
+
+        SpriteJugador.Play();
+    }
+
+    private void PrepararDisparo()
+    {
+        EstadoAccion = EstadoAccionJugador.Disparando;
+
+        Arco.Visible = true;
+        SpriteCarcaj.Visible = true;
+
+        _tiempoDisparar = 0f;
+        _disparoPreparado = false;
+
+        SpriteArco.Play("tensando");
+        SpriteArco.Frame = 0;
+
+        // Instanciar flecha
+        _flecha = PackedSceneFlecha.Instantiate<Flecha>();
+        Vector2 puntoDisparoLocal = new Vector2(8, SpriteArco.Position.Y);
+        Arco.AddChild(_flecha);
+        _flecha.Position = puntoDisparoLocal;
+
+        SpriteJugador.Pause();
+    }
+
+    private void InterrumpirDisparo()
+    {
+        if (EstadoAccion == EstadoAccionJugador.Disparando)
+            EstadoAccion = EstadoAccionJugador.Ninguno;
+
+        Arco.Visible = false;
+        SpriteCarcaj.Visible = false;
+
+        _tiempoDisparar = 0f;
+        _disparoPreparado = false;
+
+        if (_flecha != null && !_flecha.Disparada)
+        {
+            _flecha.QueueFree();
+            _flecha = null;
+        }
+
+        SpriteJugador.Play();
     }
 
     private void ComprobarContactoBloquesRompibles()
@@ -237,17 +412,25 @@ public partial class Jugador : CharacterBody2D
 
     private InputJugador LeerInput()
     {
-        return new InputJugador
+        InputJugador inputJugador = new InputJugador
         {
-            Direccion = (int)Input.GetAxis("ui_left", "ui_right"),
-            SaltoPresionado = Input.IsActionJustPressed("ui_accept"),
-            ArribaPresionado = Input.IsActionJustPressed("ui_up"),
-            AbajoPresionado = Input.IsActionJustPressed("ui_down"),
             RodarPresionado = Input.IsActionJustPressed("rodar"),
+
+            SaltoPresionado = Input.IsActionJustPressed("ui_accept"),
             Salto = Input.IsActionPressed("ui_accept"),
+
+            ArribaPresionado = Input.IsActionJustPressed("ui_up"),
             Arriba = Input.IsActionPressed("ui_up"),
-            Abajo = Input.IsActionPressed("ui_down")
+            AbajoPresionado = Input.IsActionJustPressed("ui_down"),
+            Abajo = Input.IsActionPressed("ui_down"),
+            Izquierda = Input.IsActionPressed("ui_left"),
+            Derecha = Input.IsActionPressed("ui_right"),
+
+            DispararPresionado = Input.IsActionJustPressed("disparar"),
+            Disparar = Input.IsActionPressed("disparar")
         };
+
+        return inputJugador;
     }
 
     private void ActualizarCoyoteTime()
@@ -285,6 +468,9 @@ public partial class Jugador : CharacterBody2D
 
     private (bool, Vector2) ProcesarMovimientoEscalera(double delta, ref Vector2 velocidad, InputJugador inputJugador)
     {
+        if (EstadoAccion == EstadoAccionJugador.Disparando)
+            return (false, default);
+
         if (_agarradoEscalera && _enSuelo)
         {
             _agarradoEscalera = false;
@@ -352,7 +538,6 @@ public partial class Jugador : CharacterBody2D
         }
     }
 
-
     private Vector2 CancelarSalto(Vector2 velocidad)
     {
         GD.Print("Salto interrumpido.");
@@ -365,8 +550,7 @@ public partial class Jugador : CharacterBody2D
     {
         GD.Print("Frenando salto.");
 
-        float gravedad = UtilidadesFisicas.ObtenerGravedad();
-        velocidad.Y += gravedad * GRAVEDAD_EXTRA_CORTE_SALTO * (float)delta;
+        velocidad.Y += _gravedad * GRAVEDAD_EXTRA_CORTE_SALTO * (float)delta;
         return velocidad;
     }
 
@@ -375,8 +559,7 @@ public partial class Jugador : CharacterBody2D
         bool subiendo = velocidad.Y < 0;
         bool cayendo = velocidad.Y > 0;
 
-        float gravedad = UtilidadesFisicas.ObtenerGravedad();
-        float gravedadAplicada = gravedad;
+        float gravedadAplicada = _gravedad;
 
         if (subiendo && Mathf.Abs(velocidad.Y) < UMBRAL_APEX)
         {
@@ -467,6 +650,18 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 CalcularMovimientoHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
+        if (EstadoAccion == EstadoAccionJugador.Disparando)
+        {
+            // Mientras disparamos, si hay velocidad horizontal y estamos en el suelo, la decrecemos rápidamente hasta detenernos, pero no aplicamos aceleración ni control horizontal.
+            if (Mathf.Abs(velocidad.X) > 0 && _enSuelo)
+            {
+                float desaceleracion = 1000f; // píxeles/segundo²
+                velocidad.X = Mathf.MoveToward(velocidad.X, 0, desaceleracion * (float)delta);
+            }
+
+            return velocidad;
+        }
+
         (bool rodando, Vector2 velocidadRodar) = ProcesarRodar(delta, velocidad, inputJugador);
         if (rodando)
             return velocidadRodar;
@@ -484,7 +679,7 @@ public partial class Jugador : CharacterBody2D
             return;
 
         _direccion = Mathf.Sign(velocidad.X);
-        AnimatedSprite2D.FlipH = velocidad.X < 0;
+        SpriteJugador.FlipH = velocidad.X < 0;
     }
 
 
@@ -554,7 +749,7 @@ public partial class Jugador : CharacterBody2D
         Rodando = true;
         _framesRodando = FRAMES_RODAR;
         _rodandoIniciado = false;
-        int direccion = inputJugador.Direccion != 0 ? inputJugador.Direccion : _direccion;
+        int direccion = inputJugador.Direccion.H != 0 ? inputJugador.Direccion.H : _direccion;
         _velocidadInicialRodar = direccion * VELOCIDAD_RODAR;
     }
 
@@ -582,7 +777,7 @@ public partial class Jugador : CharacterBody2D
         if (EstadoLocomocion == EstadoLocomocionJugador.Saltando && Mathf.Abs(Velocity.Y) < UMBRAL_APEX)
             aceleracion *= MULTIPLICADOR_CONTROL_APEX;
 
-        float objetivoX = inputJugador.Direccion * VELOCIDAD;
+        float objetivoX = inputJugador.Direccion.H * VELOCIDAD;
 
         if (!_enSuelo && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
             Mathf.Sign(velocidad.X) == Mathf.Sign(objetivoX))
@@ -700,7 +895,7 @@ public partial class Jugador : CharacterBody2D
         EstadoAccion = EstadoAccionJugador.AterrizajeFuerte;
 
         ReproducirAnimacion(AnimacionJugador.AterrizajeFuerte);
-        await ToSignal(AnimatedSprite2D, AnimatedSprite2D.SignalName.AnimationFinished);
+        await ToSignal(SpriteJugador, AnimatedSprite2D.SignalName.AnimationFinished);
 
         EstadoAccion = EstadoAccionJugador.Ninguno;
     }
@@ -739,7 +934,7 @@ public partial class Jugador : CharacterBody2D
     private void ActualizarAnimacion(InputJugador inputJugador)
     {
         // Mientras dure el estado temporal de AterrizajeFuerte, no permitimos que se interrumpa por cambios de locomoción normales, así que mientras dure no actualizamos la animación.
-        if (EstadoAccion == EstadoAccionJugador.AterrizajeFuerte)
+        if (EstadoAccion == EstadoAccionJugador.AterrizajeFuerte || EstadoAccion == EstadoAccionJugador.Disparando)
             return;
 
         if (Rodando)
@@ -770,7 +965,7 @@ public partial class Jugador : CharacterBody2D
 
     private void ActualizarAnimacionEnSuelo(InputJugador inputJugador)
     {
-        if (inputJugador.Direccion != 0 && !IsOnWall())
+        if (inputJugador.Direccion.H != 0 && !IsOnWall())
             ReproducirAnimacion(AnimacionJugador.Correr);
         else
             ReproducirAnimacion(AnimacionJugador.Idle);
@@ -797,7 +992,7 @@ public partial class Jugador : CharacterBody2D
             // Al empezar a moverse, avanzar un frame inmediatamente
             if (!_moviendoseEscaleraAnterior)
             {
-                _frameEscalera = 1 - AnimatedSprite2D.Frame;
+                _frameEscalera = 1 - SpriteJugador.Frame;
                 _distanciaEscalada = 0f; // resetear para que el siguiente cambio sea limpio
             }
             else
@@ -811,7 +1006,7 @@ public partial class Jugador : CharacterBody2D
                 }
             }
 
-            AnimatedSprite2D.Frame = _frameEscalera;
+            SpriteJugador.Frame = _frameEscalera;
         }
 
         _moviendoseEscaleraAnterior = moviendose;
@@ -827,10 +1022,10 @@ public partial class Jugador : CharacterBody2D
 
     private void ReproducirAnimacion(AnimacionJugador animacion, bool forzarReproducir = false)
     {
-        if (AnimatedSprite2D.Animation == animacion.Nombre && !forzarReproducir)
+        if (SpriteJugador.Animation == animacion.Nombre && !forzarReproducir)
             return;
 
-        AnimatedSprite2D.Play(animacion.Nombre);
+        SpriteJugador.Play(animacion.Nombre);
     }
 
     public async void Muerte()
@@ -909,7 +1104,7 @@ public partial class Jugador : CharacterBody2D
         // Movemos el jugador al últimpo punto de Spawn.
         this.Position = PuntoControl.GlobalPosition;
         this._direccion = PuntoControl.Direccion;
-        AnimatedSprite2D.FlipH = _direccion < 0;
+        SpriteJugador.FlipH = _direccion < 0;
         _posYAlCaer = GlobalPosition.Y;
     }
 

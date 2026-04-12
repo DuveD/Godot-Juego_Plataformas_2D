@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://dtdemr5ppofaf" path="res://recursos/sprites/caballero/caballero.png" id="1_8hr1h"]
 [ext_resource type="Script" uid="uid://cpd45dy6cgjcf" path="res://escenas/entidades/Jugador/Jugador.cs" id="1_rk7g7"]
+[ext_resource type="PackedScene" uid="uid://cxj1mfwr0sfo4" path="res://escenas/elementos/proyectiles/Flecha/Flecha.tscn" id="2_f1iqt"]
+[ext_resource type="Texture2D" uid="uid://6brhu7s1irej" path="res://recursos/sprites/armas/arco_y_flechas.png" id="3_4s2dp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_78jlr"]
 atlas = ExtResource("1_8hr1h")
@@ -399,12 +401,73 @@ size = Vector2(10, 4)
 radius = 4.5
 height = 15.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_4s2dp"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1iqt"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7swm"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uf8d6"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_01yop"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5nrb1"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4s2dp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4s2dp")
+}],
+"loop": true,
+"name": &"reposo",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1iqt")
+}],
+"loop": true,
+"name": &"tensado",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v7swm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uf8d6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_01yop")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5nrb1")
+}],
+"loop": false,
+"name": &"tensando",
+"speed": 5.0
+}]
+
 [node name="Jugador" type="CharacterBody2D" unique_id=495711804]
 position = Vector2(-1, 0)
 collision_layer = 2
 script = ExtResource("1_rk7g7")
+PackedSceneFlecha = ExtResource("2_f1iqt")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601074081]
+[node name="SpriteJugador" type="AnimatedSprite2D" parent="." unique_id=601074081]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_a0tr0")
 animation = &"aterrizajeFuerte"
@@ -428,3 +491,20 @@ collision_mask = 4
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox" unique_id=1085967192]
 position = Vector2(0, -7.5)
 shape = SubResource("CapsuleShape2D_7jr6d")
+
+[node name="Arco" type="Node2D" parent="." unique_id=661532870]
+position = Vector2(0, -7.5)
+
+[node name="SpriteArco" type="AnimatedSprite2D" parent="Arco" unique_id=1699691502]
+position = Vector2(8, -2)
+sprite_frames = SubResource("SpriteFrames_4s2dp")
+animation = &"tensando"
+
+[node name="Carcaj" type="Node2D" parent="." unique_id=1536880899]
+position = Vector2(0, -7.5)
+
+[node name="SpriteCarcaj" type="Sprite2D" parent="Carcaj" unique_id=2024516174]
+position = Vector2(-7, -1.5)
+texture = ExtResource("3_4s2dp")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
