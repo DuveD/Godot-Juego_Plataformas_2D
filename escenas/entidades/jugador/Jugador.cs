@@ -77,8 +77,8 @@ public partial class Jugador : CharacterBody2D
 
     private int _framesEstadoTemporal = 0;
 
-    bool _enSuelo = false;
-    bool _enPared = false;
+    public bool EnSuelo { get; private set; }
+    public bool EnPared { get; private set; }
     #endregion
 
     #region Estado Accion
@@ -245,7 +245,7 @@ public partial class Jugador : CharacterBody2D
         InputJugador inputJugador = LeerInput();
 
         ActualizarCoyoteTime();
-        ActualizarBufferDeSalto(InputJugadorActual);
+        ActualizarBufferDeSalto(inputJugador);
 
         return inputJugador;
     }
@@ -275,7 +275,7 @@ public partial class Jugador : CharacterBody2D
 
     private void ActualizarCoyoteTime()
     {
-        if (_enSuelo)
+        if (EnSuelo)
             _coyoteFrames = MAX_COYOTE_FRAMES;
         else if (_coyoteFrames > 0)
             _coyoteFrames--;
@@ -311,7 +311,7 @@ public partial class Jugador : CharacterBody2D
         if (EstadoAccion == EstadoAccionJugador.Disparando)
             return (false, default);
 
-        if (_agarradoEscalera && _enSuelo)
+        if (_agarradoEscalera && EnSuelo)
         {
             _agarradoEscalera = false;
             GD.Print("Escalera soltada al aterrizar.");
@@ -348,7 +348,7 @@ public partial class Jugador : CharacterBody2D
     {
         if (_escaleraActual != null && !_agarradoEscalera && !Rodando)
         {
-            if (inputJugador.ArribaPresionado || (inputJugador.AbajoPresionado && !_enSuelo))
+            if (inputJugador.ArribaPresionado || (inputJugador.AbajoPresionado && !EnSuelo))
             {
                 _agarradoEscalera = true;
                 _coyoteFrames = 0;
@@ -493,7 +493,7 @@ public partial class Jugador : CharacterBody2D
         if (EstadoAccion == EstadoAccionJugador.Disparando)
         {
             // Mientras disparamos, si hay velocidad horizontal y estamos en el suelo, la decrecemos rápidamente hasta detenernos, pero no aplicamos aceleración ni control horizontal.
-            if (Mathf.Abs(velocidad.X) > 0 && _enSuelo)
+            if (Mathf.Abs(velocidad.X) > 0 && EnSuelo)
             {
                 float desaceleracion = 1000f; // píxeles/segundo²
                 velocidad.X = Mathf.MoveToward(velocidad.X, 0, desaceleracion * (float)delta);
@@ -537,7 +537,7 @@ public partial class Jugador : CharacterBody2D
     {
         ActualizarRodar();
 
-        if (_enSuelo)
+        if (EnSuelo)
         {
             // Si estamos en el suelo, queremos rodar y no estamos ya rodando, iniciamos el rodar.
             if (inputJugador.RodarPresionado && !Rodando)
@@ -552,7 +552,7 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 MantenerVelocidadRodar(double delta, Vector2 velocidad)
     {
-        if (_enSuelo)
+        if (EnSuelo)
         {
             // Si estamos en el suelo, mantenemos la velocidad de rodar todo el rato.
             velocidad.X = _velocidadInicialRodar;
@@ -588,7 +588,7 @@ public partial class Jugador : CharacterBody2D
         // El jugador es invulnerable mientras estemos en la primera mitad de los frames de Rodar.
         Invulnerable = _framesRodando >= (FRAMES_RODAR / 2);
 
-        if (_framesRodando <= 0 && _enSuelo)
+        if (_framesRodando <= 0 && EnSuelo)
         {
             DejarDeRodar();
         }
@@ -622,14 +622,14 @@ public partial class Jugador : CharacterBody2D
 
     private Vector2 AplicarAceleracionHorizontal(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
-        float aceleracion = _enSuelo ? ACELERACION_SUELO : ACELERACION_AIRE;
+        float aceleracion = EnSuelo ? ACELERACION_SUELO : ACELERACION_AIRE;
 
         if (EstadoLocomocion == EstadoLocomocionJugador.Saltando && Mathf.Abs(Velocity.Y) < UMBRAL_APEX)
             aceleracion *= MULTIPLICADOR_CONTROL_APEX;
 
         float objetivoX = inputJugador.Direccion.H * VELOCIDAD;
 
-        if (!_enSuelo && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
+        if (!EnSuelo && Mathf.Abs(velocidad.X) > Mathf.Abs(objetivoX) &&
             Mathf.Sign(velocidad.X) == Mathf.Sign(objetivoX))
             return velocidad;
 
@@ -641,8 +641,8 @@ public partial class Jugador : CharacterBody2D
 
     private void EvaluarEstadoLocomocion()
     {
-        _enSuelo = IsOnFloor();
-        _enPared = IsOnWall();
+        EnSuelo = IsOnFloor();
+        EnPared = IsOnWall();
 
         // Reducimos contador si estamos en un estado temporal
         if (_framesEstadoTemporal > 0)
@@ -663,7 +663,7 @@ public partial class Jugador : CharacterBody2D
             return EstadoLocomocionJugador.Escalando;
         }
 
-        if (_enSuelo)
+        if (EnSuelo)
         {
             return EstadoLocomocionJugador.EnSuelo;
         }
