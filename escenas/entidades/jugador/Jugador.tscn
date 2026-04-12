@@ -425,6 +425,14 @@ region = Rect2(64, 32, 32, 32)
 atlas = ExtResource("3_4s2dp")
 region = Rect2(96, 32, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_j1ra8"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(128, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1gx4f"]
+atlas = ExtResource("3_4s2dp")
+region = Rect2(160, 32, 32, 32)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_4s2dp"]
 animations = [{
 "frames": [{
@@ -455,6 +463,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5nrb1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j1ra8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1gx4f")
 }],
 "loop": false,
 "name": &"tensando",
@@ -499,6 +513,7 @@ position = Vector2(0, -7.5)
 position = Vector2(8, -2)
 sprite_frames = SubResource("SpriteFrames_4s2dp")
 animation = &"tensando"
+frame_progress = 1.0
 
 [node name="Carcaj" type="Node2D" parent="." unique_id=1536880899]
 position = Vector2(0, -7.5)

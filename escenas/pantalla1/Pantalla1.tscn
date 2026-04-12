@@ -219,7 +219,7 @@ size = Vector2(16, 1)
 [node name="ZonaMuerte" type="Area2D" parent="." unique_id=1496392188]
 position = Vector2(560, 656)
 collision_layer = 0
-collision_mask = 2
+collision_mask = 14
 script = ExtResource("5_ak48n")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ZonaMuerte" unique_id=1366608334]
@@ -327,15 +327,19 @@ texture = ExtResource("4_ij7em")
 flip_h = true
 
 [node name="PuntoSpawnInicial" parent="." unique_id=302288010 instance=ExtResource("5_ilur8")]
+process_mode = 4
 position = Vector2(2512, -215)
 metadata/_edit_group_ = true
 
-[node name="Area2D" parent="PuntoSpawnInicial" index="0" unique_id=480066271]
+[node name="DetectorJugador" parent="PuntoSpawnInicial" index="0" unique_id=480066271]
 process_mode = 4
 visible = false
 
 [node name="Sprite2D" parent="PuntoSpawnInicial" index="1" unique_id=1216706036]
 visible = false
+
+[node name="ColisionCartel" parent="PuntoSpawnInicial" index="2" unique_id=834362011]
+process_mode = 4
 
 [node name="Jugador" parent="." unique_id=892271509 node_paths=PackedStringArray("PuntoControl") instance=ExtResource("1_x781s")]
 position = Vector2(-384, -88)

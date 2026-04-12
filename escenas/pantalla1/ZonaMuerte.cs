@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using PrimerjuegoPlataformas2D.escenas.elementos.proyectiles.Flecha;
 using PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
 public partial class ZonaMuerte : Area2D
@@ -16,6 +17,20 @@ public partial class ZonaMuerte : Area2D
 		if (body is Jugador jugador)
 		{
 			jugador.Muerte();
+		}
+		else if (body is Flecha flecha)
+		{
+			flecha.QueueFree();
+			GD.Print($"ZonaMuerte: Flecha destruida al entrar en zona de muerte: {flecha.Name}");
+		}
+		else if (body is StaticBody2D or CharacterBody2D or RigidBody2D)
+		{
+			body.QueueFree();
+			GD.Print($"ZonaMuerte: Nodo destruido al entrar en zona de muerte: {body.Name} ({body.GetType()})");
+		}
+		else
+		{
+			GD.Print($"ZonaMuerte: Colisionador inesperado: {body.Name} ({body.GetType()})");
 		}
 	}
 }

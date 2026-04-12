@@ -8,11 +8,13 @@ namespace PrimerjuegoPlataformas2D.escenas.elementos.proyectiles.Flecha;
 
 public partial class Flecha : CharacterBody2D
 {
+    Sprite2D Sprite;
+
     #region Físicas
     [Export]
     public float VelocidadFlecha = 200f;
-    [Export]
-    public float MAXIMA_VELOCIDAD_CAIDA = 300f;
+
+    public const float MAXIMA_VELOCIDAD_CAIDA = 300f;
 
     private const float DESACELERACION = 30f; // píxeles/segundo²
 
@@ -29,6 +31,13 @@ public partial class Flecha : CharacterBody2D
     private (int H, int V) _direccionInicial;
 
     private float _velocidadHorizontalInicial = 0f;
+
+    public const float DISTANCIA_CLAVADO = 5f;
+
+    public override void _Ready()
+    {
+        Sprite = GetNode<Sprite2D>("Sprite2D");
+    }
 
     public void Disparar((int H, int V) direccion, float fuerzaDeDisparo)
     {
@@ -93,7 +102,7 @@ public partial class Flecha : CharacterBody2D
                 return;
             }
 
-            if (colisionador is StaticBody2D or TileMapLayer)
+            if (colisionador is StaticBody2D or TileMapLayer or Area2D)
             {
                 Clavarse((Node2D)colisionador);
                 return;
@@ -112,7 +121,12 @@ public partial class Flecha : CharacterBody2D
         GlobalPosition = posicionGlobal;
         GlobalRotation = rotacionGlobal;
 
+        this.ZIndex = -20;
+
         Velocity = Vector2.Zero;
         SetPhysicsProcess(false);
+
+        // Avanzamos el sprite para que quede clavada en la pared o enemigo
+        Sprite.Position = GlobalPosition.Normalized() * DISTANCIA_CLAVADO;
     }
 }

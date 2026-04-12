@@ -38,6 +38,13 @@ disparar={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Terreno"
+2d_physics/layer_2="Jugador"
+2d_physics/layer_3="Enemigos"
+2d_physics/layer_4="Interactuables"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

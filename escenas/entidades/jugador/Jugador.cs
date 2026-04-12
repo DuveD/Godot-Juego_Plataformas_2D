@@ -16,8 +16,12 @@ public partial class Jugador : CharacterBody2D
     public AnimatedSprite2D SpriteJugador;
     public Area2D SensorSuelo;
     private Camera2D _camera2D;
-    public SistemaPlataformas SistemaPlataformas;
     public Area2D HitBox;
+    #endregion
+
+    #region Sistemas
+    public SistemaPlataformas SistemaPlataformas;
+    public SistemaArco SistemaArco;
     #endregion
 
     #region Arco
@@ -28,8 +32,6 @@ public partial class Jugador : CharacterBody2D
 
     [Export]
     public PackedScene PackedSceneFlecha;
-    public Flecha _flecha;
-    private Vector2 _direccionApuntado = Vector2.Right;
     #endregion
 
     #region Spawn
@@ -44,7 +46,9 @@ public partial class Jugador : CharacterBody2D
     /// <summary>
     /// Dirección: 1 = derecha, -1 = izquierda.
     /// </summary>
-    private int _direccion = 1;
+    public int Direccion = 1;
+
+    public InputJugador InputJugadorActual;
 
     [Export]
     public float VELOCIDAD = 130f;
@@ -164,45 +168,10 @@ public partial class Jugador : CharacterBody2D
     private const float DISTANCIA_CAMBIO_FRAME_ESCALAR = 20f;
     #endregion 
 
-    #region Inputs
-    private struct InputJugador
-    {
-        public bool RodarPresionado;
-
-        public bool SaltoPresionado;
-        public bool Salto;
-
-
-        public bool ArribaPresionado;
-        public bool Arriba;
-        public bool AbajoPresionado;
-        public bool Abajo;
-        public bool Izquierda;
-        public bool Derecha;
-
-        public bool DispararPresionado;
-        public bool Disparar;
-
-        /// <summary>
-        /// H -> 1 = derecha, -1 = izquierda.<br/>
-        /// V -> 1 = abajo, -1 = arriba.
-        /// </summary>
-        public readonly (int H, int V) Direccion
-        {
-            get
-            {
-                int h = (Derecha ? 1 : 0) - (Izquierda ? 1 : 0);
-                int v = (Abajo ? 1 : 0) - (Arriba ? 1 : 0);
-                return (h, v);
-            }
-        }
-    }
-    #endregion
-
     #region Muerte
 
     public bool Invulnerable = false;
-    public bool DesactivarFisicas = false;
+    public bool DesactivarFisicasYControles = false;
 
     private const float DISTANCIA_SUPERIOR_ANIMACION_MUERTE = 80f;
     private const float DISTANCIA_FINAL_ANIMACION_MUERTE = 600f;
@@ -216,15 +185,17 @@ public partial class Jugador : CharacterBody2D
         this.SensorSuelo = GetNode<Area2D>("SensorSuelo");
         this._camera2D = GetNode<Camera2D>("Camera2D");
         this.HitBox = GetNode<Area2D>("HitBox");
+
         this.Carcaj = GetNode<Node2D>("Carcaj");
-        this.SpriteCarcaj = GetNode<Sprite2D>("Carcaj/SpriteCarcaj");
+        this.SpriteCarcaj = this.Carcaj.GetNode<Sprite2D>("SpriteCarcaj");
+
         this.Arco = GetNode<Node2D>("Arco");
-        this.SpriteArco = GetNode<AnimatedSprite2D>("Arco/SpriteArco");
+        this.SpriteArco = this.Arco.GetNode<AnimatedSprite2D>("SpriteArco");
 
         HitBox.BodyEntered += OnBodyEntered;
 
-        this.SistemaPlataformas = new SistemaPlataformas(this);
-        AddChild(SistemaPlataformas);
+        this.SistemaPlataformas = SistemaPlataformas.Inicializar(this);
+        this.SistemaArco = SistemaArco.Inicializar(this);
 
         RespawnEnPuntoSpawn();
     }
@@ -232,19 +203,18 @@ public partial class Jugador : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         // Si están desactivadas las físicas del jugador, no procesamos nada.
-        if (DesactivarFisicas)
+        if (DesactivarFisicasYControles)
             return;
 
         Vector2 velocidad = Velocity;
 
         InputJugador inputJugador = ActualizarInputs();
 
-        ProcesarDisparar(delta, inputJugador);
-
         velocidad = CalcularMovimientoHorizontal(delta, velocidad, inputJugador);
         velocidad = CalcularMovimientoVertical(delta, velocidad, inputJugador);
 
         Velocity = velocidad;
+        InputJugadorActual = inputJugador;
 
         MoveAndSlide();
 
@@ -252,136 +222,6 @@ public partial class Jugador : CharacterBody2D
 
         EvaluarEstadoLocomocion();
         ActualizarAnimacion(inputJugador);
-    }
-    private float _tiempoDisparar = 0f;
-    private const float TIEMPO_DISPARO = 1f; // segundos
-    private bool _disparoPreparado = false;
-
-    private void ProcesarDisparar(double delta, InputJugador inputJugador)
-    {
-        if (EstadoAccion != EstadoAccionJugador.Ninguno && EstadoAccion != EstadoAccionJugador.Disparando)
-        {
-            InterrumpirDisparo();
-            return;
-        }
-
-        if (EstadoLocomocion == EstadoLocomocionJugador.Escalando || Rodando)
-            return;
-
-        ActualizarDireccionDisparo(inputJugador);
-
-        if (inputJugador.DispararPresionado)
-        {
-            PrepararDisparo();
-        }
-        else if (inputJugador.Disparar)
-        {
-            _tiempoDisparar += (float)delta;
-
-            if (_tiempoDisparar < TIEMPO_DISPARO)
-            {
-                int Frame = Mathf.Min((int)(_tiempoDisparar / TIEMPO_DISPARO * 4), 3);
-                SpriteArco.Frame = Frame;
-                if (Frame == 1 && !_disparoPreparado)
-                {
-                    _disparoPreparado = true;
-                    GD.Print("Disparo preparado.");
-                    _flecha?.Position = new Vector2(_flecha.Position.X - 1, _flecha.Position.Y);
-                }
-            }
-        }
-        else
-        {
-            if (_disparoPreparado)
-            {
-                Disparar(inputJugador);
-            }
-            else
-            {
-                InterrumpirDisparo();
-            }
-        }
-    }
-    private void ActualizarDireccionDisparo(InputJugador inputJugador)
-    {
-        if (inputJugador.Direccion.H != 0)
-            _direccion = (int)inputJugador.Direccion.H;
-
-        SpriteJugador.FlipH = _direccion < 0;
-
-        float rotacion = 0f;
-        if (inputJugador.Direccion.V == -1)
-            rotacion = -40f;
-        else if (inputJugador.Direccion.V == 1)
-            rotacion = 40f;
-
-        Arco.RotationDegrees = rotacion * _direccion;
-        Arco.Scale = new Vector2(_direccion, 1);
-
-        Carcaj.Scale = new Vector2(_direccion, 1);
-    }
-
-    private void Disparar(InputJugador inputJugador)
-    {
-        _disparoPreparado = false;
-
-        if (_flecha != null)
-        {
-            Vector2 posicionGlobal = _flecha.GlobalPosition; // capturar antes de reparentar
-
-            _flecha.GetParent().RemoveChild(_flecha);
-            GetParent().AddChild(_flecha);
-
-            _flecha.GlobalPosition = posicionGlobal; // restaurar la posición global
-
-            float fuerzaDeDisparo = Mathf.Clamp(_tiempoDisparar / TIEMPO_DISPARO, 0.5f, 1.5f);
-            _flecha.Disparar((_direccion, inputJugador.Direccion.V), fuerzaDeDisparo);
-            _flecha = null;
-        }
-
-        SpriteJugador.Play();
-    }
-
-    private void PrepararDisparo()
-    {
-        EstadoAccion = EstadoAccionJugador.Disparando;
-
-        Arco.Visible = true;
-        SpriteCarcaj.Visible = true;
-
-        _tiempoDisparar = 0f;
-        _disparoPreparado = false;
-
-        SpriteArco.Play("tensando");
-        SpriteArco.Frame = 0;
-
-        // Instanciar flecha
-        _flecha = PackedSceneFlecha.Instantiate<Flecha>();
-        Vector2 puntoDisparoLocal = new Vector2(8, SpriteArco.Position.Y);
-        Arco.AddChild(_flecha);
-        _flecha.Position = puntoDisparoLocal;
-
-        SpriteJugador.Pause();
-    }
-
-    private void InterrumpirDisparo()
-    {
-        if (EstadoAccion == EstadoAccionJugador.Disparando)
-            EstadoAccion = EstadoAccionJugador.Ninguno;
-
-        Arco.Visible = false;
-        SpriteCarcaj.Visible = false;
-
-        _tiempoDisparar = 0f;
-        _disparoPreparado = false;
-
-        if (_flecha != null && !_flecha.Disparada)
-        {
-            _flecha.QueueFree();
-            _flecha = null;
-        }
-
-        SpriteJugador.Play();
     }
 
     private void ComprobarContactoBloquesRompibles()
@@ -405,7 +245,7 @@ public partial class Jugador : CharacterBody2D
         InputJugador inputJugador = LeerInput();
 
         ActualizarCoyoteTime();
-        ActualizarBufferDeSalto(inputJugador);
+        ActualizarBufferDeSalto(InputJugadorActual);
 
         return inputJugador;
     }
@@ -675,13 +515,23 @@ public partial class Jugador : CharacterBody2D
 
     private void ActualizarDireccion(Vector2 velocidad)
     {
-        if (velocidad.X == 0)
-            return;
-
-        _direccion = Mathf.Sign(velocidad.X);
-        SpriteJugador.FlipH = velocidad.X < 0;
+        int direccion = velocidad.X < 0 ? -1 : velocidad.X > 0 ? 1 : 0;
+        ActualizarDireccion(direccion);
     }
 
+    /// <summary>
+    /// direccion: 1 = derecha, -1 = izquierda.
+    /// </br>
+    /// direccion == 0 --> no cambia la dirección actual.
+    /// </summary>
+    public void ActualizarDireccion(int direccion)
+    {
+        if (direccion == 0)
+            return;
+
+        SpriteJugador.FlipH = direccion < 0;
+        Direccion = Mathf.Sign(direccion);
+    }
 
     private (bool, Vector2) ProcesarRodar(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
@@ -749,7 +599,7 @@ public partial class Jugador : CharacterBody2D
         Rodando = true;
         _framesRodando = FRAMES_RODAR;
         _rodandoIniciado = false;
-        int direccion = inputJugador.Direccion.H != 0 ? inputJugador.Direccion.H : _direccion;
+        int direccion = inputJugador.Direccion.H != 0 ? inputJugador.Direccion.H : Direccion;
         _velocidadInicialRodar = direccion * VELOCIDAD_RODAR;
     }
 
@@ -1020,6 +870,21 @@ public partial class Jugador : CharacterBody2D
             ReproducirAnimacion(AnimacionJugador.Rodar, true);
     }
 
+    public void PausarAnimacion()
+    {
+        SpriteJugador.Pause();
+    }
+
+    public void ReanudarAnimacion()
+    {
+        SpriteJugador.Play();
+    }
+
+    public void PararAnimacion()
+    {
+        SpriteJugador.Stop();
+    }
+
     private void ReproducirAnimacion(AnimacionJugador animacion, bool forzarReproducir = false)
     {
         if (SpriteJugador.Animation == animacion.Nombre && !forzarReproducir)
@@ -1030,8 +895,10 @@ public partial class Jugador : CharacterBody2D
 
     public async void Muerte()
     {
-        if (DesactivarFisicas)
+        if (DesactivarFisicasYControles)
             return;
+
+        SistemaArco.InterrumpirDisparo();
 
         MarcarComoMuerto();
         await EjecutarAnimacionMuerte();
@@ -1040,7 +907,7 @@ public partial class Jugador : CharacterBody2D
 
     private void MarcarComoMuerto()
     {
-        DesactivarFisicas = true;
+        DesactivarFisicasYControles = true;
         Velocity = Vector2.Zero;
         DejarDeRodar();
     }
@@ -1093,7 +960,7 @@ public partial class Jugador : CharacterBody2D
         _camera2D.Position = Vector2.Zero;
 
         // Devolvemos el estado de muerto a false.
-        DesactivarFisicas = false;
+        DesactivarFisicasYControles = false;
     }
 
     private void RespawnEnPuntoSpawn()
@@ -1103,8 +970,8 @@ public partial class Jugador : CharacterBody2D
 
         // Movemos el jugador al últimpo punto de Spawn.
         this.Position = PuntoControl.GlobalPosition;
-        this._direccion = PuntoControl.Direccion;
-        SpriteJugador.FlipH = _direccion < 0;
+        this.Direccion = PuntoControl.Direccion;
+        SpriteJugador.FlipH = Direccion < 0;
         _posYAlCaer = GlobalPosition.Y;
     }
 
