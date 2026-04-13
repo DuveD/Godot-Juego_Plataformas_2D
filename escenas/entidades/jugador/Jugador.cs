@@ -1,12 +1,11 @@
-using System;
 using System.Threading.Tasks;
 using Godot;
-using PrimerjuegoPlataformas2D.escenas.elementos.proyectiles.Flecha;
+using PrimerjuegoPlataformas2D.escenas.bloques;
+using PrimerjuegoPlataformas2D.escenas.elementos.Escalera;
+using PrimerjuegoPlataformas2D.escenas.elementos.PuntoControl;
 using PrimerjuegoPlataformas2D.escenas.entidades.enemigos.Slime;
+using PrimerjuegoPlataformas2D.escenas.entidades.Jugador.SistemasJugador;
 using PrimerjuegoPlataformas2D.nucleo.utilidades;
-using BloqueRompible = PrimerjuegoPlataformas2D.escenas.bloques.BloqueRompible;
-using Escalera = PrimerjuegoPlataformas2D.escenas.elementos.Escalera.Escalera;
-using PuntoControl = PrimerjuegoPlataformas2D.escenas.elementos.PuntoControl.PuntoControl;
 
 namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
 
@@ -22,6 +21,7 @@ public partial class Jugador : CharacterBody2D
     #region Sistemas
     public SistemaPlataformas SistemaPlataformas;
     public SistemaArco SistemaArco;
+    public SistemaEscalera SistemaEscalera;
     #endregion
 
     #region Arco
@@ -40,7 +40,6 @@ public partial class Jugador : CharacterBody2D
     #endregion
 
     #region Físicas
-
     private static float _gravedad = UtilidadesFisicas.ObtenerGravedad();
 
     /// <summary>
@@ -59,8 +58,6 @@ public partial class Jugador : CharacterBody2D
 
     private const float ACELERACION_SUELO = 1000f;
     private const float ACELERACION_AIRE = 500f;
-
-    private const float VELOCIDAD_ESCALAR = 80;
     #endregion
 
     #region Estado de locomoción
@@ -158,18 +155,7 @@ public partial class Jugador : CharacterBody2D
     }
     #endregion
 
-    #region Escalar
-    private Escalera _escaleraActual = null;
-    private bool _agarradoEscalera = false;
-
-    private int _frameEscalera = 0;
-    private float _distanciaEscalada = 0f;
-    private bool _moviendoseEscaleraAnterior = false;
-    private const float DISTANCIA_CAMBIO_FRAME_ESCALAR = 20f;
-    #endregion 
-
     #region Muerte
-
     public bool Invulnerable = false;
     public bool DesactivarFisicasYControles = false;
 
@@ -196,6 +182,7 @@ public partial class Jugador : CharacterBody2D
 
         this.SistemaPlataformas = SistemaPlataformas.Inicializar(this);
         this.SistemaArco = SistemaArco.Inicializar(this);
+        this.SistemaEscalera = SistemaEscalera.Inicializar(this);
 
         RespawnEnPuntoSpawn();
     }
@@ -280,6 +267,10 @@ public partial class Jugador : CharacterBody2D
         else if (_coyoteFrames > 0)
             _coyoteFrames--;
     }
+    public void ResetearCoyoteTime()
+    {
+        _coyoteFrames = 0;
+    }
 
     private void ActualizarBufferDeSalto(InputJugador inputJugador)
     {
@@ -289,12 +280,17 @@ public partial class Jugador : CharacterBody2D
             _jumpBufferFrames--;
     }
 
+    public void ResetearBufferSalto()
+    {
+        _jumpBufferFrames = 0;
+    }
+
     private Vector2 CalcularMovimientoVertical(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         // Intentar agarrarse
-        (bool movimientoEscalera, Vector2 velocidadEscalera) = ProcesarMovimientoEscalera(delta, ref velocidad, inputJugador);
-        if (movimientoEscalera)
-            return velocidadEscalera;
+        Vector2? velocidadEscalera = SistemaEscalera.ProcesarMovimientoEscalera(delta, velocidad, inputJugador);
+        if (velocidadEscalera.HasValue)
+            return velocidadEscalera.Value;
 
         // Física normal
         velocidad = ProcesarSalto(delta, velocidad, inputJugador);
@@ -306,77 +302,6 @@ public partial class Jugador : CharacterBody2D
         return velocidad;
     }
 
-    private (bool, Vector2) ProcesarMovimientoEscalera(double delta, ref Vector2 velocidad, InputJugador inputJugador)
-    {
-        if (EstadoAccion == EstadoAccionJugador.Disparando)
-            return (false, default);
-
-        if (_agarradoEscalera && EnSuelo)
-        {
-            _agarradoEscalera = false;
-            GD.Print("Escalera soltada al aterrizar.");
-        }
-
-        velocidad = ProcesarAgarrarEscalera(velocidad, inputJugador);
-
-        if (_agarradoEscalera && _escaleraActual != null)
-        {
-            (bool saltoEnEscalera, Vector2 velocidadSaltoEnEscalera) = ProcesarSaltoEnEscalera(ref velocidad);
-            if (saltoEnEscalera)
-                return (true, velocidadSaltoEnEscalera);
-
-            float dirY = inputJugador.Arriba ? -1f : inputJugador.Abajo ? 1f : 0f;
-            velocidad.Y = dirY * VELOCIDAD_ESCALAR;
-
-            // Snap suave al centro X
-            velocidad.X = Mathf.Clamp(
-                (_escaleraActual.CentroX - GlobalPosition.X) / (float)delta,
-                -200f, 200f
-            );
-
-            float movimiento = Mathf.Abs(velocidad.Y * (float)delta);
-            if (movimiento > 0)
-                _distanciaEscalada += movimiento;
-
-            return (true, velocidad); // sin gravedad
-        }
-
-        return (false, default);
-    }
-
-    private Vector2 ProcesarAgarrarEscalera(Vector2 velocidad, InputJugador inputJugador)
-    {
-        if (_escaleraActual != null && !_agarradoEscalera && !Rodando)
-        {
-            if (inputJugador.ArribaPresionado || (inputJugador.AbajoPresionado && !EnSuelo))
-            {
-                _agarradoEscalera = true;
-                _coyoteFrames = 0;
-                velocidad = Vector2.Zero;
-                _distanciaEscalada = 0f;
-                _moviendoseEscaleraAnterior = false;
-            }
-        }
-
-        return velocidad;
-    }
-
-    private (bool, Vector2) ProcesarSaltoEnEscalera(ref Vector2 velocidad)
-    {
-        if (HayInputSalto())
-        {
-            _agarradoEscalera = false;
-            velocidad.Y = -VELOCIDAD_SALTO;
-            _coyoteFrames = 0;
-            _jumpBufferFrames = 0;
-
-            return (true, velocidad);
-        }
-        else
-        {
-            return (false, default);
-        }
-    }
 
     private Vector2 CancelarSalto(Vector2 velocidad)
     {
@@ -434,12 +359,12 @@ public partial class Jugador : CharacterBody2D
         }
     }
 
-    private bool PuedeSaltar()
+    public bool PuedeSaltar()
     {
         return _coyoteFrames > 0;
     }
 
-    private bool HayInputSalto()
+    public bool HayInputSalto()
     {
         return _jumpBufferFrames > 0;
     }
@@ -502,9 +427,9 @@ public partial class Jugador : CharacterBody2D
             return velocidad;
         }
 
-        (bool rodando, Vector2 velocidadRodar) = ProcesarRodar(delta, velocidad, inputJugador);
-        if (rodando)
-            return velocidadRodar;
+        Vector2? velocidadRodar = ProcesarRodar(delta, velocidad, inputJugador);
+        if (velocidadRodar.HasValue)
+            return velocidadRodar.Value;
 
         velocidad = AplicarAceleracionHorizontal(delta, velocidad, inputJugador);
 
@@ -533,7 +458,7 @@ public partial class Jugador : CharacterBody2D
         Direccion = Mathf.Sign(direccion);
     }
 
-    private (bool, Vector2) ProcesarRodar(double delta, Vector2 velocidad, InputJugador inputJugador)
+    private Vector2? ProcesarRodar(double delta, Vector2 velocidad, InputJugador inputJugador)
     {
         ActualizarRodar();
 
@@ -545,9 +470,9 @@ public partial class Jugador : CharacterBody2D
         }
 
         if (Rodando)
-            return (true, MantenerVelocidadRodar(delta, velocidad));
+            return MantenerVelocidadRodar(delta, velocidad);
         else
-            return (false, default);
+            return null;
     }
 
     private Vector2 MantenerVelocidadRodar(double delta, Vector2 velocidad)
@@ -658,7 +583,7 @@ public partial class Jugador : CharacterBody2D
 
     public EstadoLocomocionJugador CalcularEstadoLocomocion()
     {
-        if (_agarradoEscalera)
+        if (SistemaEscalera.AgarradoEscalera)
         {
             return EstadoLocomocionJugador.Escalando;
         }
@@ -808,7 +733,7 @@ public partial class Jugador : CharacterBody2D
                 break;
 
             case EstadoLocomocionJugador.Escalando:
-                ActualizarAnimacionEscalando(inputJugador);
+                SistemaEscalera.ActualizarAnimacion(inputJugador);
                 break;
         }
     }
@@ -829,37 +754,6 @@ public partial class Jugador : CharacterBody2D
     private void ActualizarAnimacionCayendo()
     {
         ReproducirAnimacion(AnimacionJugador.Caer);
-    }
-
-    private void ActualizarAnimacionEscalando(InputJugador inputJugador)
-    {
-        bool moviendose = inputJugador.Arriba || inputJugador.Abajo;
-
-        ReproducirAnimacion(AnimacionJugador.Escalando);
-
-        if (moviendose)
-        {
-            // Al empezar a moverse, avanzar un frame inmediatamente
-            if (!_moviendoseEscaleraAnterior)
-            {
-                _frameEscalera = 1 - SpriteJugador.Frame;
-                _distanciaEscalada = 0f; // resetear para que el siguiente cambio sea limpio
-            }
-            else
-            {
-                _distanciaEscalada += Mathf.Abs(Velocity.Y * (float)GetPhysicsProcessDeltaTime());
-
-                if (_distanciaEscalada >= DISTANCIA_CAMBIO_FRAME_ESCALAR)
-                {
-                    _distanciaEscalada -= DISTANCIA_CAMBIO_FRAME_ESCALAR;
-                    _frameEscalera = 1 - _frameEscalera;
-                }
-            }
-
-            SpriteJugador.Frame = _frameEscalera;
-        }
-
-        _moviendoseEscaleraAnterior = moviendose;
     }
 
     private void ActualizarAnimacionRodando()
@@ -885,7 +779,7 @@ public partial class Jugador : CharacterBody2D
         SpriteJugador.Stop();
     }
 
-    private void ReproducirAnimacion(AnimacionJugador animacion, bool forzarReproducir = false)
+    public void ReproducirAnimacion(AnimacionJugador animacion, bool forzarReproducir = false)
     {
         if (SpriteJugador.Animation == animacion.Nombre && !forzarReproducir)
             return;
@@ -987,25 +881,5 @@ public partial class Jugador : CharacterBody2D
     {
         if (!Invulnerable)
             this.Muerte();
-    }
-
-    public void EntrarZonaEscalera(Escalera escalera)
-    {
-        if (escalera == null)
-            return;
-
-        _escaleraActual = escalera;
-    }
-
-    public void SalirZonaEscalera(Escalera escalera)
-    {
-        if (escalera == null)
-            return;
-
-        if (_escaleraActual != escalera)
-            return;
-
-        _escaleraActual = null;
-        _agarradoEscalera = false;
     }
 }

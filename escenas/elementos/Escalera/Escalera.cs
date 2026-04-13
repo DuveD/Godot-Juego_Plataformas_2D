@@ -171,13 +171,13 @@ public partial class Escalera : Area2D
     private void OnBodyEntered(Node2D body)
     {
         if (body is Jugador jugador)
-            jugador.EntrarZonaEscalera(this);
+            jugador.SistemaEscalera.EntrarZonaEscalera(this);
     }
 
     private void OnBodyExited(Node2D body)
     {
         if (body is Jugador jugador)
-            jugador.SalirZonaEscalera(this);
+            jugador.SistemaEscalera.SalirZonaEscalera(this);
     }
     #endregion
 }

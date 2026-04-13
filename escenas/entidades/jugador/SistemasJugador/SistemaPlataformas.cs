@@ -4,23 +4,20 @@ using System.Linq;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.elementos.Plataforma;
 
-namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador.SistemasJugador;
 
-public partial class SistemaPlataformas : Node
+public partial class SistemaPlataformas : SistemaJugador
 {
     private float _tiempoAtravesandoPlataforma = 0f;
     private const float DURACION_DROP_PLATAFORMA = 0.18f;
-
-    private Jugador _jugador;
 
     public float Gravedad = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
     private HashSet<Plataforma> _plataformasDebajo = [];
     private HashSet<Plataforma> _plataformasIgnoradas = [];
 
-    private SistemaPlataformas(Jugador jugador)
+    private SistemaPlataformas(Jugador jugador) : base(jugador)
     {
-        this._jugador = jugador;
     }
 
     public static SistemaPlataformas Inicializar(Jugador jugador)

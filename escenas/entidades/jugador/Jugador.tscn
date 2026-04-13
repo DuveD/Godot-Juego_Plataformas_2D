@@ -510,7 +510,7 @@ shape = SubResource("CapsuleShape2D_7jr6d")
 position = Vector2(0, -7.5)
 
 [node name="SpriteArco" type="AnimatedSprite2D" parent="Arco" unique_id=1699691502]
-position = Vector2(8, -2)
+position = Vector2(8, -1.5)
 sprite_frames = SubResource("SpriteFrames_4s2dp")
 animation = &"tensando"
 frame_progress = 1.0

@@ -3,18 +3,17 @@ using Godot;
 using PrimerjuegoPlataformas2D.escenas.elementos.proyectiles.Flecha;
 using static PrimerjuegoPlataformas2D.escenas.entidades.Jugador.Jugador;
 
-namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
+namespace PrimerjuegoPlataformas2D.escenas.entidades.Jugador.SistemasJugador;
 
-public partial class SistemaArco : Node
+public partial class SistemaArco : SistemaJugador
 {
+    private const float TIEMPO_DISPARO = 1f;
+
     private Flecha _flecha;
     private Vector2 _direccionApuntado = Vector2.Right;
 
     private float _tiempoDisparar = 0f;
-    private const float TIEMPO_DISPARO = 1f; // segundos
     private bool _disparoPreparado = false;
-
-    private Jugador _jugador;
 
     private AnimatedSprite2D _spriteJugador => _jugador?.SpriteJugador;
 
@@ -28,9 +27,8 @@ public partial class SistemaArco : Node
 
     private PackedScene _packedSceneFlecha => _jugador.PackedSceneFlecha;
 
-    private SistemaArco(Jugador jugador)
+    protected SistemaArco(Jugador jugador) : base(jugador)
     {
-        this._jugador = jugador;
     }
 
     public static SistemaArco Inicializar(Jugador jugador)
@@ -123,6 +121,8 @@ public partial class SistemaArco : Node
 
         if (_flecha != null)
         {
+            GD.Print("Flecha disparada.");
+
             Vector2 posicionGlobal = _flecha.GlobalPosition; // capturar antes de reparentar
 
             _flecha.GetParent().RemoveChild(_flecha);
