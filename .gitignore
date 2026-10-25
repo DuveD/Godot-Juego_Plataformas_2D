@@ -40,7 +40,8 @@ ipch/
 *.userosscache
 *.sln.docstates
 *.env
-*.userprefs # MonoDevelop/Xamarin Studio user files
+# MonoDevelop/Xamarin Studio user files
+*.userprefs
 *.VC.db
 *.VC.VC.opendb
 

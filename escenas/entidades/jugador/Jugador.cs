@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Godot;
 using PrimerjuegoPlataformas2D.escenas.bloques;
@@ -648,6 +649,9 @@ public partial class Jugador : CharacterBody2D
                 case EstadoLocomocionJugador.Escalando:
                     OnEscalando();
                     break;
+
+                default:
+                    throw new UnreachableException($"Estado de locomoción no contemplado: {actual}");
             }
         }
     }
@@ -735,6 +739,9 @@ public partial class Jugador : CharacterBody2D
             case EstadoLocomocionJugador.Escalando:
                 SistemaEscalera.ActualizarAnimacion(inputJugador);
                 break;
+
+            default:
+                throw new UnreachableException($"Estado de locomoción no contemplado: {EstadoLocomocion}");
         }
     }
 

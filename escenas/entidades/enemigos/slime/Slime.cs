@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using PrimerjuegoPlataformas2D.nucleo.utilidades;
 
@@ -263,6 +264,9 @@ public partial class Slime : CharacterBody2D
                 case EstadoLocomocionEnemigo.Cayendo:
                     OnCayendo();
                     break;
+
+                default:
+                    throw new UnreachableException($"Estado de locomoción no contemplado: {actual}");
             }
         }
     }
@@ -305,6 +309,9 @@ public partial class Slime : CharacterBody2D
             case EstadoLocomocionEnemigo.Cayendo:
                 ActualizarAnimacionCayendo();
                 break;
+
+            default:
+                throw new UnreachableException($"Estado de locomoción no contemplado: {EstadoLocomocion}");
         }
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Godot;
 using Godot.Collections;
 using PrimerjuegoPlataformas2D.escenas.entidades.Jugador;
@@ -187,6 +188,9 @@ public partial class PlataformaMovil : Plataforma
             case EstadoPlataforma.Restaurando:
                 GestionarEstadoRestaurando(delta);
                 break;
+
+            default:
+                throw new UnreachableException($"Estado de plataforma no contemplado: {_estado}");
         }
     }
 

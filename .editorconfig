@@ -21,3 +21,11 @@ csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
+
+# Reglas de estilo comprobadas al compilar (requiere EnforceCodeStyleInBuild en el .csproj)
+# IDE0055: formato
+dotnet_diagnostic.IDE0055.severity = warning
+# IDE0010: sentencia switch sobre un enum sin todos los casos
+dotnet_diagnostic.IDE0010.severity = warning
+# IDE0072: expresión switch sobre un enum sin todos los casos
+dotnet_diagnostic.IDE0072.severity = warning
